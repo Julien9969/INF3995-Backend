@@ -8,3 +8,11 @@ def get_something(db: Session, id: int):
     if db_something == None:
         raise HTTPException(status_code=404, detail="Something not found")
     return db_something
+
+def post_string(db: Session, something: str):
+    
+    db_something = models.stringTable(txt=something)
+    db.add(db_something)
+    db.commit()
+    db.refresh(db_something)
+    return db_something

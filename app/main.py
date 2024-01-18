@@ -1,6 +1,7 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 
 from . import crud, models, schemas
@@ -42,3 +43,11 @@ app.add_middleware(
 @app.get("/api/{id}", tags=["Something"], response_model=list[schemas.SomethingBase])
 async def something(id: int, db: Session = Depends(get_db)):
     return [crud.get_something(db=db, id=id)]
+
+@app.post("/api/something", tags=["postText"])
+async def postSomething(something: str, db: Session = Depends(get_db)):
+
+    if crud.post_string(something=something, db=db):
+        return JSONResponse(content={"message": "Resource created successfully"})
+    else:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create resource")
