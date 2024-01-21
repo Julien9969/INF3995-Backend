@@ -6,6 +6,8 @@ from sqlalchemy.orm import Session
 
 from . import crud, models, schemas
 from .database import SessionLocal, engine
+from typing import List
+
 
 models.Base.metadata.create_all(bind=engine)
 
@@ -26,8 +28,8 @@ app = FastAPI(lifespan=lifespan)
 
 origins = [
     "http://localhost",
-    "http://localhost:3200",
-    "http://127.0.0.1:3200",
+    "http://localhost:8000",
+    "http://127.0.0.1:8000",
     "*"
 ]
 
@@ -40,7 +42,7 @@ app.add_middleware(
 )
 
 
-@app.get("/api/{id}", tags=["Something"], response_model=list[schemas.SomethingBase])
+@app.get("/api/{id}", tags=["Something"], response_model=List[schemas.SomethingBase])
 async def something(id: int, db: Session = Depends(get_db)):
     return [crud.get_something(db=db, id=id)]
 
