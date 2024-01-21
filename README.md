@@ -55,6 +55,8 @@ docker images
 docker build -t projet3 .
 docker run -p 3200:8000 -v $(pwd):/app --name pj3 -it projet3
 
+/etc/init.d/postgresql start
+uvicorn app.main:app --reload
 
 
 docker logs -f pj3
