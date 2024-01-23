@@ -42,9 +42,13 @@ app.add_middleware(
 )
 
 
-@app.get("/api/{id}", tags=["Something"], response_model=List[schemas.SomethingBase])
+@app.get("/api/something/{id}", tags=["Something"], response_model=List[schemas.SomethingBase])
 async def something(id: int, db: Session = Depends(get_db)):
     return [crud.get_something(db=db, id=id)]
+
+@app.get("/api/ping", tags=['ping'])
+async def ping():
+    return {'data': 'pong'}
 
 @app.post("/api/something", tags=["postText"])
 async def postSomething(something: str, db: Session = Depends(get_db)):
