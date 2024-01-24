@@ -50,7 +50,7 @@ async def something(id: int, db: Session = Depends(get_db)):
 
 @app.get("/api/ping", tags=['ping'])
 async def ping():
-    return {'data': 'pong'}
+    return {'data': 'pong-exi'}
 
 
 @app.post("/api/something", tags=["postText"])

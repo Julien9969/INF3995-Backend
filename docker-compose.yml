@@ -9,15 +9,18 @@ services:
       - db
     networks:
       - fastapi-network
+    volumes:
+      - ./app:/src/app 
+    command: ["uvicorn", "app.main:app", "--reload","--host", "0.0.0.0", "--port", "80"]
 
   db:
     image: postgres:13
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: table    
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
+      POSTGRES_DB: inf3995    
+      POSTGRES_USER: eq102
+      POSTGRES_PASSWORD: root
     networks:
       - fastapi-network
 
