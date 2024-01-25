@@ -127,6 +127,11 @@ docker builder prune
 docker images
 ```
 
+Reset docker configuration (change db user)
+```sh
+docker compose down -v
+```
+
 ## Resources
 
 [Fast API documentation](https://fastapi.tiangolo.com/) \
