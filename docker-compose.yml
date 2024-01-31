@@ -24,6 +24,18 @@ services:
     networks:
       - fastapi-network
 
+  test_db:
+    image: postgres:13
+    command: -p 5555
+    volumes:
+      - postgres_data:/var/lib/postgresql/test_data
+    environment:
+      POSTGRES_DB: test_inf3995    
+      POSTGRES_USER: test_eq102
+      POSTGRES_PASSWORD: test_root
+    networks:
+      - fastapi-network
+
 networks:
   fastapi-network:
     driver: bridge

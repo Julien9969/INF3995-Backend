@@ -1,5 +1,6 @@
 import os
 import sys
+import time
 from typing import Any
 from typing import Generator
 
@@ -10,13 +11,11 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import sessionmaker
 
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-# this is to include backend dir in sys.path so that we can import from db,main.py
+# Give Access the app. module
+sys.path.append(".")
 
 from app.db.session import Base, get_db
-from apis.base import api_router
-from core.config import settings
-from tests.utils.users import authentication_token_from_email
+from app.api.base import api_router
 
 
 def start_application():
@@ -25,12 +24,18 @@ def start_application():
     return app
 
 
-SQLALCHEMY_DATABASE_URL = "sqlite:///./test_db.db"
-engine = create_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
-)
-# Use connect_args parameter only with sqlite
-SessionTesting = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+# Will see if we use the same database for testing (if yes create a clean routine after test)
+while True:
+    try:
+        SQLALCHEMY_DATABASE_URL = "postgresql://test_eq102:test_root@test_db:5555/test_inf3995"
+        engine = create_engine(
+            SQLALCHEMY_DATABASE_URL
+        )
+        SessionTesting = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        break
+    except Exception as e:
+        print("Waiting for db to be ready...")
+        time.sleep(1)
 
 
 @pytest.fixture(scope="module")
@@ -49,6 +54,10 @@ def db_session(app: FastAPI) -> Generator[SessionTesting, Any, None]:
     connection = engine.connect()
     transaction = connection.begin()
     session = SessionTesting(bind=connection)
+    if session is None:
+        print("Test Database session is None.")
+    else:
+        print("Test Database session is On.")
     yield session  # use the session in tests.
     session.close()
     transaction.rollback()
@@ -77,6 +86,4 @@ def client(
 
 @pytest.fixture(scope="module")
 def normal_user_token_headers(client: TestClient, db_session: Session):
-    return authentication_token_from_email(
-        client=client, email=settings.TEST_USER_EMAIL, db=db_session
-    )
+    return None
