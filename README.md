@@ -113,6 +113,21 @@ select * from something;
 docker compose stop
 ```
 
+### Run the tests
+Open a bash of fast-api
+```sh
+docker exec -it inf3995-backend-fastapi-1 bash
+```
+Run the tests + coverage
+```sh
+pytest --cov-report term-missing --cov=app app/
+```
+
+##### Test execution with one command
+```sh
+docker exec -it inf3995-backend-fastapi-1 bash -c "pytest --cov-report term-missing --cov=app app/"
+``` 
+
 ### Delete the docker and cache
 At `docker-compose.yml` location run 
 ```sh
