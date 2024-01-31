@@ -1,31 +1,41 @@
-from fastapi import FastAPI, Depends, HTTPException, status
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
-from fastapi.responses import JSONResponse
-from sqlalchemy.orm import Session
 
-from . import crud, models, schemas
-from .database import SessionLocal, engine
-from typing import List
+from app.db.models.exemples_models import Base
+from app.db.utils import check_db_connected, check_db_disconnected
+from app.db.session import engine
+from app.router.base import api_router
 
-
-models.Base.metadata.create_all(bind=engine)
-
-
-# Dependency
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
-
-        
+# Don't work for the moment, on_event work of you want
 @asynccontextmanager
-async def lifespan(app: FastAPI): 
-    yield 
+async def app_lifespan(app: FastAPI):
+    # Start up event
+    print("Starting up")
+    await check_db_connected()
+    
+    yield
+    
+    # Shutdown event
+    await check_db_disconnected()
 
-app = FastAPI(lifespan=lifespan)
+def include_router(app):
+    app.include_router(api_router)
+
+# def configure_static(app):
+#     app.mount("/static", StaticFiles(directory="static"), name="static")
+
+def create_tables():
+    Base.metadata.create_all(bind=engine)
+
+def start_application() -> FastAPI:
+    app = FastAPI(title="INF3995", version="V1.0.0", lifespan=app_lifespan)
+    include_router(app)
+    # configure_static(app)
+    create_tables()
+    return app
+
+app = start_application()
 
 origins = [
     "http://localhost",
@@ -42,21 +52,22 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# @app.on_event("startup")
+# async def startup_event():
+#     async with lifespan(app):
+#         print("App started")
+# 
+# @app.on_event("shutdown")
+# async def shutdown_event():
+#     print("App shutting down")
+#     await check_db_disconnected()
 
-@app.get("/api/something/{id}", tags=["Something"], response_model=List[schemas.SomethingBase])
-async def something(id: int, db: Session = Depends(get_db)):
-    return [crud.get_something(db=db, id=id)]
 
-
-@app.get("/api/ping", tags=['ping'])
-async def ping():
-    return {'data': 'pong-exi'}
-
-
-@app.post("/api/something", tags=["postText"])
-async def postSomething(something: str, db: Session = Depends(get_db)):
-
-    if crud.post_string(something=something, db=db):
-        return JSONResponse(content={"message": "Resource created successfully"})
-    else:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create resource")
+# @app.on_event("startup")
+# async def app_startup():
+#     await check_db_connected()
+# 
+# 
+# @app.on_event("shutdown")
+# async def app_shutdown():
+#     await check_db_disconnected()

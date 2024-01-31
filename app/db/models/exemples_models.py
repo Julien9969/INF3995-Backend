@@ -1,6 +1,6 @@
 from sqlalchemy import Enum, Column, Integer, String
-from .database import Base
-from .classes.something_type import SomethingType
+from app.db.session import Base
+from app.schemas.something_type import SomethingType
 
 
 class Something(Base):
