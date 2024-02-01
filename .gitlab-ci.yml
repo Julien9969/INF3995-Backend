@@ -5,33 +5,22 @@ image: tiangolo/uvicorn-gunicorn-fastapi:python3.8
     refs:
       - master
       - merge_requests
-      - commit
     changes:
       - app/**/*
 
 stages:
-  - install
   - test
-
-install:app:
-  stage: install
-  <<: *only-app
-  script:
-    - pip install --no-cache-dir -r requirements.txt
 
 test:app:
   stage: test
-  needs: ["install:app"]
   <<: *only-app
   services:
     - name: postgres:13
       alias: postgres
       command: ["-p", "5555"]
   script:
-    - ls -a
+    - pip install -r requirements.txt
     - pytest --cov-report term-missing --cov=app app/
-  dependencies:
-    - install:app
 
 variables:
   POSTGRES_DB: test_inf3995    
