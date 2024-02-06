@@ -1,0 +1,11 @@
+fastapi[all]
+sqlalchemy
+psycopg2-binary
+databases
+asyncpg
+aiosqlite
+
+# for testing
+pytest
+requests
+pytest-cov

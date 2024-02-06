@@ -1,0 +1,28 @@
+image: tiangolo/uvicorn-gunicorn-fastapi:python3.8
+
+.only-app: &only-app
+  only:
+    refs:
+      - master
+      - merge_requests
+    changes:
+      - app/**/*
+
+stages:
+  - test
+
+test:app:
+  stage: test
+  <<: *only-app
+  services:
+    - name: postgres:13
+      alias: test_db
+      command: ["-p", "5555"]
+  script:
+    - pip install -r requirements.txt
+    - pytest --cov-report term-missing --cov=app app/
+
+variables:
+  POSTGRES_DB: test_inf3995    
+  POSTGRES_USER: test_eq102
+  POSTGRES_PASSWORD: test_root
