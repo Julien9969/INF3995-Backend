@@ -11,8 +11,25 @@ services:
       - fastapi-network
     volumes:
       - ./app:/src/app 
-    command: ["uvicorn", "app.main:app", "--reload","--host", "0.0.0.0", "--port", "80"]
+    # command: ["uvicorn", "app.main:app", "--reload","--host", "0.0.0.0", "--port", "80"]
     # command: ["/bin/bash"]
+    # network_mode: host
+    # build: ./docker-robot
+    image: fastapi
+    container_name: fastapi-container
+    environment:
+      - ROS_DOMAIN_ID=102
+      - TERM='xterm-256color'
+    # devices:
+    #   - /dev/ttyTHS1
+    #   - /dev/ydlidar
+    #     # - /sys/bus/usb/001/009
+    # volumes:
+    #   - /home/nvidia/INF3995-Robot:/root/INF3995-Robot
+      # - /tmp/.X11-unix:/tmp/.X11-unix
+    # Décommenter cette commande lorsqu'on voudra lancer un launch file automatiquement (RR)
+    command: /bin/bash -c "cd root && /root/deploy-robot.sh && source /root/INF3995-Robot/ros_ws/install/setup.bash && ros2 launch py_identify_server identify.launch.py"
+
 
   db:
     image: postgres:13
@@ -25,17 +42,17 @@ services:
     networks:
       - fastapi-network
 
-  test_db:
-    image: postgres:13
-    command: -p 5555
-    volumes:
-      - postgres_data:/var/lib/postgresql/test_data
-    environment:
-      POSTGRES_DB: test_inf3995    
-      POSTGRES_USER: test_eq102
-      POSTGRES_PASSWORD: test_root
-    networks:
-      - fastapi-network
+  # test_db:
+  #   image: postgres:13
+  #   command: -p 5555
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/test_data
+  #   environment:
+  #     POSTGRES_DB: test_inf3995    
+  #     POSTGRES_USER: test_eq102
+  #     POSTGRES_PASSWORD: test_root
+  #   networks:
+  #     - fastapi-network
 
 networks:
   fastapi-network:

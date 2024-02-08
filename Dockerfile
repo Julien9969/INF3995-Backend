@@ -1,13 +1,23 @@
-# FROM tiangolo/uvicorn-gunicorn-fastapi:python3.8
 FROM ubuntu:22.04
 ARG DEBIAN_FRONTEND=noninteractive
 
-RUN apt update; apt upgrade -y
+RUN apt update && apt upgrade -y
 # INSTALL UTILS
-RUN apt install lsb-release wget curl gnupg python3-pip git -y
+RUN apt update && apt install lsb-release wget curl gnupg python3-pip git -y
+
+# OPENGL/MESA UTILS
+RUN apt update && apt install mesa-utils libglu1-mesa-dev freeglut3-dev mesa-common-dev -y
+
+
+# # INSTALL IGNITION GAZEBO
+# RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg
+# RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null
+
+# RUN apt update && apt install ignition-fortress -y
+
 
 # INSTALL ROS2
-RUN apt install software-properties-common -y
+RUN apt update && apt install software-properties-common -y
 RUN pip3 install vcstool colcon-common-extensions
 RUN add-apt-repository universe
 
@@ -16,13 +26,16 @@ RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/r
 
 RUN apt update; apt install ros-humble-desktop -y
 
-RUN pip3 install rosdep
+RUN apt-get clean 
+RUN apt update && apt install python3-rosdep2 -y
+RUN sh -c 'echo "deb [arch=amd64,arm64] http://repo.ros2.org/ubuntu/main `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-latest.list'
+RUN curl -s https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add -
+RUN apt install python3-colcon-common-extensions -y
 
+RUN apt update && apt install -y vim
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
+RUN echo "export GZ_VERSION=fortress" >> /root/.bashrc
 
-
-WORKDIR /src
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
-# COPY ./app ./app
-# CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "80"]
+RUN mkdir /root/INF3995-Backend -p
+COPY deploy-backend.sh /root/deploy-backend.sh
+RUN chmod +x /root/deploy-backend.sh
