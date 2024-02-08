@@ -11,8 +11,8 @@ services:
       - fastapi-network
     volumes:
       - ./app:/src/app 
-    # command: ["uvicorn", "app.main:app", "--reload","--host", "0.0.0.0", "--port", "80"]
-    command: ["/bin/bash"]
+    command: ["uvicorn", "app.main:app", "--reload","--host", "0.0.0.0", "--port", "80"]
+    # command: ["/bin/bash"]
 
   db:
     image: postgres:13
