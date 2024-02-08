@@ -5,6 +5,8 @@ databases
 asyncpg
 aiosqlite
 
+rclpy
+
 # for testing
 pytest
 requests
