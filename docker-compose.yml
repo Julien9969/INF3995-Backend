@@ -10,7 +10,7 @@ services:
     networks:
       - fastapi-network
     volumes:
-      - ./app:/src/app 
+      - ./app:/src/app
     # command: ["uvicorn", "app.main:app", "--reload","--host", "0.0.0.0", "--port", "80"]
     # command: ["/bin/bash"]
     # network_mode: host
@@ -28,7 +28,7 @@ services:
     #   - /home/nvidia/INF3995-Robot:/root/INF3995-Robot
       # - /tmp/.X11-unix:/tmp/.X11-unix
     # Décommenter cette commande lorsqu'on voudra lancer un launch file automatiquement (RR)
-    command: /bin/bash -c "cd root && /root/deploy-robot.sh && source /root/INF3995-Robot/ros_ws/install/setup.bash && ros2 launch py_identify_server identify.launch.py"
+    command: /bin/bash -c "cd /src/app/ros_nodes && source /opt/ros/humble/setup.bash && /src/app/ros_nodes/deploy-backend.sh && source /src/app/ros_nodes/install/setup.sh && ros2 launch ros_gz_example_bringup diff_drive.launch.py"
 
 
   db:

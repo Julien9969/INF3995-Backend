@@ -36,6 +36,10 @@ RUN apt update && apt install -y vim
 RUN echo "source /opt/ros/humble/setup.bash" >> /root/.bashrc
 RUN echo "export GZ_VERSION=fortress" >> /root/.bashrc
 
-RUN mkdir /root/INF3995-Backend -p
-COPY deploy-backend.sh /root/deploy-backend.sh
-RUN chmod +x /root/deploy-backend.sh
+RUN mkdir /src/app/ros_nodes -p
+COPY deploy-backend.sh /src/app/ros_nodes/deploy-backend.sh
+RUN chmod +x /src/app/ros_nodes/deploy-backend.sh
+
+WORKDIR /src/app
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
