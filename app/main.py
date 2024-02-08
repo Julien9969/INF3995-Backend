@@ -36,7 +36,8 @@ def start_application() -> FastAPI:
     create_tables()
     return app
 
-app = start_application()
+# ENLEVE TEMPORAIREMENT POUR ETRE LANCE PAR ROS A LA PLACE
+# app = start_application()
 
 origins = [
     "http://localhost",
