@@ -20,6 +20,13 @@ install(
   DESTINATION share/${PROJECT_NAME}/config
 )
 
+# Install fastapi project PLEASE
+install(
+  DIRECTORY
+    ../backend_server/backend_server
+  DESTINATION ../backend_server/lib/python3.10/site-packages/
+)
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()

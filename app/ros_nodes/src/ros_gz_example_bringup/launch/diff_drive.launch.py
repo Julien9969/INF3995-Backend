@@ -16,9 +16,6 @@ import os
 
 from ament_index_python.packages import get_package_share_directory
 
-# pour launch FASTAPI
-from app.main import start_application
-
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.actions import IncludeLaunchDescription
@@ -33,7 +30,7 @@ def generate_launch_description():
     # Configure ROS nodes for launch
 
     # Setup project paths
-    pkg_project_bringup = get_package_share_directory('ros_gz_example_bringup')
+    # pkg_project_bringup = get_package_share_directory('ros_gz_example_bringup')
     # pkg_project_gazebo = get_package_share_directory('ros_gz_example_gazebo')
     # pkg_project_description = get_package_share_directory('ros_gz_example_description')
     # pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
@@ -88,7 +85,7 @@ def generate_launch_description():
     # Node pour identification:
         # Bridge ROS topics and Gazebo messages for establishing communication
     identify = Node(
-        package='py_identify_server',
+        package='py_identify_client',
         executable='identify',
         # parameters=[{
         #     'config_file': os.path.join(pkg_project_bringup, 'config', 'ros_gz_example_bridge.yaml'),
@@ -97,9 +94,15 @@ def generate_launch_description():
         output='screen'
     )
 
-
-    # LAUNCH FASTAPI
-    app = start_application()
+    backend = Node(
+        package='backend_server',
+        executable='serv',
+        # parameters=[{
+        #     'config_file': os.path.join(pkg_project_bringup, 'config', 'ros_gz_example_bridge.yaml'),
+        #     'qos_overrides./tf_static.publisher.durability': 'transient_local',
+        # }],
+        output='screen'
+    )
 
 
     return LaunchDescription([
@@ -108,5 +111,6 @@ def generate_launch_description():
         # bridge,
         # robot_state_publisher,
         # rviz,
-        identify
+        identify,
+        backend
     ])

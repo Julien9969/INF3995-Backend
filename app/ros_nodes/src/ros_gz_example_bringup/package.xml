@@ -13,8 +13,8 @@
   <depend>sdformat_urdf</depend>
   <depend>joint_state_publisher_gui</depend>
 
-  <depend>ros_gz_example_description</depend>
-  <depend>ros_gz_example_gazebo</depend>
+  <!-- <depend>ros_gz_example_description</depend>
+  <depend>ros_gz_example_gazebo</depend> -->
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
