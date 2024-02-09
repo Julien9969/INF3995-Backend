@@ -54,7 +54,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-                'serv = backend_server.main:main',
+                'serv = backend_server.run:main',
         ],
     },
 )

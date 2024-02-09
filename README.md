@@ -89,7 +89,7 @@ docker compose logs -f
 
 **Open a bash of fast-api**
 ```sh
-docker exec -it inf3995-backend-fastapi-1 bash
+docker exec -it fastapi-container bash
 ```
 
 **Open a bash of the database**
@@ -116,16 +116,17 @@ docker compose stop
 ### Run the tests
 Open a bash of fast-api
 ```sh
-docker exec -it inf3995-backend-fastapi-1 bash
+docker exec -it fastapi-container bash
 ```
 Run the tests + coverage
 ```sh
-pytest --cov-report term-missing --cov=app app/
+cd ros_nodes/src/backend_server/  
+pytest --cov-report term-missing --cov=backend_server backend_server/
 ```
 
 ##### Test execution with one command
 ```sh
-docker exec -it inf3995-backend-fastapi-1 bash -c "pytest --cov-report term-missing --cov=app app/"
+docker exec -it fastapi-container bash -c "cd ros_nodes/src/backend_server/ && pytest --cov-report term-missing --cov=backend_server backend_server/"
 ``` 
 
 ### Delete the docker and cache
@@ -136,7 +137,7 @@ docker compose rm
 ```
 Prompt `Y` for the container to delete
 ```sh
-docker rmi inf3995-backend-fastapi
+docker rmi fastapi-container
 docker rmi postgres:13
 docker builder prune
 docker images
@@ -146,6 +147,10 @@ Reset docker configuration (change db user)
 ```sh
 docker compose down -v
 ```
+
+in progress  
+uvicorn backend_server.main:app --reload --host 0.0.0.0 --port 8000
+
 
 ## Resources
 

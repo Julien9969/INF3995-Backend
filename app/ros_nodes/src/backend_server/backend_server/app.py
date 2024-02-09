@@ -7,6 +7,7 @@ from backend_server.db.utils import check_db_connected, check_db_disconnected
 from backend_server.db.session import engine
 from backend_server.api.base import api_router
 # Don't work for the moment, on_event work of you want
+
 @asynccontextmanager
 async def app_lifespan(app: FastAPI):
     # Start up event

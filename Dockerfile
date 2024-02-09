@@ -43,3 +43,6 @@ RUN chmod +x /src/app/ros_nodes/deploy-backend.sh
 WORKDIR /src/app
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
+
+COPY start-app.sh /
+RUN chmod +x /start-app.sh

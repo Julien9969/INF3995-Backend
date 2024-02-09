@@ -14,8 +14,8 @@ from sqlalchemy.orm import sessionmaker
 # Give Access the app. module
 sys.path.append(".")
 
-from db.session import Base, get_db
-from api.base import api_router
+from backend_server.db.session import Base, get_db
+from backend_server.api.base import api_router
 
 
 def start_application():
@@ -27,7 +27,9 @@ def start_application():
 # Will see if we use the same database for testing (if yes create a clean routine after test)
 while True:
     try:
-        SQLALCHEMY_DATABASE_URL = "postgresql://test_eq102:test_root@test_db:5555/test_inf3995"
+        # SQLALCHEMY_DATABASE_URL = "postgresql://test_eq102:test_root@test_db:5555/test_inf3995"
+        # Temporary use the same database for testing as no test realy use it
+        SQLALCHEMY_DATABASE_URL = "postgresql://eq102:root@localhost:5430/inf3995"
         engine = create_engine(
             SQLALCHEMY_DATABASE_URL
         )
