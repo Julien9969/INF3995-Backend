@@ -7,44 +7,44 @@ from app.db.utils import check_db_connected, check_db_disconnected
 from app.db.session import engine
 from app.api.base import api_router
 
+from .websocket.websocket import sio
+import socketio
+import logging
+
+logging.basicConfig(level=logging.DEBUG,
+                    format='%(asctime)s - %(levelname)s - %(message)s',
+                    datefmt='%Y-%m-%d %H:%M:%S')
+
+origins = [
+    "http://localhost:4200",
+    "*",
+]
+
+
 # Don't work for the moment, on_event work of you want
 @asynccontextmanager
 async def app_lifespan(app: FastAPI):
-    # Start up event
-    print("Starting up")
     await check_db_connected()
-    print(app.title)
-    
-    yield
-    
-    # Shutdown event
+    yield  # This creates a context manager for the database
+    #        that will last the entire lifespan of the application
     await check_db_disconnected()
 
-def include_router(app):
-    app.include_router(api_router)
-
-# def configure_static(app):
-#     app.mount("/static", StaticFiles(directory="static"), name="static")
-
-def create_tables():
-    Base.metadata.create_all(bind=engine)
 
 def start_application() -> FastAPI:
-    app = FastAPI(lifespan=app_lifespan, debug=True, title="API", version="0.1")
-    include_router(app)
-    # configure_static(app)
-    create_tables()
+    app = FastAPI(
+        lifespan=app_lifespan,
+        debug=True,
+        title="API",
+        version="0.1"
+    )
+    socket_app = socketio.ASGIApp(sio, app)
+    app.mount("/", socket_app)
+    app.include_router(api_router)
+    Base.metadata.create_all(bind=engine)
     return app
 
+
 app = start_application()
-
-origins = [
-    "http://localhost",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
-    "*"
-]
-
 app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,

@@ -4,8 +4,12 @@ psycopg2-binary
 databases
 asyncpg
 aiosqlite
+python-socketio
 
 # for testing
 pytest
 requests
 pytest-cov
+
+#linting
+flake8
