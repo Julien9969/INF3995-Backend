@@ -4,7 +4,7 @@ psycopg2-binary
 databases
 asyncpg
 aiosqlite
-python-socketio
+python-socketio[client]
 
 # for testing
 pytest

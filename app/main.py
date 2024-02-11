@@ -7,17 +7,21 @@ from app.db.utils import check_db_connected, check_db_disconnected
 from app.db.session import engine
 from app.api.base import api_router
 
-from .websocket.websocket import sio
+from .websocket import sio
 import socketio
+
 import logging
 
-logging.basicConfig(level=logging.DEBUG,
-                    format='%(asctime)s - %(levelname)s - %(message)s',
-                    datefmt='%Y-%m-%d %H:%M:%S')
+logger = logging.getLogger(__name__)
+
+logging.basicConfig(
+    level=logging.DEBUG,
+    format='%(levelname)s: [%(module)s] - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
 
 origins = [
-    "http://localhost:4200",
-    "*",
+    "*"
 ]
 
 
@@ -37,10 +41,11 @@ def start_application() -> FastAPI:
         title="API",
         version="0.1"
     )
-    socket_app = socketio.ASGIApp(sio, app)
-    app.mount("/", socket_app)
+    socket_app = socketio.ASGIApp(sio, app, socketio_path='')
+    app.mount("/socket.io", socket_app)
     app.include_router(api_router)
     Base.metadata.create_all(bind=engine)
+    logger.info("Application started")
     return app
 
 
@@ -52,12 +57,3 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# @app.on_event("startup")
-# async def app_startup():
-#     await check_db_connected()
-# 
-# 
-# @app.on_event("shutdown")
-# async def app_shutdown():
-#     await check_db_disconnected()

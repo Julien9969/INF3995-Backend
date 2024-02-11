@@ -1,23 +1,20 @@
-import socketio
-import logging
-
-sio = socketio.AsyncServer(async_mode='asgi', cors_allowed_origins='*')
-
-logging.getLogger('socketio').setLevel(logging.INFO)
+from . import logger, sio
 
 
+# Event handler for new client connections
 @sio.event
 async def connect(sid, environ):
-    print("Connected", sid)
-    await sio.emit('reply', "Connect Event", to=sid)
+    logger.info("Client connected", sid)
+    await sio.emit('TEST', "Hello from Server!", to=sid)
 
 
-@sio.on('*')
+@sio.on('message')
 async def handle_message(sid, data):
-    print(f"Message from {sid}: {data}")
-    await sio.emit('reply', data, to=sid)
+    logger.info('Message from {}: {}'.format(sid, data))
+    await sio.emit('reply', "This is a reply", to=sid)
 
 
+# Event handler for client disconnections
 @sio.event
 async def disconnect(sid):
-    print("Disconnected", sid)
+    logger.info("Client disconnected", sid)
