@@ -84,15 +84,15 @@ def generate_launch_description():
 
     # Node pour identification:
         # Bridge ROS topics and Gazebo messages for establishing communication
-    identify = Node(
-        package='py_identify_client',
-        executable='identify',
-        # parameters=[{
-        #     'config_file': os.path.join(pkg_project_bringup, 'config', 'ros_gz_example_bridge.yaml'),
-        #     'qos_overrides./tf_static.publisher.durability': 'transient_local',
-        # }],
-        output='screen'
-    )
+    # identify = Node(
+    #     package='py_identify_client',
+    #     executable='identify',
+    #     # parameters=[{
+    #     #     'config_file': os.path.join(pkg_project_bringup, 'config', 'ros_gz_example_bridge.yaml'),
+    #     #     'qos_overrides./tf_static.publisher.durability': 'transient_local',
+    #     # }],
+    #     output='screen'
+    # )
 
     backend = Node(
         package='backend_server',
@@ -111,6 +111,6 @@ def generate_launch_description():
         # bridge,
         # robot_state_publisher,
         # rviz,
-        identify,
+        # identify,
         backend
     ])
