@@ -13,20 +13,16 @@ class PingBase:
         return f"{datetime.datetime.now().strftime('%d/%m/%Y, %H:%M:%S')} - pong!"
     
     @staticmethod
-    def send_cmd_vel():
-        # Initialize ROS node
+    def send_cmd_vel(x: float = 0.0, z: float = 0.0):
         rclpy.init()
         node = rclpy.create_node('cmd_vel_publisher')
 
-        # Create a publisher for the cmd_vel topic
         publisher = node.create_publisher(Twist, '/limo/cmd_vel', 10)
 
-        # Create a Twist message to send velocity commands
         twist_msg = Twist()
-        twist_msg.linear.x = -0.1  # Example linear velocity
-        twist_msg.angular.z = -2.0  # Example angular velocity
+        twist_msg.linear.x = x 
+        twist_msg.angular.z = z  
 
-        # Publish the Twist message
         publisher.publish(twist_msg)
 
         node.destroy_node()

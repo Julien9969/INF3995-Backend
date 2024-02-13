@@ -1,45 +1,32 @@
 PI3 application backend
-## Setup
-
-### Python
-
-Create a virtual environment :
-```bash
-python3 -m venv .venv
-```
-or in vscode : \
-Ctrl+Shift+P -> Python: Select Interpreter -> Enter interpreter path -> Enter path to venv/bin/python3
-
-Activate the virtual environment (Linux):
-```sh
-source ./.venv/bin/activate
-```
-
-Activate the virtual environment (Windows):
-```
-./.venv/Scripts/activate
-```
-
-Install dependencies (in the virtual environment):
-```bash
-pip install -r requirements.txt
-```
-
-## Usage
-
-Start the server (at the root of the project):
-```
-uvicorn app.main:app --reload
-```
-
-
-Open the docs in a browser :
-http://localhost:8000/docs
-
 ## Setup with docker compose
 Access the api docs:
 - http://localhost:8000/docs
 - http://localhost:8000/redoc
+
+### Test connection
+**Show avaible topic**
+```sh
+ros2 topic list
+```
+**Move the robots**
+```sh
+ros2 topic pub --rate 1 /limo/cmd_vel geometry_msgs/msg/Twist "{linear: {x: 2.0, y: 0.0, z: 0.0}, angular: {x: 0.0, y: 0.0, z: 1.8}}"
+```
+or request 
+```sh
+localhost:8000/api/ping
+```
+
+**Si ne fonctionne pas essayer, pour "refresh" ?**
+```sh
+ros2 topic info </topic> -v
+```
+**see the topic messages**
+```sh
+ros2 topic echo /limo/cmd_vel "or /limo/odom"...
+```
+
 
 ### Install
 make sure that **docker** and **docker compose / docker-compose** is installed on your computer by running
@@ -90,6 +77,10 @@ docker compose logs -f
 **Open a bash of fast-api**
 ```sh
 docker exec -it fastapi-container bash
+```
+Source the setup.sh file
+```sh
+source ros_nodes/install/setup.sh
 ```
 
 **Open a bash of the database**
@@ -158,3 +149,38 @@ uvicorn backend_server.main:app --reload --host 0.0.0.0 --port 8000
 [Fastapi sql db tutorial](https://fastapi.tiangolo.com/tutorial/sql-databases/) \
 [SQLAlchemy](https://www.sqlalchemy.org/) \
 [Pydantic](https://pydantic-docs.helpmanual.io/)
+
+### Python
+
+Create a virtual environment :
+```bash
+python3 -m venv .venv
+```
+or in vscode : \
+Ctrl+Shift+P -> Python: Select Interpreter -> Enter interpreter path -> Enter path to venv/bin/python3
+
+Activate the virtual environment (Linux):
+```sh
+source ./.venv/bin/activate
+```
+
+Activate the virtual environment (Windows):
+```
+./.venv/Scripts/activate
+```
+
+Install dependencies (in the virtual environment):
+```bash
+pip install -r requirements.txt
+```
+
+## Usage
+
+Start the server (at the root of the project):
+```
+uvicorn app.main:app --reload
+```
+
+
+Open the docs in a browser :
+http://localhost:8000/docs
