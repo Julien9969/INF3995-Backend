@@ -3,11 +3,12 @@ version: '3.8'
 services:
   fastapi:
     build: .
-    ports:
-      - "8000:8000"
-      - "22900:22900"
-      - "22901:22901"
-      - "22910-22911:22910-22911"
+    # ports:
+    #   - "8000:8000"
+    #   - "22900:22900"
+    #   - "22901:22901"
+    #   - "22902:22902"
+    #   - "22910-22921:22910-22921"
     depends_on:
       - db
     # networks:
@@ -19,7 +20,7 @@ services:
       - /app/ros_nodes/log
     # command: ["uvicorn", "app.main:app", "--reload","--host", "0.0.0.0", "--port", "80"]
     # command: ["/bin/bash"]
-    # network_mode: host
+    network_mode: host
     image: fastapi
     container_name: fastapi-container
     environment:
