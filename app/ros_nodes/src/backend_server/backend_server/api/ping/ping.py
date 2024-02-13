@@ -13,11 +13,12 @@ class PingBase:
         return f"{datetime.datetime.now().strftime('%d/%m/%Y, %H:%M:%S')} - pong!"
     
     @staticmethod
-    def send_cmd_vel(x: float = 0.0, z: float = 0.0):
+    def send_cmd_vel(x: float, z: float, robot: bool):
         rclpy.init()
         node = rclpy.create_node('cmd_vel_publisher')
+        print("Sending cmd_vel", x, z, robot)
 
-        publisher = node.create_publisher(Twist, '/limo/cmd_vel', 10)
+        publisher = node.create_publisher(Twist, '/cmd_vel', 10)
 
         twist_msg = Twist()
         twist_msg.linear.x = x 
