@@ -3,27 +3,29 @@ version: '3.8'
 services:
   fastapi:
     build: .
-    # ports:
-    #   - "8000:80"
+    ports:
+      - "8000:8000"
+      # - "22900-22920:22900-22920"
+      - "22900-22911:22900-22911/udp"
     depends_on:
       - db
     # networks:
     #   - fastapi-network
     volumes:
       - ./app:/src/app
-      - /app/ros_nodes/build
-      - /app/ros_nodes/install
-      - /app/ros_nodes/log
+      # - /app/ros_nodes/build
+      # - /app/ros_nodes/install
+      # - /app/ros_nodes/log
 
 
     # command: ["uvicorn", "app.main:app", "--reload","--host", "0.0.0.0", "--port", "80"]
     # command: ["/bin/bash"]
-    network_mode: host
+    # network_mode: host
     # build: ./docker-robot
     image: fastapi
     container_name: fastapi-container
     environment:
-      - ROS_DOMAIN_ID=102
+      - ROS_DOMAIN_ID=66
       - TERM='xterm-256color'
     # devices:
     #   - /dev/ttyTHS1
@@ -64,7 +66,7 @@ services:
 
 # networks:
 #   fastapi-network:
-#     driver: host
+#     driver: bridge
 
 volumes:
   postgres_data:
