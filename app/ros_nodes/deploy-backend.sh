@@ -6,5 +6,5 @@ rosdep update
 rosdep install --from-paths /src/app/ros_nodes/src --ignore-src -r -i -y --rosdistro humble
 sleep 5
 source /src/app/ros_nodes/install/setup.sh
-colcon build
+colcon build --symlink-install --cmake-args -DBUILD_TESTING=ON 
 source /src/app/ros_nodes/install/setup.sh
