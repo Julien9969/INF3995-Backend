@@ -1,4 +1,4 @@
-import datetime
+import datetime, time
 import asyncio
 import rclpy
 from geometry_msgs.msg import Twist
@@ -15,19 +15,38 @@ class PingBase:
     @staticmethod
     def send_cmd_vel(x: float, z: float, robot: bool):
         rclpy.init()
-        node = rclpy.create_node('cmd_vel_publisher')
-        print("Sending cmd_vel", x, z, robot)
+
+        node = rclpy.create_node('twist_publisher')
 
         publisher = node.create_publisher(Twist, '/cmd_vel', 10)
 
-        twist_msg = Twist()
-        twist_msg.linear.x = x 
-        twist_msg.angular.z = z  
+        msg = Twist()
+        msg.linear.x = x
+        msg.linear.y = 0.0
+        msg.linear.z = 0.0
+        msg.angular.x = 0.0
+        msg.angular.y = 0.0
+        msg.angular.z = z
 
-        publisher.publish(twist_msg)
+        # rate = node.create_rate(1)  # 1 Hz
+        for i in range(10):
+            publisher.publish(msg)
+            node.get_logger().info('Publishing: {}'.format(msg))
+            time.sleep(1)
+            # rate.sleep()
 
         node.destroy_node()
         rclpy.shutdown()
+
+        return asyncio.sleep(0)
+
+        # # Spin briefly to allow message to be published
+        # rclpy.spin_once(node, timeout_sec=2.5)
+
+        # from time import sleep
+        # sleep(2)
+        # node.destroy_node()
+        # rclpy.shutdown()
     
 class PingResponse(BaseModel):
     data: str
