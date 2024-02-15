@@ -10,6 +10,7 @@ async def get_ping(x: float = 0.0, z: float = 0.0, robot: bool = False) -> respo
     
     # asyncio.create_task(PingBase.send_cmd_vel(x, z, robot))
     await PingBase.send_cmd_vel(x, z, robot)
+    print("UCIUVIBVNDBVIB44444444444444444444444444444UID")
     
     return responses.JSONResponse (
         { 'data':  PingBase.ping() }, 

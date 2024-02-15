@@ -4,11 +4,24 @@ from typing import Generator
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
+import socket
+
+def get_container_ip(container_name):
+    try:
+        # Resolve the container name to its IP address
+        ip_address = socket.gethostbyname(container_name)
+        return ip_address
+    except socket.gaierror:
+        print(f"Error: Unable to resolve IP address for container '{container_name}'.")
+        return None
 
 
 while True:
 	try:
-		SQLALCHEMY_DATABASE_URL = "postgresql://eq102:root@172.18.0.2:5432/inf3995"
+		database_container_name = 'inf3995-backend-db-1'
+		database_ip = get_container_ip(database_container_name)
+
+		SQLALCHEMY_DATABASE_URL = "postgresql://eq102:root@" + database_ip + ":5432/inf3995"
 		Base = declarative_base()
 
 		engine = create_engine(

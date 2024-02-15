@@ -2,6 +2,7 @@ FROM ubuntu:22.04
 ARG DEBIAN_FRONTEND=noninteractive
 
 RUN apt update && apt upgrade -y
+RUN apt install net-tools
 # INSTALL UTILS
 RUN apt update && apt install lsb-release wget curl gnupg python3-pip git -y
 
