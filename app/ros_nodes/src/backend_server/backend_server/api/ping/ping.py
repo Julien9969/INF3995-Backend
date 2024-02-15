@@ -3,7 +3,6 @@ import asyncio
 import rclpy
 from geometry_msgs.msg import Twist
 from pydantic import BaseModel
-from trajectory_msgs.msg import JointTrajectoryPoint
 
 class PingBase:
     def __init__(self):
@@ -18,23 +17,19 @@ class PingBase:
         rclpy.init()
 
         node = rclpy.create_node('twist_publisher')
-        rate = node.create_rate(2)
+        # rate = node.create_timer(1, )
         publisher = node.create_publisher(Twist, '/cmd_vel', 10)
 
         msg = Twist()
         msg.linear.x = x
-        msg.linear.y = 0.0
-        msg.linear.z = 0.0
-        msg.angular.x = 0.0
-        msg.angular.y = 0.0
         msg.angular.z = z
 
-        print('oiehc')
         # rate = node.create_rate(1)  # 1 Hz
-        for i in range(5):
+        for i in range(50):
             publisher.publish(msg)
             node.get_logger().info('Publishing: {}'.format(msg))
-            rate.sleep()
+            # rate.sleep()
+            time.sleep(0.5)
             # rate.sleep()
 
         node.destroy_node()
