@@ -20,7 +20,8 @@ test:app:
       command: ["-p", "5555"]
   script:
     - pip install -r requirements.txt
-    - cd /src/app/ros_nodes/src/backend_server
+    - pwd
+    - cd /app/ros_nodes/src/backend_server
     - pytest --cov-report term-missing --cov=backend_server
 
 variables:
