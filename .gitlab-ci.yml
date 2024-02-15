@@ -20,7 +20,8 @@ test:app:
       command: ["-p", "5555"]
   script:
     - pip install -r requirements.txt
-    - pytest --cov-report term-missing --cov=app app/
+    - cd /src/app/ros_nodes/src/backend_server
+    - pytest --cov-report term-missing --cov=backend_server
 
 variables:
   POSTGRES_DB: test_inf3995    

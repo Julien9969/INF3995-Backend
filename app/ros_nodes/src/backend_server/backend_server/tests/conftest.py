@@ -13,6 +13,8 @@ from sqlalchemy.orm import sessionmaker
 
 # Give Access the app. module
 sys.path.append(".")
+print(sys.path)
+print(os.getcwd())
 
 from backend_server.db.session import Base, get_db
 from backend_server.api.base import api_router
@@ -29,7 +31,7 @@ while True:
     try:
         # SQLALCHEMY_DATABASE_URL = "postgresql://test_eq102:test_root@test_db:5555/test_inf3995"
         # Temporary use the same database for testing as no test realy use it
-        SQLALCHEMY_DATABASE_URL = "postgresql://eq102:root@localhost:5430/inf3995"
+        SQLALCHEMY_DATABASE_URL = "postgresql://eq102:root@host.docker.internal:5430/inf3995"
         engine = create_engine(
             SQLALCHEMY_DATABASE_URL
         )

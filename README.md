@@ -115,9 +115,9 @@ cd ros_nodes/src/backend_server/
 pytest --cov-report term-missing --cov=backend_server backend_server/
 ```
 
-##### Test execution with one command
+##### Test execution with one command (marche pas d'un coup faut la faire en deux fois jsp pk)
 ```sh
-docker exec -it fastapi-container bash -c "cd ros_nodes/src/backend_server/ && pytest --cov-report term-missing --cov=backend_server backend_server/"
+docker exec -it fastapi-container bash -c "cd ros_nodes/src/backend_server/ && pytest --cov-report term-missing --cov=backend_server"
 ``` 
 
 ### Delete the docker and cache
