@@ -14,3 +14,11 @@ async def get_identify() -> responses.JSONResponse:
         { 'data':  IdentifyBase.launch_client() }, 
         status_code=status.HTTP_200_OK
     )
+
+@router.get("/id/{robot_id}")
+async def get_identify_id(robot_id: int) -> responses.JSONResponse:
+    print("here robot id")
+    return responses.JSONResponse (
+        { 'data':  IdentifyBase.launch_client(robot_id) }, 
+        status_code=status.HTTP_200_OK
+    )
