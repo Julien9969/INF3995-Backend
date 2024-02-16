@@ -28,8 +28,7 @@ class PingBase:
         for i in range(50):
             publisher.publish(msg)
             node.get_logger().info('Publishing: {}'.format(msg))
-            # rate.sleep()
-            time.sleep(0.5)
+            time.sleep(0.3)
             # rate.sleep()
 
         node.destroy_node()
