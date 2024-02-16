@@ -30,10 +30,11 @@ class MissionBase:
 
         response1, response2 = mission_client.send_request('start')
         
-        mission_client.get_logger().info(response1, response2)
+        mission_client.get_logger().info(f"{response1}, {response2}")
 
         mission_client.destroy_node()
         rclpy.shutdown()
+
         return "Mission started !"
 
     @staticmethod
@@ -51,7 +52,7 @@ class MissionBase:
         
         response1, response2 = mission_client.send_request('stop')
 
-        mission_client.get_logger().info(response1, response2)
+        mission_client.get_logger().info(f"{response1}, {response2}")
 
         mission_client.destroy_node()
         rclpy.shutdown()
