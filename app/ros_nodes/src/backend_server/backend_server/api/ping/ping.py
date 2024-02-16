@@ -17,22 +17,18 @@ class PingBase:
         rclpy.init()
 
         node = rclpy.create_node('twist_publisher')
-
+        # rate = node.create_timer(1, )
         publisher = node.create_publisher(Twist, '/cmd_vel', 10)
 
         msg = Twist()
         msg.linear.x = x
-        msg.linear.y = 0.0
-        msg.linear.z = 0.0
-        msg.angular.x = 0.0
-        msg.angular.y = 0.0
         msg.angular.z = z
 
         # rate = node.create_rate(1)  # 1 Hz
-        for i in range(10):
+        for i in range(50):
             publisher.publish(msg)
             node.get_logger().info('Publishing: {}'.format(msg))
-            time.sleep(1)
+            time.sleep(0.3)
             # rate.sleep()
 
         node.destroy_node()
@@ -42,6 +38,7 @@ class PingBase:
 
         # # Spin briefly to allow message to be published
         # rclpy.spin_once(node, timeout_sec=2.5)
+
 
         # from time import sleep
         # sleep(2)
