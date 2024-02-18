@@ -3,6 +3,7 @@ import sys
 import time
 from typing import Any
 from typing import Generator
+from unittest.mock import patch
 
 import pytest
 from fastapi import FastAPI
@@ -11,14 +12,23 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import Session
 from sqlalchemy.orm import sessionmaker
 
-# Give Access the app. module
 sys.path.append(".")
 print(sys.path)
 print(os.getcwd())
 
+# ROS2 Mock (make ros2 installation not required for testing)
+import backend_server.tests.mock.rclpy_mock as rclpy_mock
+patch.dict("sys.modules", rclpy=rclpy_mock).start()
+
+import backend_server.tests.mock.geometry_msgs_mock as geometry_msgs_mock
+patch.dict("sys.modules", geometry_msgs=geometry_msgs_mock).start()
+
+import backend_server.tests.mock.interfaces_mock as interfaces_mock
+patch.dict("sys.modules", interfaces=interfaces_mock).start()
+
+
 from backend_server.db.session import Base, get_db
 from backend_server.api.base import api_router
-
 
 def start_application():
     app = FastAPI()
@@ -91,3 +101,6 @@ def client(
 @pytest.fixture(scope="module")
 def normal_user_token_headers(client: TestClient, db_session: Session):
     return None
+
+
+
