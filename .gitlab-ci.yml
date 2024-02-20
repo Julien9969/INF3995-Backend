@@ -22,7 +22,7 @@ test:app:
     - pip install -r requirements.txt
     - pwd
     - ls # for debug
-    - cd src/app/ros_nodes/src/backend_server 
+    - cd app/ros_nodes/src/backend_server 
     - pytest --ignore=./test --cov-report term-missing --cov=backend_server backend_server/
 
 variables:
