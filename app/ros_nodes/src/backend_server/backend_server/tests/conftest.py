@@ -40,16 +40,18 @@ while True:
     try:
         # SQLALCHEMY_DATABASE_URL = "postgresql://test_eq102:test_root@test_db:5555/test_inf3995"
         # Temporary use the same database for testing as no test realy use it
-        try:
-            SQLALCHEMY_DATABASE_URL = "postgresql://eq102:root@host.docker.internal:5430/inf3995"
-            engine = create_engine(
-                SQLALCHEMY_DATABASE_URL
-            )
-        except Exception as e:
-            SQLALCHEMY_DATABASE_URL = "postgresql://eq102:root@test_db:5430/inf3995"
-            engine = create_engine(
-                SQLALCHEMY_DATABASE_URL
-            )
+        environment = os.getenv("SQLALCHEMY_DATABASE_HOST", "test_db")
+        
+        if environment == "test_db":
+            SQLALCHEMY_DATABASE_URL = "postgresql://test_eq102:test_root@test_db:5430/test_inf3995"
+        else:
+            SQLALCHEMY_DATABASE_URL = "postgresql://eq102:root@host.docker.internal:5430/inf3995"        
+
+        print(f"Using database: {SQLALCHEMY_DATABASE_URL}")
+        engine = create_engine(
+            SQLALCHEMY_DATABASE_URL
+        )
+        
 
         SessionTesting = sessionmaker(autocommit=False, autoflush=False, bind=engine)
         break
