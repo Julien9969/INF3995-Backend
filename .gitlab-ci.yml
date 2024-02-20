@@ -17,10 +17,13 @@ test:app:
   services:
     - name: postgres:13
       alias: test_db
-      command: ["-p", "5555"]
+      command: ["-p", "5430"]
   script:
     - pip install -r requirements.txt
-    - pytest --cov-report term-missing --cov=app app/
+    - pwd
+    - ls # for debug
+    - cd app/ros_nodes/src/backend_server 
+    - pytest --ignore=./test --cov-report term-missing --cov=backend_server backend_server/ -s
 
 flake8:
   stage: test
@@ -34,3 +37,7 @@ variables:
   POSTGRES_DB: test_inf3995    
   POSTGRES_USER: test_eq102
   POSTGRES_PASSWORD: test_root
+  SQLALCHEMY_DATABASE_HOST: test_db
+
+before_script:
+  - export SQLALCHEMY_DATABASE_HOST

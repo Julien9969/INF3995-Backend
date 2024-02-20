@@ -3,43 +3,71 @@ version: '3.8'
 services:
   fastapi:
     build: .
-    ports:
-      - "8000:80"
+    # ports:
+    #   - "8000:8000"
+    #   - "22900:22900"
+    #   - "22901:22901"
+    #   - "22902:22902"
+    #   - "22910-22921:22910-22921"
     depends_on:
       - db
-    networks:
-      - fastapi-network
+    # networks:
+    #   - fastapi-network
     volumes:
-      - ./app:/src/app 
-    restart: on-failure
-    command: ["uvicorn", "app.main:app", "--reload","--host", "0.0.0.0", "--port", "80"]
+      - ./app:/src/app
+      - /app/ros_nodes/build
+      - /app/ros_nodes/install
+      - /app/ros_nodes/log
+    # command: ["uvicorn", "app.main:app", "--reload","--host", "0.0.0.0", "--port", "80"]
+    # command: ["/bin/bash"]
+    network_mode: host
+    image: fastapi
+    container_name: fastapi-container
+    environment:
+      - ROS_DOMAIN_ID=62
+      - TERM='xterm-256color'
+      - SQLALCHEMY_DATABASE_HOST=host.docker.internal
+      - WATCHFILES_FORCE_POLLING=true
+    # devices:
+    #   - /dev/ttyTHS1
+    #   - /dev/ydlidar
+    #     # - /sys/bus/usb/001/009
+    # volumes:
+    #   - /home/nvidia/INF3995-Robot:/root/INF3995-Robot
+      # - /tmp/.X11-unix:/tmp/.X11-unix
+    # Décommenter cette commande lorsqu'on voudra lancer un launch file automatiquement (RR)
+    # command: /bin/bash -c "cd /src/app/ros_nodes && source /opt/ros/humble/setup.bash && /src/app/ros_nodes/deploy-backend.sh && source /src/app/ros_nodes/install/setup.sh && ros2 launch ros_gz_example_bringup diff_drive.launch.py"
+    command: /bin/bash -c "/start-app.sh"
+
 
   db:
     image: postgres:13
+    ports:
+      - "5430:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
       POSTGRES_DB: inf3995    
       POSTGRES_USER: eq102
       POSTGRES_PASSWORD: root
-    networks:
-      - fastapi-network
+    # networks:
+    #   - fastapi-network
 
-  test_db:
-    image: postgres:13
-    command: -p 5555
-    volumes:
-      - postgres_data:/var/lib/postgresql/test_data
-    environment:
-      POSTGRES_DB: test_inf3995    
-      POSTGRES_USER: test_eq102
-      POSTGRES_PASSWORD: test_root
-    networks:
-      - fastapi-network
+  # test_db:
+  #   image: postgres:13
+  #   command: -p 5555
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/test_data
+  #   environment:
+  #     POSTGRES_DB: test_inf3995    
+  #     POSTGRES_USER: test_eq102
+  #     POSTGRES_PASSWORD: test_root
+    # networks:
+    #   - fastapi-network
 
-networks:
-  fastapi-network:
-    driver: bridge
+# networks:
+#   fastapi-network:
+#     driver: bridge
 
 volumes:
   postgres_data:
