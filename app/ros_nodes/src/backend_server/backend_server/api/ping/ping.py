@@ -5,8 +5,8 @@ from geometry_msgs.msg import Twist
 from pydantic import BaseModel
 
 class PingBase:
-    def __init__(self):
-        pass
+    # def __init__(self):
+    #     pass
 
     @staticmethod
     def ping():

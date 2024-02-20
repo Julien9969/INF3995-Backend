@@ -238,7 +238,7 @@ docker compose logs -f
 
 **Open a bash of fast-api**
 ```sh
-docker exec -it inf3995-backend-fastapi-1 bash
+docker exec -it fastapi-container bash
 ```
 
 **Open a bash of the database**
@@ -265,16 +265,17 @@ docker compose stop
 ### Run the tests
 Open a bash of fast-api
 ```sh
-docker exec -it inf3995-backend-fastapi-1 bash
+docker exec -it fastapi-container bash
 ```
 Run the tests + coverage
 ```sh
-pytest --cov-report term-missing --cov=app app/
+cd /src/app/ros_nodes/src/backend_server
+pytest --ignore=./test --cov-report term-missing --cov=backend_server backend_server/
 ```
 
-##### Test execution with one command
+##### Test execution with one command (--ignore=./test is for ros2 lint exclude)
 ```sh
-docker exec -it inf3995-backend-fastapi-1 bash -c "pytest --cov-report term-missing --cov=app app/"
+docker exec -it fastapi-container bash -c "cd /src/app/ros_nodes/src/backend_server && pytest --ignore=./test --cov-report term-missing --cov=backend_server backend_server/"
 ``` 
 
 ### Delete the docker and cache
@@ -296,7 +297,24 @@ Reset docker configuration (change db user)
 docker compose down -v
 ```
 
+## Unit Test tutorial
+#### Tests are build to be ros2 independent so the installation of ros python libs is not required.
+
+But pytest need to know the methods, classes etc of the ros2 lib.  
+The start of the ros2 lib mock is in [app\ros_nodes\src\backend_server\backend_server\tests\mock](app\ros_nodes\src\backend_server\backend_server\tests\mock).
+
+#### All test function should start with `test` to make pytest found them
+
+If you need to create a new folder in **tests/mock** you will need to patch the import to make pytest use the mock as it's already done around line 25 in [conftest.py](app\ros_nodes\src\backend_server\backend_server\tests\conftest.py)
+
+`-s` in pytest call to show the print in test
+
+
+
 ## Resources
+
+Gitlab ci ignore test folder (ros2 dep)
+pytest --ignore=./test --cov-report term-missing --cov=backend_server backend_server/
 
 [Fast API documentation](https://fastapi.tiangolo.com/) \
 [Fastapi sql db tutorial](https://fastapi.tiangolo.com/tutorial/sql-databases/) \
