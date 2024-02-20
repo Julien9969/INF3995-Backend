@@ -8,7 +8,7 @@ from sqlalchemy.orm import sessionmaker
 
 while True:
 	try:
-		SQLALCHEMY_DATABASE_URL = "postgresql://eq102:root@localhost:5432/inf3995"
+		SQLALCHEMY_DATABASE_URL = "postgresql://eq102:root@host.docker.internal:5430/inf3995"
 		Base = declarative_base()
 
 		engine = create_engine(

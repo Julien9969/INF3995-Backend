@@ -26,8 +26,6 @@ patch.dict("sys.modules", geometry_msgs=geometry_msgs_mock).start()
 import backend_server.tests.mock.interfaces_mock as interfaces_mock
 patch.dict("sys.modules", interfaces=interfaces_mock).start()
 
-
-from backend_server.db.session import Base, get_db
 from backend_server.api.base import api_router
 
 def start_application():
@@ -37,6 +35,7 @@ def start_application():
 
 
 # Will see if we use the same database for testing (if yes create a clean routine after test)
+from backend_server.db.session import Base, get_db
 while True:
     try:
         # SQLALCHEMY_DATABASE_URL = "postgresql://test_eq102:test_root@test_db:5555/test_inf3995"
@@ -57,7 +56,7 @@ def app() -> Generator[FastAPI, Any, None]:
     """
     Create a fresh database on each test case.
     """
-    Base.metadata.create_all(engine)  # Create the tables.
+    Base.metadata.create_all(engine)  
     _app = start_application()
     yield _app
     Base.metadata.drop_all(engine)

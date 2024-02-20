@@ -17,7 +17,7 @@ test:app:
   services:
     - name: postgres:13
       alias: test_db
-      command: ["-p", "5555"]
+      command: ["-p", "5430"]
   script:
     - pip install -r requirements.txt
     - pwd
