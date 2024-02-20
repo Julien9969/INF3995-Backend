@@ -1,4 +1,6 @@
-from unittest.mock import patch, MagicMock
+from unittest.mock import AsyncMock, patch, MagicMock
+
+import pytest
 from backend_server.api.identify.identify_client import IdentifyClientAsync
 
 @patch("interfaces.srv.Identify")
@@ -28,3 +30,18 @@ def test_identify_client_init_failure(create_client_mock, identify_mock, get_log
     assert create_client_mock.called
     assert not hasattr(identify_client, 'req')
     identify_client.get_logger().info.assert_called_once_with('service not available (robot id 1), waiting again...')
+
+
+@pytest.mark.asyncio
+@patch("rclpy.node.Node.create_client")
+async def test_send_request(create_client_mock):
+    future = MagicMock()
+    future.result = MagicMock(return_value="result")
+    cli_mock = MagicMock()
+    cli_mock.call_async.return_value = future
+    create_client_mock.return_value = cli_mock
+
+    identify_client = IdentifyClientAsync(1)
+
+    result = await identify_client.send_request("a")
+    assert result == "result"

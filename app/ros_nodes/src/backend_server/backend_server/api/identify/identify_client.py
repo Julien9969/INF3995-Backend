@@ -17,8 +17,9 @@ class IdentifyClientAsync(Node):
         else:    
             self.get_logger().info(f'service not available (robot id {robot_id}), waiting again...')
 
-    def send_request(self, a):
+    async def send_request(self, a):
         self.req.a = a
         self.future = self.cli.call_async(self.req)
         rclpy.spin_until_future_complete(self, self.future)
+
         return self.future.result()

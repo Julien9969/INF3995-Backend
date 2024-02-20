@@ -13,8 +13,8 @@ from sqlalchemy.orm import Session
 from sqlalchemy.orm import sessionmaker
 
 sys.path.append(".")
-print(sys.path)
-print(os.getcwd())
+# print(sys.path)
+# print(os.getcwd())
 
 # ROS2 Mock (make ros2 installation not required for testing)
 import backend_server.tests.mock.rclpy_mock as rclpy_mock
