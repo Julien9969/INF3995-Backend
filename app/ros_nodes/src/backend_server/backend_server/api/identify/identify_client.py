@@ -1,9 +1,7 @@
 import sys
-
 from interfaces.srv import Identify
 import rclpy
 from rclpy.node import Node
-
 
 class IdentifyClientAsync(Node):
     """

@@ -45,7 +45,7 @@ while True:
         if environment == "test_db":
             SQLALCHEMY_DATABASE_URL = "postgresql://test_eq102:test_root@test_db:5430/test_inf3995"
         else:
-            SQLALCHEMY_DATABASE_URL = "postgresql://eq102:root@host.docker.internal:5430/inf3995"        
+            SQLALCHEMY_DATABASE_URL = f"postgresql://eq102:root@{environment}:5430/inf3995"        
 
         print(f"Using database: {SQLALCHEMY_DATABASE_URL}")
         engine = create_engine(
