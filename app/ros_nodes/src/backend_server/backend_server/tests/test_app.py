@@ -14,21 +14,15 @@ def test_start_application(include_router_mock, create_tables_mock):
     assert include_router_mock.called
     assert create_tables_mock.called
 
-@pytest.fixture
-async def app():
-    return fastapi.FastAPI(title="TestApp")
 
 @pytest.mark.asyncio
-async def test_app_lifespan():
-    async with app_lifespan(await app()) as ctx:
-        # Here you can write your test logic
-        
-        # Mock any necessary async calls for testing purposes
-        ctx.check_db_connected = AsyncMock(return_value=None)
-        ctx.check_db_disconnected = AsyncMock(return_value=None)
-        
-        # Assert any expected behavior or state changes
-        
-        # Example assertion, you can replace this with your actual test logic
-        assert ctx.check_db_connected.called
-        assert ctx.check_db_disconnected.called
+@patch("backend_server.app.check_db_disconnected", new_callable=AsyncMock)
+@patch("backend_server.app.check_db_connected", new_callable=AsyncMock)
+async def test_app_lifespan(check_db_connected_mock: MagicMock, check_db_disconnected_mock: MagicMock):
+    app_mock = MagicMock(spec=["title"])
+    app_mock.title = "TestApp"
+    
+    async with app_lifespan(app_mock):
+        check_db_connected_mock.assert_called_once()
+        # should stop at yield
+        check_db_disconnected_mock.assert_not_called()
