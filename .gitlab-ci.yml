@@ -26,9 +26,9 @@ test:app:
     - pytest --ignore=./test --ignore=./tests/mock --cov-config=.coveragerc --cov-report term-missing --cov=backend_server backend_server/ -s
 
 variables:
-  POSTGRES_DB: test_inf3995    
-  POSTGRES_USER: test_eq102
-  POSTGRES_PASSWORD: test_root
+  POSTGRES_DB: inf3995    
+  POSTGRES_USER: eq102
+  POSTGRES_PASSWORD: root
   SQLALCHEMY_DATABASE_HOST: test_db
 
 before_script:
