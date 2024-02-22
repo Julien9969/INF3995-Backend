@@ -23,7 +23,7 @@ test:app:
     - pwd
     - ls # for debug
     - cd app/ros_nodes/src/backend_server 
-    - pytest --ignore=./test --ignore=./tests/mock --cov-report term-missing --cov=backend_server backend_server/ -s
+    - pytest --ignore=./test --ignore=./tests/mock --cov-config=.coveragerc --cov-report term-missing --cov=backend_server backend_server/ -s
 
 variables:
   POSTGRES_DB: test_inf3995    

@@ -26,8 +26,23 @@ patch.dict("sys.modules", geometry_msgs=geometry_msgs_mock).start()
 import backend_server.tests.mock.interfaces_mock as interfaces_mock
 patch.dict("sys.modules", interfaces=interfaces_mock).start()
 
+<<<<<<< HEAD
 from backend_server.api.base import api_router
 
+=======
+# ROS2 Mock (make ros2 installation not required for testing)
+import backend_server.tests.mock.rclpy_mock as rclpy_mock
+patch.dict("sys.modules", rclpy=rclpy_mock).start()
+
+import backend_server.tests.mock.geometry_msgs_mock as geometry_msgs_mock
+patch.dict("sys.modules", geometry_msgs=geometry_msgs_mock).start()
+
+import backend_server.tests.mock.interfaces_mock as interfaces_mock
+patch.dict("sys.modules", interfaces=interfaces_mock).start()
+
+from backend_server.api.base import api_router
+
+>>>>>>> dev
 def start_application():
     app = FastAPI()
     app.include_router(api_router)
@@ -45,7 +60,11 @@ while True:
         if environment == "test_db":
             SQLALCHEMY_DATABASE_URL = "postgresql://test_eq102:test_root@test_db:5430/test_inf3995"
         else:
+<<<<<<< HEAD
             SQLALCHEMY_DATABASE_URL = f"postgresql://eq102:root@{environment}:5430/inf3995"        
+=======
+            SQLALCHEMY_DATABASE_URL = "postgresql://eq102:root@host.docker.internal:5430/inf3995"        
+>>>>>>> dev
 
         print(f"Using database: {SQLALCHEMY_DATABASE_URL}")
         engine = create_engine(
