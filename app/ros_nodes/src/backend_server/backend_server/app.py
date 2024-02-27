@@ -6,6 +6,8 @@ from backend_server.db.models.exemples_models import Base
 from backend_server.db.utils import check_db_connected, check_db_disconnected
 from backend_server.db.session import engine
 from backend_server.api.base import api_router
+
+from backend_server.websocket.base import socket_app
 # Don't work for the moment, on_event work of you want
 
 @asynccontextmanager
@@ -33,6 +35,7 @@ def start_application() -> FastAPI:
     app = FastAPI(lifespan=app_lifespan, debug=True, title="API", version="0.1")
     include_router(app)
     # configure_static(app)
+    app.mount("/", socket_app) # Add web sockets to app
     create_tables()
     return app
 
@@ -40,9 +43,9 @@ def start_application() -> FastAPI:
 app = start_application()
 
 origins = [
-    "http://localhost",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
+    # "http://localhost",
+    # "http://localhost:8000",
+    # "http://127.0.0.1:8000",
     "*"
 ]
 
