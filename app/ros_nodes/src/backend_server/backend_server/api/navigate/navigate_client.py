@@ -2,6 +2,7 @@ import sys
 
 from interfaces.srv import Navigate
 import rclpy
+from rclpy.node import Node
 
 
 class NavigateClientAsync(Node):
