@@ -26,7 +26,7 @@ services:
     environment:
       - ROS_DOMAIN_ID=62
       - TERM='xterm-256color'
-      - SQLALCHEMY_DATABASE_HOST=host.docker.internal
+      - SQLALCHEMY_DATABASE_HOST=localhost
       - WATCHFILES_FORCE_POLLING=true
     # devices:
     #   - /dev/ttyTHS1

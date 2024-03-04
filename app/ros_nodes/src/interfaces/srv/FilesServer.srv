@@ -1,3 +1,5 @@
 string command
+string content
 ---
-string answer
+string message
+string content

@@ -1,30 +1,67 @@
 import rclpy
+from enum import Enum
 from rclpy.node import Node
-from backend_server.schemas.schemas import File, FileId, FileObject
+from backend_server.schemas.schemas import File, serviceError
 from interfaces.srv import FilesServer
+from .files_client import FilesClientAsync
+
+class Commands(Enum):
+    FILES_TREE = "files-tree" 
+    GET_FILE = "get-file"
+    EDIT_FILE = "edit-file"
+    UPDATE_ROBOT = "update-robot"
 
 class ROSFilesBase():
-    @staticmethod
-    def get_file() -> File:
-        with open('./src/backend_server/backend_server/api/files/file_trees.json', 'r', encoding='utf-8') as f:
-            file = FileObject(name="file1", id=1, content=f.read(), robotId=1)
-            return file
-
-    @staticmethod
-    def get_files_tree(robot_id: int) -> str:
-        rclpy.init()
-        client = Node.create_client(FilesServer, f"robot{robot_id}/files")
-
-        if client.wait_for_service(timeout_sec=5.0):
-            client.req = FilesServer.Request()
-        else:    
-            Node.get_logger().info(f'service not available (robot id {robot_id}), waiting again...')
-
-        # data = None
-        # with open('./src/backend_server/backend_server/api/files/file_trees.json', 'r', encoding='utf-8') as file:
-        #     data = file.read()
-        # return data
     
     @staticmethod
-    def post_file():
+    async def send_command(robot_id: int, command: Commands, content: str = "None") -> tuple[str, str]:
+        rclpy.init()
+        files_client = FilesClientAsync(robot_id)
+
+        if not hasattr(files_client, 'req'):
+            files_client.destroy_node()
+            rclpy.shutdown()
+            return serviceError("Error", "Impossible de se connecter au service files !")
+        
+        response = await files_client.send_request(command.value, content)
+        
+        files_client.get_logger().info(
+            f"{command.value} command response : {response.message}"
+        )
+
+        files_client.destroy_node()
+        rclpy.shutdown()
+
+        return response
+
+    @staticmethod
+    async def get_files_tree(robot_id: int) -> tuple[str, str]:
+        response = await ROSFilesBase.send_command(robot_id, Commands.FILES_TREE)
+        
+        return response.message, response.content
+    
+    @staticmethod
+    async def get_file(robot_id: int, file_name: str, file_id: int) -> tuple[str, File] | tuple[str, str]:
+        
+        file = { 'name': file_name, 'id': file_id }
+        response = await ROSFilesBase.send_command(robot_id, Commands.GET_FILE, str(file))
+
+        if response.message == 'Error':
+            return response.message, response.content
+        
+        return response.message, File(name=file_name, id=file_id, content=response.content)
+    
+    @staticmethod
+    async def edit_file(robot_id: int, file: File):
+        file = { 'name': file.name, 'id': file.id, 'content': file.content }
+        response = await ROSFilesBase.send_command(robot_id, Commands.EDIT_FILE, str(file))
+
+        if response.message == 'Error':
+            return response.message, response.content
+
+        return response.message, response.content
+        
+
+    @staticmethod
+    def update_robot(robot_id: int):
         pass

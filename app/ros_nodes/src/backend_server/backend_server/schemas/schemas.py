@@ -35,4 +35,12 @@ class FileId(BaseModel):
     id: int
     robotId: int    
 
+class serviceError():
+    def __init__(self, message: str, content: str):
+        self.message = message
+        self.content = content
+
+    message: str
+    content: str
+
 

@@ -1,5 +1,8 @@
 
 class Node:
+    def __init__(self, node_name):
+        pass
+
     def create_publisher(self, msg, topic, qos_profile):
         pass
 
@@ -22,4 +25,10 @@ class Node:
         pass
 
     def shutdown(self):
+        pass
+
+    def create_client(self, srv, topic):
+        pass
+
+    def spin_until_future_complete(self, node, future):
         pass
