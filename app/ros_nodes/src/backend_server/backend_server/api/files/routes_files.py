@@ -7,10 +7,10 @@ import asyncio, os
 
 router = APIRouter(include_in_schema=True)
 
-@router.get("/tree")
-async def get_files_tree() -> responses.JSONResponse:
+@router.get("/tree/{robot_id}")
+async def get_files_tree(robot_id: int) -> responses.JSONResponse:
 
-    data = ROSFilesBase.get_files_tree()
+    data = ROSFilesBase.get_files_tree(robot_id)
 
     return responses.JSONResponse (
         data,

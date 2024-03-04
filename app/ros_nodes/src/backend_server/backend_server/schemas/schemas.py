@@ -28,9 +28,11 @@ class FileObject():
     name: str
     id: int
     content: str
+    robotId: int
 
 class FileId(BaseModel):
     name: str
     id: int
+    robotId: int    
 
 
