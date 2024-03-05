@@ -14,4 +14,4 @@ async def disconnect(sid):
     print(f"Client Disconnected: {str(sid)}")
 
 # Websocket files must be imported at the end to avoid circular dependency error
-from backend_server.websocket.event_handlers.mission import sockets_mission
+from backend_server.websocket.event_handlers import sockets_mission

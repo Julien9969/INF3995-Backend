@@ -27,10 +27,6 @@ def include_router(app):
     app.include_router(api_router)
 
 
-# def configure_static(app):
-#     app.mount("/static", StaticFiles(directory="static"), name="static")
-
-
 def create_tables():
     Base.metadata.create_all(bind=engine)
 
@@ -61,11 +57,3 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# @app.on_event("startup")
-# async def app_startup():
-#     await check_db_connected()
-#
-#
-# @app.on_event("shutdown")
-# async def app_shutdown():
-#     await check_db_disconnected()
