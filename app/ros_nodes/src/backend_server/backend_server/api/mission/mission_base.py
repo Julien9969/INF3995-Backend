@@ -2,12 +2,18 @@
 from interfaces.srv import MissionSwitch
 import rclpy
 from rclpy.node import Node
+import time
 
 
-# TODO Logigique de base modifiable au besoin 
 class MissionBase:
-    """Singleton mission base class."""
+    """
+    Singleton for mission, which also includes robot information
+    """
     mission = None
+    # TODO: Add timestamp for start/stop to compute duration
+    # TODO: Create a getter for mission status (to be )
+    # TODO: Create a getter for battery level
+    # TODO: Add env variable to know if running in dev
 
     @staticmethod
     def get_mission():
@@ -21,7 +27,7 @@ class MissionBase:
         """Start mission."""
         rclpy.init()
         mission_client = Mission()
-
+        mission_client.start_timestamp = int(time.time())
         # if not hasattr(identify_client, 'req'):
         if not hasattr(mission_client, 'req'):
             mission_client.destroy_node()
@@ -29,41 +35,57 @@ class MissionBase:
             return None
 
         response1, response2 = mission_client.send_request('start')
-        
-        mission_client.get_logger().info(f"{response1}, {response2}")
+        result = f"Robots response to start: {response1}, {response2}"
+        mission_client.get_logger().info(result)
 
         mission_client.destroy_node()
         rclpy.shutdown()
-
-        return "Mission started !"
+        # TODO: add error handling
+        return result
 
     @staticmethod
     def stop_mission():
         """Stop mission."""
-        # mission = MissionBase.get_mission()
-        # mission.stop()
         rclpy.init()
         mission_client = Mission()
-
+        mission_client.stop_timestamp = int(time.time())
         if not hasattr(mission_client, 'req'):
             mission_client.destroy_node()
             rclpy.shutdown()
             return None
         
         response1, response2 = mission_client.send_request('stop')
-
-        mission_client.get_logger().info(f"{response1}, {response2}")
+        result = f"Robots response to stop: {response1}, {response2}"
+        mission_client.get_logger().info(result)
 
         mission_client.destroy_node()
         rclpy.shutdown()
 
-        return "Mission stopped"
+        return result
+
+    @staticmethod
+    def is_mission_ongoing():
+        return MissionBase.mission is not None
+
+    @staticmethod
+    def get_mission_duration():
+        """
+        To be used when persisting data into the database
+        """
+        if Mission.stop_timestamp is not 0:
+            return Mission.stop_timestamp - Mission.start_timestamp
+        else:
+            return 0
 
 
 class Mission(Node):
     """
     This class is used to call the ROS service 'identify' from the backend.
     """
+    start_timestamp: int = 0
+    stop_timestamp: int = 0
+    mission_name: str = "Mission"
+
     def __init__(self):
         super().__init__('identify_client_async')
         ros_route = f"robot{1}/mission_switch"

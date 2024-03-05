@@ -6,3 +6,4 @@ class MissionEvents(Enum):
     MISSION_END = "mission-end"
     MISSION_STATUS = "mission-status"
     TEST_EVENT = "event"
+    LOG_DATA = "log-data"
