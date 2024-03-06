@@ -3,6 +3,7 @@ from ...logs import send_log
 from backend_server.websocket.base import sio
 from backend_server.websocket.events import MissionEvents
 from backend_server.api.mission.mission_base import MissionBase
+from backend_server.websocket.logs import send_log, EventType
 
 
 @sio.on(MissionEvents.MISSION_STATUS.value)
@@ -20,10 +21,9 @@ async def set_mission_start(sid, value):
     Confirm to clients that the mission has been started
     """
     result = MissionBase.start_mission()
-    print(result)
-    await sio.emit(MissionEvents.LOG_DATA.value, result)
     await sio.emit(MissionEvents.MISSION_START.value)
     await record_logs()
+    await send_log(f"Robots response to start: {result}")
 
 
 @sio.on(MissionEvents.MISSION_END.value)
@@ -32,5 +32,5 @@ async def set_mission_end(sid):
     Confirm to clients that the mission has been stopped
     """
     result = MissionBase.stop_mission()
-    await send_log(result)
+    await send_log(f"Robots response to stop: {result}")
     await sio.emit(MissionEvents.MISSION_END.value)
