@@ -1,3 +1,5 @@
+from .logs_mission import record_logs
+from ...logs import send_log
 from backend_server.websocket.base import sio
 from backend_server.websocket.events import MissionEvents
 from backend_server.api.mission.mission_base import MissionBase
@@ -13,7 +15,7 @@ async def get_mission_status(sid):
 
 
 @sio.on(MissionEvents.MISSION_START.value)
-async def set_mission_start(sid):
+async def set_mission_start(sid, value):
     """
     Confirm to clients that the mission has been started
     """
@@ -21,6 +23,7 @@ async def set_mission_start(sid):
     print(result)
     await sio.emit(MissionEvents.LOG_DATA.value, result)
     await sio.emit(MissionEvents.MISSION_START.value)
+    await record_logs()
 
 
 @sio.on(MissionEvents.MISSION_END.value)

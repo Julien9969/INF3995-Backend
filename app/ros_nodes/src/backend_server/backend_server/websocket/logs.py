@@ -1,7 +1,12 @@
 import logging
+from ..db.models.exemples_models import Mission, Robot
+from ..db.models.exemples_models import Log as LogDB
 
-from backend_server.websocket.events import MessageEvents
-from backend_server.websocket.base import sio
+
+from ..db.session import SessionLocal
+
+from .events import  MissionEvents
+from .base import sio
 
 import json
 import time
@@ -22,17 +27,27 @@ class Log:
         self.message = message
         self.timestamp = time.time()
         self.robotId = robotId if robotId is not None else 1  # Usually, either 1 or 2
-        self.eventType = eventType.value
+        self.eventType = eventType
+        #TODO ajouter le parametre missionId
 
     def to_json(self):
         return json.dumps(self.__dict__)
 
 
-async def send_log(message):
+async def send_log(message, robotId):
+    print(message)
     """
     """
-    log = Log(message=message)
+    log = Log(message, robotId, eventType=EventType.LOG)
     if DEBUG:
         logging.debug(log.to_json())
-    await sio.emit(MessageEvents.LOG_DATA, log.to_json())
+        
+    #Envoi vers la database
+    new_mission = Mission()
+    new_robot = Robot(robotId=log.robotId)
+    new_log = LogDB(mission=new_mission, robot=new_robot, log_type='INFO', message='Mission started successfully')
+
+    SessionLocal.add_all([new_mission, new_robot, new_log])
+    SessionLocal.commit()
+    await sio.emit(MissionEvents.LOG_DATA, log.to_json())
 
