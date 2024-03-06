@@ -37,7 +37,7 @@ class MissionBase:
             return None
 
         response1, response2 = mission_client.send_request('start')
-        result = f"Robots response to start: {response1}, {response2}"
+        result = f"{response1}, {response2}"
         mission_client.get_logger().info(result)
 
         mission_client.destroy_node()

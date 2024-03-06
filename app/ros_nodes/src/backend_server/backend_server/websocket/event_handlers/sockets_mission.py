@@ -20,9 +20,7 @@ async def set_mission_start(sid):
     """
     result = MissionBase.start_mission()
     await sio.emit(MissionEvents.MISSION_START.value)
-    await send_log(result)
-    await send_log("Yooo!")
-    await send_log("Yooo!")
+    await send_log(f"Robots response to start: {result}")
 
 
 @sio.on(MissionEvents.MISSION_END.value)
@@ -31,5 +29,5 @@ async def set_mission_end(sid):
     Confirm to clients that the mission has been stopped
     """
     result = MissionBase.stop_mission()
-    await send_log(result)
+    await send_log(f"Robots response to stop: {result}")
     await sio.emit(MissionEvents.MISSION_END.value)
