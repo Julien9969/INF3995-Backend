@@ -1,3 +1,4 @@
+import json
 import rclpy
 from enum import Enum
 from rclpy.node import Node
@@ -43,8 +44,9 @@ class ROSFilesBase():
     @staticmethod
     async def get_file(robot_id: int, file_name: str, file_id: int) -> tuple[str, File] | tuple[str, str]:
         
-        file = { 'name': file_name, 'id': file_id }
-        response = await ROSFilesBase.send_command(robot_id, Commands.GET_FILE, str(file))
+        file = json.dumps({ 'name': file_name, 'id': file_id })
+        # file = { 'name': file_name, 'id': file_id }
+        response = await ROSFilesBase.send_command(robot_id, Commands.GET_FILE, file)
 
         if response.message == 'Error':
             return response.message, response.content
@@ -53,7 +55,7 @@ class ROSFilesBase():
     
     @staticmethod
     async def edit_file(robot_id: int, file: File):
-        file = { 'name': file.name, 'id': file.id, 'content': file.content }
+        file = json.dumps({ 'name': file.name, 'id': file.id, 'content': file.content })
         response = await ROSFilesBase.send_command(robot_id, Commands.EDIT_FILE, str(file))
 
         if response.message == 'Error':
@@ -61,7 +63,8 @@ class ROSFilesBase():
 
         return response.message, response.content
         
-
     @staticmethod
-    def update_robot(robot_id: int):
-        pass
+    async def update_robot(robot_id: int):
+        response = await ROSFilesBase.send_command(robot_id, Commands.UPDATE_ROBOT)
+        
+        return response.message, response.content

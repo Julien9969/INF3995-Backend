@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Query, status, responses
+import json
+from fastapi import APIRouter, status, responses
 from backend_server.schemas.schemas import File, FileId
 from pydantic import BaseModel
 from .files_base import ROSFilesBase
@@ -34,10 +35,10 @@ async def get_file(robot_id: int, name: str, id: int) -> responses.JSONResponse:
             status_code=status.HTTP_404_NOT_FOUND
         )
 
-    file_dict = {"name": content.name, "id": content.id, "content": content.content}
+    file_json = {"name": content.name, "id": content.id, "content": content.content}
 
     return responses.JSONResponse(
-        content=file_dict,
+        content=file_json,
         status_code=status.HTTP_200_OK
     )
 
