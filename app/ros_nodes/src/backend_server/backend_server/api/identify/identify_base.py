@@ -5,6 +5,7 @@ import rclpy
 from geometry_msgs.msg import Twist
 from pydantic import BaseModel
 
+
 class IdentifyBase:
     def __init__(self):
         pass
