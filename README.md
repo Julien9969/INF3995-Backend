@@ -270,7 +270,7 @@ docker exec -it fastapi-container bash
 Run the tests + coverage
 ```sh
 cd /src/app/ros_nodes/src/backend_server
-pytest --ignore=./test --cov-report term-missing --cov=backend_server backend_server/
+pytest --ignore=./test --ignore=./tests/mock --cov-config=.coveragerc --cov-report term-missing --cov=backend_server backend_server/
 ```
 
 ##### Test execution with one command (--ignore=./test is for ros2 lint exclude)
@@ -314,7 +314,7 @@ If you need to create a new folder in **tests/mock** you will need to patch the 
 ## Resources
 
 Gitlab ci ignore test folder (ros2 dep)
-pytest --ignore=./test --cov-report term-missing --cov=backend_server backend_server/
+pytest --ignore=./test --cov-config=.coveragerc --ignore=./tests/mock --cov-report term-missing --cov=backend_server backend_server/
 
 [Fast API documentation](https://fastapi.tiangolo.com/) \
 [Fastapi sql db tutorial](https://fastapi.tiangolo.com/tutorial/sql-databases/) \
