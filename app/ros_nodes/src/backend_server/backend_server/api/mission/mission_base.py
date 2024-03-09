@@ -8,7 +8,7 @@ from rclpy.node import Node
 import time
 
 ROBOT_COUNT = 2  # Store the number of robots as a constant
-import os
+import os 
 SIMULATION = os.environ.get('ROS_DOMAIN_ID') != '0'
 
 from enum import Enum
@@ -33,9 +33,11 @@ class Singleton(type):
 def start_mission():
     rclpy.init()
     mission_client = Mission()
-    MissionState().start_timestamp = int(time.time())
+    MissionData().start_timestamp = int(time.time())
 
     if SIMULATION:
+        mission_client.destroy_node()
+        rclpy.shutdown()
         return "Simulation mode: Mission started successfully."
 
     if not hasattr(mission_client, 'req'):
@@ -55,7 +57,7 @@ def start_mission():
 def stop_mission():
     rclpy.init()
     mission_client = Mission()
-    MissionState().stop_timestamp = int(time.time())
+    MissionData().stop_timestamp = int(time.time())
 
     if not hasattr(mission_client, 'req'):
         mission_client.destroy_node()

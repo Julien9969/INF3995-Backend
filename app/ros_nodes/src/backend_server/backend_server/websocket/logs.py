@@ -32,7 +32,7 @@ class Log:
         return json.dumps(self.__dict__)
 
 
-async def send_log(message: str, robot_id=1, event_type=LogType.LOG, missionId = 6):
+async def send_log(message: str, robot_id=2, event_type=LogType.LOG, missionId = 6):
     """
     Emits formatted log to the clients
     """

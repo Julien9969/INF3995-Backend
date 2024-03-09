@@ -1,3 +1,4 @@
+from .logs_mission import record_logs
 from backend_server.websocket.base import sio
 from backend_server.websocket.events import Events
 from backend_server.api.mission.mission_base import Mission, start_mission, stop_mission
@@ -17,7 +18,7 @@ async def get_mission_status(sid):
 
 
 @sio.on(Events.MISSION_START.value)
-async def set_mission_start(sid):
+async def set_mission_start(sid,data):
     """
     Confirm to clients that the mission has been started
     """
@@ -25,6 +26,7 @@ async def set_mission_start(sid):
     assert result is not None
     await sio.emit(Events.MISSION_START.value)
     await send_log(f"Robots response to start: {result}")
+    await record_logs()
 
 
 @sio.on(Events.MISSION_END.value)
