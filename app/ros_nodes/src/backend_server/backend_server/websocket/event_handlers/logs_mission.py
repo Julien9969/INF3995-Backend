@@ -1,4 +1,4 @@
-from ...logs import send_log
+from ..logs import send_log
 import rclpy
 from rclpy.node import Node
 
@@ -28,7 +28,7 @@ class LogSubscriber(Node):
         severity = severity_levels.get(log_msg.level, 'UNKNOWN')
 
         # Extract robot ID from logger name
-        robot_id = log_msg.name.split("robot")[1]
+        robot_id = log_msg.name.split("robot")[1][0]
 
         # Extract log message
         message = log_msg.msg
@@ -41,6 +41,7 @@ class LogSubscriber(Node):
     def listener_callback(self, msg):
         severity, robot_id,name, message = self.parse_log_message(msg)
         log_message = f"{severity}: {name}: {message}"
+        # self.get_logger().info(robot_id)
         self.messageList.append([log_message, robot_id])
         # self.get_logger().info(log_message)
         
@@ -56,7 +57,7 @@ async def record_logs():
             rclpy.spin_once(logSubscriber, timeout_sec=2)
             #TODO S'assurer qu'il y a vraiment une valeur de log enregistrée avant de send_log
             await send_log(logSubscriber.messageList[current_index][0],
-                           logSubscriber.messageList[current_index][1],)
+                           logSubscriber.messageList[current_index][1])
             current_index += 1
         except KeyboardInterrupt:
             pass

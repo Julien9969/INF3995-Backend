@@ -16,18 +16,19 @@ import time
 from enum import Enum
 
 
-class EventType(Enum):
+class LogType(Enum):
     LOG = "log"
     COMMAND = "command"
     SENSOR = "sensor"
+    
 
 
 class Log:
-    def __init__(self, message, robotId, eventType: EventType):
+    def __init__(self, message, robotId, logType: LogType):
         self.message = message
         self.timestamp = int(time.time())
         self.robotId = robotId if robotId is not None else 1  # Usually, either 1 or 2
-        self.eventType = eventType
+        self.logType = logType
         #TODO ajouter le parametre missionId
 
     def to_json(self):
@@ -38,18 +39,17 @@ async def send_log(message, robotId):
     print(message)
     """
     """
-    log = Log(message, robotId, eventType=EventType.LOG)
-    if DEBUG:
-        logging.debug(log.to_json())
+    log = Log(message, robotId, logType=LogType.LOG)
         
     #Envoi vers la database
-    new_mission = Mission()
-    new_robot = Robot(robotId=log.robotId)
-    new_log = LogDB(mission=new_mission, robot=new_robot, log_type='INFO', message='Mission started successfully')
+    # new_mission = Mission()
+    # new_robot = Robot(robot_id=log.robotId)
+    new_log = LogDB(mission_id=6, robot_id=log.robotId, log_type='INFO', message=log.message)
 
-    SessionLocal.add_all([new_mission, new_robot, new_log])
-    SessionLocal.commit()
-    await sio.emit(MissionEvents.LOG_DATA, log.to_json())
-    log = Log(message, 1, EventType.LOG)
+    session = SessionLocal()
+
+    session.add_all([new_log])
+    session.commit()
+    log = Log(message, robotId, LogType.LOG.value)
     await sio.emit(MissionEvents.LOG_DATA.value, log.to_json())
 

@@ -1,9 +1,9 @@
 from .logs_mission import record_logs
-from ...logs import send_log
+from ..logs import send_log
 from backend_server.websocket.base import sio
 from backend_server.websocket.events import MissionEvents
 from backend_server.api.mission.mission_base import MissionBase
-from backend_server.websocket.logs import send_log, EventType
+from backend_server.websocket.logs import send_log, LogType
 
 
 @sio.on(MissionEvents.MISSION_STATUS.value)
