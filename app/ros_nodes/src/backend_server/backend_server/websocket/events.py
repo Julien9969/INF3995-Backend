@@ -1,9 +1,8 @@
 from enum import Enum
 
 
-class MissionEvents(Enum):
+class Events(Enum):
     MISSION_START = "mission-start"
     MISSION_END = "mission-end"
     MISSION_STATUS = "mission-status"
-    TEST_EVENT = "event"
     LOG_DATA = "log-data"

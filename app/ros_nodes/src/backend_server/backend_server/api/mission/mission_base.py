@@ -1,106 +1,99 @@
 import os
 
 from interfaces.srv import MissionSwitch
+
 import rclpy
 from rclpy.node import Node
+
 import time
 
+ROBOT_COUNT = 2  # Store the number of robots as a constant
+import os
+SIMULATION = os.environ.get('ROS_DOMAIN_ID') != '0'
 
-class MissionBase:
-    """
-    Singleton for mission, which also includes robot information
-    """
-    mission = None
+from enum import Enum
 
-    # TODO: Add timestamp for start/stop to compute duration
-    # TODO: Create a getter for mission status (to be )
-    # TODO: Create a getter for battery level
-    # TODO: Add env variable to know if running in dev
 
-    @staticmethod
-    def get_mission():
-        """Get mission object."""
-        if MissionBase.mission is None:
-            MissionBase.mission = Mission()
-        return MissionBase.mission
+class MissionState(str, Enum):
+    ONGOING = "ongoing"
+    ENDED = "ended"
+    NOT_STARTED = "not-started"
 
-    @staticmethod
-    def start_mission():
-        """Start mission."""
-        rclpy.init()
-        mission_client = Mission()
-        mission_client.start_timestamp = int(time.time())
-        # if not hasattr(identify_client, 'req'):
-        if not hasattr(mission_client, 'req'):
-            mission_client.destroy_node()
-            rclpy.shutdown()
-            return None
 
-        response1, response2 = mission_client.send_request('start')
-        result = f"{response1}, {response2}"
-        mission_client.get_logger().info(result)
+# Source: https://stackoverflow.com/questions/6760685/what-is-the-best-way-of-implementing-singleton-in-python
+class Singleton(type):
+    _instances = {}
 
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+
+def start_mission():
+    rclpy.init()
+    mission_client = Mission()
+    MissionState().start_timestamp = int(time.time())
+
+    if SIMULATION:
+        return "Simulation mode: Mission started successfully."
+
+    if not hasattr(mission_client, 'req'):
         mission_client.destroy_node()
         rclpy.shutdown()
-        # TODO: add error handling
-        return result
+        return None
 
-    @staticmethod
-    def stop_mission():
-        """Stop mission."""
-        rclpy.init()
-        mission_client = Mission()
-        mission_client.stop_timestamp = int(time.time())
-        if not hasattr(mission_client, 'req'):
-            mission_client.destroy_node()
-            rclpy.shutdown()
-            return None
+    response1, response2 = mission_client.send_request('start')
+    result = f"{response1}, {response2}"
+    mission_client.get_logger().info(result)
 
-        response1, response2 = mission_client.send_request('stop')
-        result = f"Robots response to stop: {response1}, {response2}"
-        mission_client.get_logger().info(result)
+    mission_client.destroy_node()
+    rclpy.shutdown()
+    return result
 
+
+def stop_mission():
+    rclpy.init()
+    mission_client = Mission()
+    MissionState().stop_timestamp = int(time.time())
+
+    if not hasattr(mission_client, 'req'):
         mission_client.destroy_node()
         rclpy.shutdown()
+        return None
 
-        return result
+    response1, response2 = mission_client.send_request('stop')
+    result = f"Robots response to stop: {response1}, {response2}"
+    mission_client.get_logger().info(result)
 
-    @staticmethod
-    def is_mission_ongoing():
-        return MissionBase.mission is not None
+    mission_client.destroy_node()
+    rclpy.shutdown()
 
-    @staticmethod
-    def get_mission_duration():
-        """
-        To be used when persisting data into the database
-        """
-        if Mission.stop_timestamp != 0:
-            return Mission.stop_timestamp - Mission.start_timestamp
-        else:
-            return 0
+    return result
 
 
 class Mission(Node):
     """
     This class is used to call the ROS service 'identify' from the backend.
     """
-    start_timestamp: int = 0
-    stop_timestamp: int = 0
-    mission_name: str = "Mission"
 
     def __init__(self):
         super().__init__('identify_client_async')
         self.future2 = None
         self.future1 = None
-        ros_route = f"robot{1}/mission_switch"
-        self.cli1 = self.create_client(MissionSwitch, ros_route)
 
-        ros_route = f"robot{2}/mission_switch"
-        self.cli2 = self.create_client(MissionSwitch, ros_route)
-        debug = os.getenv("DEBUG") if os.getenv("DEBUG") is not None else False
-        if self.cli1.wait_for_service(timeout_sec=5.0) and not debug:  # Active Waiting
-            if self.cli2.wait_for_service(timeout_sec=5.0):
-                self.req = MissionSwitch.Request()
+        try:
+            ros_route = f"robot{1}/mission_switch"
+            self.cli1 = self.create_client(MissionSwitch, ros_route)
+
+            ros_route = f"robot{2}/mission_switch"
+            self.cli2 = self.create_client(MissionSwitch, ros_route)
+            if self.cli1.wait_for_service(timeout_sec=5.0):  # Active Waiting
+                if self.cli2.wait_for_service(timeout_sec=5.0):
+                    self.req = MissionSwitch.Request()
+        except Exception as e:
+            self.get_logger().error(f"Error creating ROS clients: {e}")
+            raise
 
     def send_request(self, cmd: str):
         self.req.command = cmd
@@ -109,3 +102,31 @@ class Mission(Node):
         rclpy.spin_until_future_complete(self, self.future1)
         rclpy.spin_until_future_complete(self, self.future2)
         return self.future1.result(), self.future2.result()
+
+
+class MissionData(metaclass=Singleton):
+
+    def __init__(self):
+        self.start_timestamp: int = 0
+        self.stop_timestamp: int = 0
+        self.mission_name: str = "Mission"
+
+    def get_mission_state(self):
+        if self.start_timestamp == 0 and self.stop_timestamp == 0:
+            return MissionState.NOT_STARTED
+        elif self.start_timestamp > 0 and self.stop_timestamp == 0:
+            return MissionState.ONGOING
+        elif self.start_timestamp > 0 and self.stop_timestamp > 0:
+            return MissionState.ENDED
+
+    def get_mission_duration(self):
+        if self.stop_timestamp != 0:
+            return self.stop_timestamp - self.start_timestamp
+        else:
+            return 0
+
+    def get_battery(self, robot_id):
+        return 100
+
+    def get_robot_status(self, robot_id):
+        return 0

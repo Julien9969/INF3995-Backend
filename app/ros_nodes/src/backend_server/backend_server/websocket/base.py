@@ -1,3 +1,5 @@
+import asyncio
+
 import socketio
 
 sio = socketio.AsyncServer(cors_allowed_origins="*", async_mode="asgi")
@@ -13,5 +15,10 @@ async def connect(sid, env):
 async def disconnect(sid):
     print(f"Client Disconnected: {str(sid)}")
 
+
 # Websocket files must be imported at the end to avoid circular dependency error
-from backend_server.websocket.event_handlers import sockets_mission
+from backend_server.websocket.event_handlers import mission
+from backend_server.websocket.status import send_updates
+
+# With mission start, start sending status updates to the clients
+asyncio.create_task(send_updates())
