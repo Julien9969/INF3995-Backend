@@ -12,7 +12,7 @@ class Commands(Enum):
     EDIT_FILE = "edit-file"
     UPDATE_ROBOT = "update-robot"
 
-class ROSFilesBase():
+class ROSFilesBase:
     
     @staticmethod
     async def send_command(robot_id: int, command: Commands, content: str = "None") -> tuple[str, str]:
