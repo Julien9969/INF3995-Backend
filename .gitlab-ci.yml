@@ -20,9 +20,6 @@ test:app:
       command: ["-p", "5430"]
   script:
     - pip install -r requirements.txt
-    - pip uninstall -y pydantic
-    - pip uninstall -y pydantic
-    - pip install -U pydantic
     - pwd
     - ls # for debug
     - cd app/ros_nodes/src/backend_server 
