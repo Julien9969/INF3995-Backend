@@ -1,4 +1,4 @@
-import time
+import time, os
 from typing import Generator
 
 from sqlalchemy import create_engine
@@ -8,7 +8,9 @@ from sqlalchemy.orm import sessionmaker
 
 while True:
 	try:
-		SQLALCHEMY_DATABASE_URL = "postgresql://eq102:root@host.docker.internal:5430/inf3995"
+            
+		environment = os.getenv("SQLALCHEMY_DATABASE_HOST", "host.docker.internal")
+		SQLALCHEMY_DATABASE_URL = f"postgresql://eq102:root@{environment}:5430/inf3995"
 		Base = declarative_base()
 
 		engine = create_engine(

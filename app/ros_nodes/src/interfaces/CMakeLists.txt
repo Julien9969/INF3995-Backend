@@ -32,6 +32,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   # "srv/AddThreeInts.srv"
   "srv/Identify.srv"
   "srv/MissionSwitch.srv"
+  "srv/FilesService.srv"
   # DEPENDENCIES geometry_msgs # Add packages that above messages depend on, in this case geometry_msgs for Sphere.msg
 )
 

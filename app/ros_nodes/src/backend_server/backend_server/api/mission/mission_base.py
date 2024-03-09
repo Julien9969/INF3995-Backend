@@ -40,8 +40,6 @@ class MissionBase:
     @staticmethod
     def stop_mission():
         """Stop mission."""
-        # mission = MissionBase.get_mission()
-        # mission.stop()
         rclpy.init()
         mission_client = Mission()
 
