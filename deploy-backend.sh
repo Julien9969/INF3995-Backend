@@ -1,5 +1,6 @@
 #!/bin/bash 
 
+apt update -y
 cd /src/app/ros_nodes
 rm /etc/ros/rosdep/sources.list.d/20-default.list
 source /opt/ros/humble/setup.bash

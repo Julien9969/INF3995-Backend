@@ -1,4 +1,4 @@
-image: tiangolo/uvicorn-gunicorn-fastapi:python3.8
+image: python:3.11
 
 .only-app: &only-app
   only:

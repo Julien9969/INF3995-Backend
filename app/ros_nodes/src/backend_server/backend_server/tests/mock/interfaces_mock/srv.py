@@ -1,5 +1,7 @@
 class Request:
     a = 0
+    content = ""
+    message = ""
 
 
 class Identify:
@@ -9,4 +11,7 @@ class Identify:
     
 MissionSwitch = "mission_switch"
 
-
+class FilesServer:
+    @staticmethod
+    def Request():
+        return Request()
