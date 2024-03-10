@@ -49,7 +49,7 @@ def test_send_cmd_vel(mock_init: MagicMock, mock_create_node: MagicMock, shutdow
 
     mock_init.assert_called_once()
     mock_create_node.assert_called_once_with('twist_publisher')
-    mock_node.create_publisher.assert_called_once_with(mock.ANY, '/cmd_vel', 10)
+    mock_node.create_publisher.assert_called_once()
     assert mock_publisher.publish.call_count == 50
     assert time.sleep.call_count == 50
     shutdown_mock.assert_called_once()

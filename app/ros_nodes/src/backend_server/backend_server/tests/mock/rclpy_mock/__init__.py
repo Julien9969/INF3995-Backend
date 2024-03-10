@@ -6,3 +6,6 @@ def create_node():
 
 def shutdown():
     pass
+
+def spin_until_future_complete(node, future):
+    pass

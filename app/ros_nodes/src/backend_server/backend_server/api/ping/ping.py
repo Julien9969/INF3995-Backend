@@ -18,7 +18,7 @@ class PingBase:
 
         node = rclpy.create_node('twist_publisher')
         # rate = node.create_timer(1, )
-        publisher = node.create_publisher(Twist, '/cmd_vel', 10)
+        publisher = node.create_publisher(Twist, 'robot2/cmd_vel', 10)
 
         msg = Twist()
         msg.linear.x = x
