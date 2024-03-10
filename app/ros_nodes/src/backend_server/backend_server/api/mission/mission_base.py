@@ -8,8 +8,8 @@ from rclpy.node import Node
 import time
 
 ROBOT_COUNT = 2  # Store the number of robots as a constant
-import os
-SIMULATION = os.environ.get('ROS_DOMAIN_ID') != '0'
+
+SIMULATION = os.environ.get('ROS_DOMAIN_ID') == '0'
 
 from enum import Enum
 
@@ -33,10 +33,7 @@ class Singleton(type):
 def start_mission():
     rclpy.init()
     mission_client = Mission()
-    MissionState().start_timestamp = int(time.time())
-
-    if SIMULATION:
-        return "Simulation mode: Mission started successfully."
+    MissionData().start_timestamp = int(time.time())
 
     if not hasattr(mission_client, 'req'):
         mission_client.destroy_node()
@@ -55,7 +52,7 @@ def start_mission():
 def stop_mission():
     rclpy.init()
     mission_client = Mission()
-    MissionState().stop_timestamp = int(time.time())
+    MissionData().stop_timestamp = int(time.time())
 
     if not hasattr(mission_client, 'req'):
         mission_client.destroy_node()
@@ -109,24 +106,23 @@ class MissionData(metaclass=Singleton):
     def __init__(self):
         self.start_timestamp: int = 0
         self.stop_timestamp: int = 0
-        self.mission_name: str = "Mission"
 
     def get_mission_state(self):
-        if self.start_timestamp == 0 and self.stop_timestamp == 0:
-            return MissionState.NOT_STARTED
+        if self.start_timestamp == 0:
+            return MissionState.NOT_STARTED.value
         elif self.start_timestamp > 0 and self.stop_timestamp == 0:
-            return MissionState.ONGOING
+            return MissionState.ONGOING.value
         elif self.start_timestamp > 0 and self.stop_timestamp > 0:
-            return MissionState.ENDED
+            return MissionState.ENDED.value
 
     def get_mission_duration(self):
         if self.stop_timestamp != 0:
             return self.stop_timestamp - self.start_timestamp
         else:
-            return 0
+            return int(time.time()) - self.start_timestamp
 
-    def get_battery(self, robot_id):
-        return 100
+    def get_battery(self):
+        return [50, 50]  # TODO
 
-    def get_robot_status(self, robot_id):
-        return 0
+    def get_robot_status(self):
+        return [0.2, 0.2]  # TODO
