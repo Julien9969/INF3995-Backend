@@ -1,14 +1,16 @@
-import databases
+from databases import Database
 from backend_server.db.session import SQLALCHEMY_DATABASE_URL
 
 
 async def check_db_connected():
     try:
-        if not str(SQLALCHEMY_DATABASE_URL).__contains__("sqlite"):
-            database = databases.Database(SQLALCHEMY_DATABASE_URL)
-            if not database.is_connected:
-                await database.connect()
-                await database.execute("SELECT 1")
+        database = Database(SQLALCHEMY_DATABASE_URL)
+
+        print(database)
+        print("test")
+        if not database.is_connected:
+            await database.connect()
+            await database.execute("SELECT 1")
         print("Database is connected (^_^)")
     except Exception as e:
         print(
@@ -19,10 +21,9 @@ async def check_db_connected():
 
 async def check_db_disconnected():
     try:
-        if not str(SQLALCHEMY_DATABASE_URL).__contains__("sqlite"):
-            database = databases.Database(SQLALCHEMY_DATABASE_URL)
-            if database.is_connected:
-                await database.disconnect()
+        database = Database(SQLALCHEMY_DATABASE_URL)
+        if database.is_connected:
+            await database.disconnect()
         print("Database is Disconnected (-_-) zZZ")
     except Exception as e:
         raise e

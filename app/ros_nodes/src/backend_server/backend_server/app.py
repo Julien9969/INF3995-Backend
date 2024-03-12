@@ -1,6 +1,10 @@
-from fastapi import FastAPI
+import asyncio
+import time
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
+from fastapi import FastAPI, Request, Response, HTTPException
+from fastapi.responses import JSONResponse
+from starlette.status import HTTP_504_GATEWAY_TIMEOUT
 
 from backend_server.db.models.exemples_models import Base
 from backend_server.db.utils import check_db_connected, check_db_disconnected
@@ -42,6 +46,19 @@ def start_application() -> FastAPI:
 
 # ENLEVE TEMPORAIREMENT POUR ETRE LANCE PAR ROS A LA PLACE
 app = start_application()
+
+@app.middleware("http")
+async def timeout_middleware(request: Request, call_next):
+    try:
+        start_time = time.time()
+        return await asyncio.wait_for(call_next(request), timeout=20)
+
+    except asyncio.TimeoutError:
+        process_time = time.time() - start_time
+        return JSONResponse({'detail': 'Request processing time excedeed limit',
+                             'processing_time': process_time},
+                            status_code=HTTP_504_GATEWAY_TIMEOUT)
+
 origins = [
     # "http://localhost",
     # "http://localhost:8000",
