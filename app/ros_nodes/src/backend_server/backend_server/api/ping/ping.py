@@ -18,14 +18,14 @@ class PingBase:
 
         node = rclpy.create_node('twist_publisher')
         # rate = node.create_timer(1, )
-        publisher = node.create_publisher(Twist, 'robot2/cmd_vel', 10)
+        publisher = node.create_publisher(Twist, '/robot1/cmd_vel', 10)
 
         msg = Twist()
         msg.linear.x = x
         msg.angular.z = z
 
         # rate = node.create_rate(1)  # 1 Hz
-        for i in range(50):
+        for i in range(20):
             publisher.publish(msg)
             node.get_logger().info('Publishing: {}'.format(msg))
             time.sleep(0.3)
