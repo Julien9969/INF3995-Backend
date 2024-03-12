@@ -1,7 +1,7 @@
 from .logs_mission import record_logs
 from backend_server.websocket.base import sio
 from backend_server.websocket.events import Events
-from backend_server.api.mission.mission_base import Mission, start_mission, stop_mission
+from backend_server.api.mission.mission_base import  MissionData, start_mission, stop_mission
 from backend_server.websocket.logs import send_log, LogType
 
 import json
@@ -12,13 +12,13 @@ async def get_mission_status(sid):
     """
     Inform a newly joined client of the current mission status
     """
-    status = Mission().get_mission_state()
+    status = MissionData().get_mission_state()
     assert status is not None
     await sio.emit(Events.MISSION_STATUS.value, json.dumps(status), to=sid)
 
 
 @sio.on(Events.MISSION_START.value)
-async def set_mission_start(sid,data):
+async def set_mission_start(sid):
     """
     Confirm to clients that the mission has been started
     """

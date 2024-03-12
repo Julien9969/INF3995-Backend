@@ -56,9 +56,10 @@ async def record_logs():
         try:
             rclpy.spin_once(logSubscriber, timeout_sec=2)
             #TODO S'assurer qu'il y a vraiment une valeur de log enregistrée avant de send_log
-            await send_log(logSubscriber.messageList[current_index][0],
+            if current_index < len(logSubscriber.messageList) and logSubscriber.messageList[current_index] is not None:
+                await send_log(logSubscriber.messageList[current_index][0],
                            logSubscriber.messageList[current_index][1])
-            current_index += 1
+                current_index += 1
         except KeyboardInterrupt:
             pass
 
