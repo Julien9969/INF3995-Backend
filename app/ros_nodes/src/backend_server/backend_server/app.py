@@ -1,13 +1,10 @@
 import asyncio
 import time
-from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Response, HTTPException
 from fastapi.responses import JSONResponse
-from httpx import AsyncClient
 from starlette.status import HTTP_504_GATEWAY_TIMEOUT
-import requests
 
 from backend_server.db.models.exemples_models import Base
 from backend_server.db.utils import check_db_connected, check_db_disconnected
