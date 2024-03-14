@@ -10,7 +10,7 @@ from rcl_interfaces.msg import Log
 logging.basicConfig(level=logging.DEBUG)
 class LogSubscriber(Node):
 
-    def __init__(self):
+    def __init__(self, messageList):
         super().__init__('logs_subscriber')
         self.subscription = self.create_subscription(
             Log,
@@ -18,7 +18,8 @@ class LogSubscriber(Node):
             self.listener_callback,
             10)
         self.subscription  # prevent unused variable warning
-        self.messageList = []
+        self.messageList = messageList
+        self.isFinished = False
 
     def parse_log_message(self, log_msg):
         # Extract severity level
@@ -38,7 +39,9 @@ class LogSubscriber(Node):
             robot_id = 2
 
         # Extract log message
-        message = log_msg.data
+        message = log_msg.msg
+        if message == 'CODE 36: STOP RECORDING': 
+            self.isFinished = True
 
         #Extract log name
         name = log_msg.name
@@ -55,24 +58,26 @@ class LogSubscriber(Node):
         
 
         
-        
 async def start_record_logs():
-    rclpy.init()
+    # rclpy.init()
     current_index:int = 0
-    while(MissionData().get_mission_state() == MissionState.ONGOING):
+    messageList = []
+    logSubscriber = LogSubscriber(messageList)
+    while(rclpy.ok()):
         try:
-            await asyncio.sleep(2)
-            logSubscriber = LogSubscriber()
+            # logSubscriber = LogSubscriber(messageList)
             rclpy.spin_once(logSubscriber, timeout_sec=2)
-            # logging.debug("This is a debug message..............................")
-            #TODO S'assurer qu'il y a vraiment une valeur de log enregistrée avant de send_log
-            if current_index < len(logSubscriber.messageList) and logSubscriber.messageList[current_index] is not None:
-                await send_log(logSubscriber.messageList[current_index][0],
-                           logSubscriber.messageList[current_index][1])
+            if current_index < len(messageList) and messageList[current_index] is not None:
+                await send_log(messageList[current_index][0],
+                           messageList[current_index][1])
                 current_index += 1
-            logSubscriber.destroy_node()
+            # logSubscriber.destroy_node()
+            await asyncio.sleep(2)
+            if (logSubscriber.isFinished): break
         except KeyboardInterrupt:
             pass
 
+    if(rclpy.ok()): 
+        logging.debug("not shut down yet..............................")
     logSubscriber.destroy_node()
     rclpy.shutdown()

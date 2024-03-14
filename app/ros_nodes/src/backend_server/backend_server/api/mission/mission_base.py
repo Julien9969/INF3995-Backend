@@ -45,12 +45,12 @@ def start_mission():
     mission_client.get_logger().info(result)
 
     mission_client.destroy_node()
-    rclpy.shutdown()
+    # rclpy.shutdown()
     return result
 
 
 def stop_mission():
-    rclpy.init()
+    # rclpy.init()
     mission_client = Mission()
     MissionData().stop_timestamp = int(time.time())
 
@@ -64,7 +64,7 @@ def stop_mission():
     mission_client.get_logger().info(result)
 
     mission_client.destroy_node()
-    rclpy.shutdown()
+    # rclpy.shutdown()
 
     return result
 

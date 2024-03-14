@@ -1,4 +1,4 @@
-from .logs_mission import record_logs
+from .logs_mission import start_record_logs
 from backend_server.websocket.base import sio
 from backend_server.websocket.events import Events
 from backend_server.api.mission.mission_base import start_mission, stop_mission
@@ -24,7 +24,8 @@ async def set_mission_start(sid):
     result = start_mission()
     await sio.emit(Events.MISSION_START.value)
     await send_log(f"Robots response to start: {result}")
-    await record_logs()
+    await start_record_logs()
+
 
 
 @sio.on(Events.MISSION_END.value)
@@ -35,6 +36,7 @@ async def set_mission_end(sid):
     result = stop_mission()
     await send_log(f"Robots response to stop: {result}")
     await sio.emit(Events.MISSION_END.value)
+
 
 # Debug: notify the frontend that it should
 # reset the mission state because state was lost during hot reload
