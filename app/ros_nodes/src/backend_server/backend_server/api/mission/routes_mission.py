@@ -25,3 +25,12 @@ async def post_start_mission() -> responses.JSONResponse:
     return responses.JSONResponse (
         { 'data':  "Mission stop sent !" }, 
         status_code=status.HTTP_200_OK )
+
+@router.get("/status")
+async def get_mission_status() -> responses.JSONResponse:
+
+    missionStatus = MissionBase.get_mission_status()
+
+    return responses.JSONResponse (
+        missionStatus,
+        status_code=status.HTTP_200_OK )

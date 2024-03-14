@@ -15,7 +15,7 @@ class IdentifyBase:
     #     pass
 
     @staticmethod
-    async def launch_client(robot_id: int = 1):
+    async def launch_client(robot_id: int = 1) -> str:
         rclpy.init()
         identify_client = IdentifyClientAsync(robot_id)
 
@@ -35,7 +35,7 @@ class IdentifyBase:
     
 
     @staticmethod
-    async def list_connected_robot():
+    async def list_connected_robot() -> list[int]:
         global connected_robots, i
         connected_robots = set()
         rclpy.init()

@@ -7,17 +7,15 @@ from rclpy.node import Node
 # TODO Logigique de base modifiable au besoin 
 class MissionBase:
     """Singleton mission base class."""
-    mission = None
+    mission = False
 
     @staticmethod
-    def get_mission():
+    def get_mission_status():
         """Get mission object."""
-        if MissionBase.mission is None:
-            MissionBase.mission = Mission()
         return MissionBase.mission
     
     @staticmethod
-    def start_mission():
+    def start_mission() -> str:
         """Start mission."""
         rclpy.init()
         mission_client = Mission()
@@ -35,10 +33,11 @@ class MissionBase:
         mission_client.destroy_node()
         rclpy.shutdown()
 
+        MissionBase.mission = True
         return "Mission started !"
 
     @staticmethod
-    def stop_mission():
+    def stop_mission() -> str:
         """Stop mission."""
         rclpy.init()
         mission_client = Mission()
@@ -55,6 +54,7 @@ class MissionBase:
         mission_client.destroy_node()
         rclpy.shutdown()
 
+        MissionBase.mission = False
         return "Mission stopped"
 
 

@@ -7,7 +7,6 @@ async def check_db_connected():
         database = Database(SQLALCHEMY_DATABASE_URL)
 
         print(database)
-        print("test")
         if not database.is_connected:
             await database.connect()
             await database.execute("SELECT 1")

@@ -7,8 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 
 while True:
-	try:
-            
+	try:        
 		environment = os.getenv("SQLALCHEMY_DATABASE_HOST", "host.docker.internal")
 		SQLALCHEMY_DATABASE_URL = f"postgresql://eq102:root@{environment}:5430/inf3995"
 		Base = declarative_base()

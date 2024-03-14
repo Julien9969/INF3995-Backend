@@ -9,7 +9,7 @@ class PingBase:
     #     pass
 
     @staticmethod
-    def ping():
+    def ping() -> str:
         return f"{datetime.datetime.now().strftime('%d/%m/%Y, %H:%M:%S')} - pong!"
     
     @staticmethod
