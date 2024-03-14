@@ -21,4 +21,4 @@ from backend_server.websocket.event_handlers import mission
 from backend_server.websocket.status import send_updates
 
 # With mission start, start sending status updates to the clients
-asyncio.create_task(send_updates())
+asyncio.ensure_future(send_updates())
