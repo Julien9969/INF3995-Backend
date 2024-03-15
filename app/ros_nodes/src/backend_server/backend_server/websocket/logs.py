@@ -21,27 +21,27 @@ class LogType(Enum):
     
 
 class Log:
-    def __init__(self, message, robotId, logType: LogType):
+    def __init__(self, message: str, robotId:int , logType : LogType= LogType.LOG, missionId = 1):
         self.message = message
         self.timestamp = int(time.time())
         self.robotId = robotId if robotId is not None else 1  # Usually, either 1 or 2
         self.eventType = logType.value
-        # TODO add parameter missionId
+        self.missionId = missionId
 
     def to_json(self):
         return json.dumps(self.__dict__)
 
 
-async def send_log(message: str, robot_id=2, event_type=LogType.LOG, missionId = 6):
+async def send_log(message: str, robot_id=2, event_type=LogType.LOG):
     """
     Emits formatted log to the clients
     """
     log = Log(message, robot_id, event_type)
         
     # Creating and sending of the log to the Database
-    new_log = LogDB(mission_id=missionId, robot_id=log.robotId, log_type='INFO', message=log.message)
+    new_log_row = LogDB(mission_id=log.missionId, robot_id=log.robotId, log_type=log.eventType, message=log.message)
     session = SessionLocal()
-    session.add_all([new_log])
+    session.add_all([new_log_row])
     session.commit()
     # Sending the log to the frontend
     await sio.emit(Events.LOG_DATA.value, log.to_json())
