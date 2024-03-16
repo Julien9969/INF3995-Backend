@@ -3,6 +3,7 @@ from collections import namedtuple
 import re
 from typing import List
 from backend_server.api.mission.mission_base import MissionState, MissionData
+from fastapi.concurrency import run_in_threadpool
 from ..logs import LogType, send_log
 import logging
 import rclpy
@@ -65,7 +66,7 @@ class LogSubscriber(Node):
         source_id : int = self.get_robot_id(raw_log)
         logType = self.get_event_type(raw_log)
         formatted_message = f"{self.get_severity(raw_log)}: {raw_log.name}: {raw_log.msg}"
-        
+        logging.debug(formatted_message)
         self.lastRosLog = RosLog(source_id, formatted_message, logType)
         self.isNewLog = True
         
@@ -75,17 +76,15 @@ async def start_record_logs():
     logSubscriber = LogSubscriber()
     while(rclpy.ok()):
         try:
-            rclpy.spin_once(logSubscriber, timeout_sec=2)
+            # await run_in_threadpool(lambda:rclpy.spin_once(logSubscriber, timeout_sec=4))
+            rclpy.spin_once(logSubscriber, timeout_sec=4)
             if logSubscriber.isNewLog and logSubscriber.lastRosLog is not None:
                 log = logSubscriber.lastRosLog
                 await send_log(log.message, log.source_id, log.logType)
                 logSubscriber.isNewLog = False
-            await asyncio.sleep(2)
+            # await asyncio.sleep(1)
             if (logSubscriber.isFinished): break
         except KeyboardInterrupt:
             pass
-
-    if(rclpy.ok()): 
-        logging.debug("not shut down yet..............................")
     logSubscriber.destroy_node()
-    rclpy.shutdown()
+    
