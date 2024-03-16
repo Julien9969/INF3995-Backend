@@ -16,12 +16,12 @@ class ROSFilesBase:
     
     @staticmethod
     async def send_command(robot_id: int, command: Commands, content: str = "None") -> tuple[str, str]:
-        rclpy.init()
+        
         files_client = FilesClientAsync(robot_id)
 
         if not hasattr(files_client, 'req'):
             files_client.destroy_node()
-            rclpy.shutdown()
+            
             return serviceError("Error", "Impossible de se connecter au service files !")
         
         response = await files_client.send_request(command.value, content)
@@ -31,7 +31,7 @@ class ROSFilesBase:
         )
 
         files_client.destroy_node()
-        rclpy.shutdown()
+        
 
         return response
 

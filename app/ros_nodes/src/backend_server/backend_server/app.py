@@ -13,7 +13,6 @@ from backend_server.db.models.exemples_models import Base
 from backend_server.db.utils import check_db_connected, check_db_disconnected
 from backend_server.db.session import engine
 from backend_server.api.base import api_router
-# Don't work for the moment, on_event work of you want
 
 @asynccontextmanager
 async def app_lifespan(app: FastAPI):
@@ -44,7 +43,6 @@ def start_application() -> FastAPI:
     create_tables()
     return app
 
-# ENLEVE TEMPORAIREMENT POUR ETRE LANCE PAR ROS A LA PLACE
 app = start_application()
 
 @app.middleware("http")

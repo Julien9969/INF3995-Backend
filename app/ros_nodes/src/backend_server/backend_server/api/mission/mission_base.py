@@ -17,13 +17,13 @@ class MissionBase:
     @staticmethod
     def start_mission() -> str:
         """Start mission."""
-        rclpy.init()
+        
         mission_client = Mission()
 
         # if not hasattr(identify_client, 'req'):
         if not hasattr(mission_client, 'req'):
             mission_client.destroy_node()
-            rclpy.shutdown()
+            
             return None
 
         response1, response2 = mission_client.send_request('start')
@@ -31,7 +31,7 @@ class MissionBase:
         mission_client.get_logger().info(f"{response1}, {response2}")
 
         mission_client.destroy_node()
-        rclpy.shutdown()
+        
 
         MissionBase.mission = True
         return "Mission started !"
@@ -39,12 +39,12 @@ class MissionBase:
     @staticmethod
     def stop_mission() -> str:
         """Stop mission."""
-        rclpy.init()
+        
         mission_client = Mission()
 
         if not hasattr(mission_client, 'req'):
             mission_client.destroy_node()
-            rclpy.shutdown()
+            
             return None
         
         response1, response2 = mission_client.send_request('stop')
@@ -52,7 +52,7 @@ class MissionBase:
         mission_client.get_logger().info(f"{response1}, {response2}")
 
         mission_client.destroy_node()
-        rclpy.shutdown()
+        
 
         MissionBase.mission = False
         return "Mission stopped"
