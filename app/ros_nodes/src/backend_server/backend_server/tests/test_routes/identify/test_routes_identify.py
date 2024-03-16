@@ -28,3 +28,18 @@ async def test_get_identify_id_failure(launch_client_mock, client):
     assert launch_client_mock.calledwith(robot_id)
     assert str(response.json()["data"]) == "Request to identify service failed !"
 
+@pytest.mark.asyncio
+@patch.object(IdentifyBase, "list_connected_robot", return_value= {"data": "mocked result"})
+async def test_get_connected_robot_success(list_connected_robot_mock, client):
+    response = client.get("/api/identify/connected")
+    assert response.status_code == status.HTTP_200_OK
+    assert list_connected_robot_mock.called_once()
+    assert response.json() == {"data": "mocked result"}
+
+@pytest.mark.asyncio
+@patch.object(IdentifyBase, "list_connected_robot", return_value=False)
+async def test_get_connected_robot_failure(list_connected_robot_mock, client):
+    response = client.get("/api/identify/connected")
+    assert response.status_code == status.HTTP_404_NOT_FOUND
+    assert list_connected_robot_mock.called_once()
+    assert response.json() == {"data": "Request to identify service failed !"}

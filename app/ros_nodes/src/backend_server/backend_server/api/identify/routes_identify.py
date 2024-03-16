@@ -21,7 +21,6 @@ async def get_identify_id(robot_id: int) -> responses.JSONResponse:
     else:
         return responses.JSONResponse ({ 'data':  result }, status_code=status.HTTP_200_OK)
 
-# TODO can create error with rospy.init called 2 times
 @router.get("/connected")
 async def get_connected_robot() -> responses.JSONResponse:
     result = await IdentifyBase.list_connected_robot()

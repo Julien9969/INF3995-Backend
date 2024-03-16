@@ -10,10 +10,8 @@ class Response:
         self.content = content
 
 @pytest.mark.asyncio
-@patch("rclpy.init")
-@patch("rclpy.shutdown")
 @patch("backend_server.api.files.files_base.FilesClientAsync")
-async def test_send_command_success(mock_files_client, shutdown_mock, init_mock):
+async def test_send_command_success(mock_files_client):
     mock_files_client.return_value.send_request = AsyncMock(return_value=Response("Success", "File content"))
     response = await ROSFilesBase.send_command(123, Commands.FILES_TREE)
     
@@ -24,15 +22,11 @@ async def test_send_command_success(mock_files_client, shutdown_mock, init_mock)
     )
     mock_files_client.return_value.get_logger.assert_called_once()
     mock_files_client.return_value.destroy_node.assert_called_once()
-    shutdown_mock.assert_called_once()
-    init_mock.assert_called_once()
 
 @pytest.mark.asyncio
 @patch("backend_server.api.files.files_base.hasattr")
-@patch("rclpy.init")
-@patch("rclpy.shutdown")
 @patch("backend_server.api.files.files_base.FilesClientAsync")
-async def test_send_command_req_null(mock_files_client, shutdown_mock, init_mock, mock_hasattr):
+async def test_send_command_req_null(mock_files_client, mock_hasattr):
     mock_hasattr.return_value = False
     mock_files_client.return_value.send_request = AsyncMock()
     
@@ -40,14 +34,10 @@ async def test_send_command_req_null(mock_files_client, shutdown_mock, init_mock
     assert (response.message, response.content) == ("Error", "Impossible de se connecter au service files !")
 
     mock_files_client.return_value.destroy_node.assert_called_once()
-    shutdown_mock.assert_called_once()
-    init_mock.assert_called_once()
 
 @pytest.mark.asyncio
-@patch("rclpy.init")
-@patch("rclpy.shutdown")
 @patch("backend_server.api.files.files_base.FilesClientAsync")
-async def test_send_command_failure(mock_files_client, shutdown_mock, init_mock):
+async def test_send_command_failure(mock_files_client):
     mock_files_client.return_value.send_request = AsyncMock(return_value=Response("Error", "Connection failed"))
     response = await ROSFilesBase.send_command(456, Commands.FILES_TREE)
     
@@ -58,8 +48,6 @@ async def test_send_command_failure(mock_files_client, shutdown_mock, init_mock)
     )
     mock_files_client.return_value.get_logger.assert_called_once()
     mock_files_client.return_value.destroy_node.assert_called_once()
-    shutdown_mock.assert_called_once()
-    init_mock.assert_called_once()
 
 @pytest.mark.asyncio
 @patch.object(ROSFilesBase, "send_command", return_value = Response("Success", "Tree data"))

@@ -35,10 +35,8 @@ def test_get_ping_robot(cmd_vel_mock: MagicMock, ping_mock: MagicMock, client):
 from backend_server.api.ping.ping import PingBase
 import rclpy
 
-@patch("rclpy.shutdown")
 @patch("rclpy.create_node")
-@patch("rclpy.init")
-def test_send_cmd_vel(mock_init: MagicMock, mock_create_node: MagicMock, shutdown_mock: MagicMock):
+def test_send_cmd_vel(mock_create_node: MagicMock):
     mock_node = MagicMock()
     mock_publisher = MagicMock()
     mock_publisher.publish = MagicMock()
@@ -47,12 +45,10 @@ def test_send_cmd_vel(mock_init: MagicMock, mock_create_node: MagicMock, shutdow
 
     asyncio.run(PingBase.send_cmd_vel(1.0, 2.0, True))
 
-    mock_init.assert_called_once()
     mock_create_node.assert_called_once_with('twist_publisher')
     mock_node.create_publisher.assert_called_once()
-    assert mock_publisher.publish.call_count == 50
-    assert time.sleep.call_count == 50
-    shutdown_mock.assert_called_once()
+    assert mock_publisher.publish.call_count == 20
+    assert time.sleep.call_count == 20
 
 @patch("datetime.datetime")
 def test_ping(mock_datetime):

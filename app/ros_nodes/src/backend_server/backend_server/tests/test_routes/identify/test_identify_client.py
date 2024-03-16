@@ -29,7 +29,7 @@ def test_identify_client_init_failure(create_client_mock, identify_mock, get_log
     identify_client = IdentifyClientAsync(1)
     assert create_client_mock.called
     assert not hasattr(identify_client, 'req')
-    identify_client.get_logger().info.assert_called_once_with('service not available (robot id 1), waiting again...')
+    identify_client.get_logger().info.assert_called_once_with('service not available (robot id 1)...')
 
 
 @pytest.mark.asyncio
