@@ -5,6 +5,7 @@ import rclpy
 from geometry_msgs.msg import Twist
 from nav_msgs.msg import Odometry
 from pydantic import BaseModel
+from fastapi import BackgroundTasks
 
 
 connected_robots = set()
@@ -41,15 +42,16 @@ class IdentifyBase:
         rclpy.init()
 
         
-        for i in range(1, 5):
+        for i in range(1, 3):
             node = rclpy.create_node('robot_connector_node')
             odom_topic = f'/robot{i}/odom'
             subscriber = node.create_subscription(Odometry, odom_topic, IdentifyBase.odom_callback, 10)
+
             node.get_logger().info(f"Connected robots: {connected_robots}")
-            rclpy.spin_once(node, timeout_sec=1)
+            rclpy.spin_once(node, timeout_sec=5)
+            await asyncio.sleep(1)  # Wait for some time to receive odom data
             node.destroy_node()
             
-        await asyncio.sleep(1)  # Wait for some time to receive odom data
         rclpy.shutdown()
 
 

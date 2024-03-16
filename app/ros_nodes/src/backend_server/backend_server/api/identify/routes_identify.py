@@ -23,7 +23,7 @@ async def get_identify_id(robot_id: int) -> responses.JSONResponse:
 
 # TODO can create error with rospy.init called 2 times
 @router.get("/connected")
-async def get_identify_connected() -> responses.JSONResponse:
+async def get_connected_robot() -> responses.JSONResponse:
     result = await IdentifyBase.list_connected_robot()
     if(not result):
         return responses.JSONResponse ({ 'data':  "Request to identify service failed !" } , status_code=status.HTTP_404_NOT_FOUND)

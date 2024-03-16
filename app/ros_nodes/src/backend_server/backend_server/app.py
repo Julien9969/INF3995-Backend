@@ -7,7 +7,7 @@ from fastapi import FastAPI, Request, Response, HTTPException
 from fastapi.responses import JSONResponse
 from httpx import AsyncClient
 from starlette.status import HTTP_504_GATEWAY_TIMEOUT
-import requests
+import rclpy
 
 from backend_server.db.models.exemples_models import Base
 from backend_server.db.utils import check_db_connected, check_db_disconnected
@@ -19,11 +19,12 @@ from backend_server.api.base import api_router
 async def app_lifespan(app: FastAPI):
     # Start up event
     print("Starting up")
+    rclpy.init()
     await check_db_connected()
     print(app.title)
     
     yield
-    
+    rclpy.shutdown()
     # Shutdown event
     await check_db_disconnected()
 

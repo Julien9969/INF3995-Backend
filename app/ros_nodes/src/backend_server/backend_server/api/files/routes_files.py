@@ -58,7 +58,7 @@ async def post_file(robot_id: int, file: File) -> responses.JSONResponse:
     )
 
 @router.patch("/update/{robot_id}")
-async def post_file(robot_id: int) -> responses.JSONResponse:
+async def post_update(robot_id: int) -> responses.JSONResponse:
 
     message, content = await ROSFilesBase.update_robot(robot_id)
 
