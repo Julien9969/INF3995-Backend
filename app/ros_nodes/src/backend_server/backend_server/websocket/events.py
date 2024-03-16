@@ -7,3 +7,4 @@ class Events(Enum):
     MISSION_STATUS = "mission-status"
     MISSION_RESTART = "mission-restart"
     LOG_DATA = "log-data"
+    MAP_DATA = "map-data"
