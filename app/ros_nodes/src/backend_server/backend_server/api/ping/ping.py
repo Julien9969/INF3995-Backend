@@ -14,7 +14,8 @@ class PingBase:
     
     @staticmethod
     def send_cmd_vel(x: float, z: float, robot: bool):
-        rclpy.init()
+        if(not rclpy.ok()):
+            rclpy.init()
 
         node = rclpy.create_node('twist_publisher')
         # rate = node.create_timer(1, )
@@ -32,7 +33,6 @@ class PingBase:
             # rate.sleep()
 
         node.destroy_node()
-        rclpy.shutdown()
 
         return asyncio.sleep(0)
 
