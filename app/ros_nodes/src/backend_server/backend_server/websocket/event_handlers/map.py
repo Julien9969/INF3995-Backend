@@ -33,7 +33,7 @@ class MapPublisher(Node):
         logging.debug("============= map received in backend")
         # logging.debug(occupancy_grid.data)
         base_64_map_data = self.convertDataToBase64Str(occupancy_grid)
-        logging.debug(base_64_map_data)
+        # logging.debug(base_64_map_data)
         self.base_64_map_img = f'data:image/bmp;base64,{base_64_map_data}'
         self.newMapAvailable = True
         logging.debug("============= map received in backend OUT")
@@ -42,9 +42,15 @@ class MapPublisher(Node):
         logging.debug("============= map backend 0")
         width = grid.info.width
         height = grid.info.height
+        width_b = width
+        height_b = height
+        if width > 127:
+            width_b = twos_comp_byte(width)
+        if height > 127:
+            height_b = twos_comp_byte(height)
         logging.debug(f"============= map backend W: {width} H: {height}")
         try:
-            data = array('b', [0x42, 0x43, twos_comp_byte(0xFE), 0x37, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x36, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, twos_comp_byte(width), 0x00, 0x00, 0x00, twos_comp_byte(height), 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, twos_comp_byte(0xC8), 0x37, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+            data = array('b', [0x42, 0x4D, twos_comp_byte(0xFE), 0x37, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x36, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, width_b, 0x00, 0x00, 0x00, height_b, 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, twos_comp_byte(0xC8), 0x37, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
         except Exception as err:
             logging.debug(f"============= CRASH {err}")
 
@@ -64,6 +70,7 @@ class MapPublisher(Node):
                     data.append(point_color)
                     data.append(point_color)
                     data.append(point_color)
+                data.append(twos_comp_byte(0xff))
             # end of a row, add padding
             data.append(0)
 
@@ -76,8 +83,8 @@ class MapPublisher(Node):
 
 
         # data_bytes = bytes(data)
-        logging.debug("=== data_bytes: ")
-        logging.debug(data)
+        # logging.debug("=== data_bytes: ")
+        # logging.debug(data)
         return base64.b64encode(data).decode('utf-8')
 
 
