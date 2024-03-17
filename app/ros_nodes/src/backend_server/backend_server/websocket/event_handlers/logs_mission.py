@@ -24,7 +24,6 @@ class LogSubscriber(Node):
             10)
         self.subscription  # prevent unused variable warning
         self.lastRosLog : RosLog = None
-        self.isFinished = False
         self.isNewLog = False
 
     def get_robot_id(self,log_msg):
@@ -57,12 +56,6 @@ class LogSubscriber(Node):
         
 
     def listener_callback(self, raw_log):
-        logging.debug("listener called")
-        
-        # Check if the message indicates the end of the process
-        if raw_log.msg == 'Incoming request, command: stop, current state: State.ON': 
-            self.isFinished = True
-        
         source_id : int = self.get_robot_id(raw_log)
         logType = self.get_event_type(raw_log)
         formatted_message = f"{self.get_severity(raw_log)}: {raw_log.name}: {raw_log.msg}"
@@ -70,21 +63,26 @@ class LogSubscriber(Node):
         self.lastRosLog = RosLog(source_id, formatted_message, logType)
         self.isNewLog = True
         
+class LogManager():
+    isRecording = True
+    @staticmethod
+    async def start_record_logs():
+        LogManager.isRecording = True
+        logSubscriber = LogSubscriber()
+        while LogManager.isRecording:
+            try:
+                await run_in_threadpool(lambda:rclpy.spin_once(logSubscriber, timeout_sec=4))
+                # rclpy.spin_once(logSubscriber, timeout_sec=4)
+                if logSubscriber.isNewLog and logSubscriber.lastRosLog is not None:
+                    log = logSubscriber.lastRosLog
+                    await send_log(log.message, log.source_id, log.logType)
+                    logSubscriber.isNewLog = False
+            except KeyboardInterrupt:
+                pass
+        logSubscriber.destroy_node()
 
-        
-async def start_record_logs():
-    logSubscriber = LogSubscriber()
-    while(rclpy.ok()):
-        try:
-            # await run_in_threadpool(lambda:rclpy.spin_once(logSubscriber, timeout_sec=4))
-            rclpy.spin_once(logSubscriber, timeout_sec=4)
-            if logSubscriber.isNewLog and logSubscriber.lastRosLog is not None:
-                log = logSubscriber.lastRosLog
-                await send_log(log.message, log.source_id, log.logType)
-                logSubscriber.isNewLog = False
-            # await asyncio.sleep(1)
-            if (logSubscriber.isFinished): break
-        except KeyboardInterrupt:
-            pass
-    logSubscriber.destroy_node()
+    @staticmethod
+    def stop_record_logs():
+        LogManager.isRecording = False
+        logging.debug("stopping recording")
     

@@ -1,8 +1,9 @@
-from .logs_mission import start_record_logs
+import threading
+from .logs_mission import LogManager
 from backend_server.websocket.base import sio
 from backend_server.websocket.events import Events
 from backend_server.api.mission.mission_base import start_mission, stop_mission
-from backend_server.websocket.logs import send_log, LogType
+from backend_server.websocket.logs import send_log, LogType, Log
 from backend_server.websocket.status import StatusUpdate
 
 
@@ -24,7 +25,7 @@ async def set_mission_start(sid):
     result = start_mission()
     await sio.emit(Events.MISSION_START.value)
     await send_log(f"Robots response to start: {result}")
-    await start_record_logs()
+    await LogManager.start_record_logs()
 
 
 
@@ -36,6 +37,7 @@ async def set_mission_end(sid):
     result = stop_mission()
     await send_log(f"Robots response to stop: {result}")
     await sio.emit(Events.MISSION_END.value)
+    LogManager.stop_record_logs()
 
 
 # Debug: notify the frontend that it should
