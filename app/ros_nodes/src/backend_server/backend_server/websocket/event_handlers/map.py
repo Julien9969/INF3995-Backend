@@ -50,7 +50,7 @@ class MapPublisher(Node):
             height_b = twos_comp_byte(height)
         logging.debug(f"============= map backend W: {width} H: {height}")
         try:
-            data = array('b', [0x42, 0x4D, twos_comp_byte(0xFE), 0x37, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x36, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, width_b, 0x00, 0x00, 0x00, height_b, 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, twos_comp_byte(0xC8), 0x37, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+            data = array('b', [0x42, 0x4D, twos_comp_byte(0xBA), twos_comp_byte(0xA5), 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x36, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, width_b, 0x00, 0x00, 0x00, height_b, 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, twos_comp_byte(0x84), twos_comp_byte(0xA5), 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
         except Exception as err:
             logging.debug(f"============= CRASH {err}")
 
@@ -60,9 +60,10 @@ class MapPublisher(Node):
             for j in range(width):
                 point_value = grid.data[width*i + j]
                 if(point_value == -1):
+                    # format = BGR , donc voici du rose
+                    data.append(twos_comp_byte(175))
+                    data.append(twos_comp_byte(175))
                     data.append(twos_comp_byte(254))
-                    data.append(twos_comp_byte(175))
-                    data.append(twos_comp_byte(175))
                 else:
                     point_color = math.floor(point_value/100*255)
                     if point_color > 127:
@@ -70,8 +71,10 @@ class MapPublisher(Node):
                     data.append(point_color)
                     data.append(point_color)
                     data.append(point_color)
-                data.append(twos_comp_byte(0xff))
+                # data.append(twos_comp_byte(0xff)) # pas de transparence! uniquement BGR
             # end of a row, add padding
+            data.append(0)
+            data.append(0)
             data.append(0)
 
         logging.debug("============= map backend 2")
