@@ -3,6 +3,7 @@ from backend_server.websocket.events import Events
 from backend_server.api.mission.mission_base import Mission, MissionData, start_mission, stop_mission
 from backend_server.websocket.logs import send_log, LogType
 from backend_server.websocket.status import StatusUpdate
+from backend_server.websocket.event_handlers.map import MapManager
 
 
 @sio.on(Events.MISSION_STATUS.value)
@@ -23,6 +24,7 @@ async def set_mission_start(sid):
     result = start_mission()
     await sio.emit(Events.MISSION_START.value)
     await send_log(f"Robots response to start: {result}")
+    await MapManager.start_map_listener()
 
 
 @sio.on(Events.MISSION_END.value)
