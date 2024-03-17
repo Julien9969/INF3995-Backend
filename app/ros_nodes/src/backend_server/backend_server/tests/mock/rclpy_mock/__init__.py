@@ -9,3 +9,5 @@ def shutdown():
 
 def spin_until_future_complete(node, future):
     pass
+def spin_once(node, timeout_sec):
+    pass
