@@ -30,14 +30,15 @@ class MapPublisher(Node):
         self.newMapAvailable = True
         logging.debug("============= map received in backend OUT")
 
-    def convertDataToBase64Str(data):
+    def convertDataToBase64Str(self, data):
         data_bytes = bytes(data)
         return base64.b64encode(data_bytes).decode('utf-8')
 
 class MapManager():
-    missionOngoing = True
+    missionOngoing = False
     @staticmethod
     async def start_map_listener():
+        MapManager.missionOngoing = True
         logging.debug("===== starting mission")
         if(not rclpy.ok()):
             rclpy.init()
@@ -53,6 +54,10 @@ class MapManager():
             except KeyboardInterrupt:
                 pass
         # mapPublisher.destroy_node()
+        
+    @staticmethod
+    def stop_map_listener():
+        MapManager.missionOngoing = False
             
     
 async def send_map_image(map_data):

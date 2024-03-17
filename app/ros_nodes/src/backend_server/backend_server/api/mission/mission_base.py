@@ -50,13 +50,11 @@ def start_mission():
 
 
 def stop_mission():
-    rclpy.init()
     mission_client = Mission()
     MissionData().stop_timestamp = int(time.time())
 
     if not hasattr(mission_client, 'req'):
         mission_client.destroy_node()
-        rclpy.shutdown()
         return None
 
     response1, response2 = mission_client.send_request('stop')
@@ -64,7 +62,6 @@ def stop_mission():
     mission_client.get_logger().info(result)
 
     mission_client.destroy_node()
-    rclpy.shutdown()
 
     return result
 

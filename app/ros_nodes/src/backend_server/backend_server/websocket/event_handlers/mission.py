@@ -35,6 +35,7 @@ async def set_mission_end(sid):
     result = stop_mission()
     await send_log(f"Robots response to stop: {result}")
     await sio.emit(Events.MISSION_END.value)
+    MapManager.stop_map_listener()
 
 # Debug: notify the frontend that it should
 # reset the mission state because state was lost during hot reload
