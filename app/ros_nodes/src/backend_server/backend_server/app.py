@@ -6,7 +6,7 @@ from fastapi import FastAPI, Request, Response, HTTPException
 from fastapi.responses import JSONResponse
 from starlette.status import HTTP_504_GATEWAY_TIMEOUT
 
-from backend_server.db.models.exemples_models import Base
+from backend_server.db.models.tables_models import Base, populate_db
 from backend_server.db.utils import check_db_connected, check_db_disconnected
 from backend_server.db.session import engine
 from backend_server.api.base import api_router
@@ -41,6 +41,7 @@ def start_application() -> FastAPI:
     # configure_static(app)
     app.mount("/", socket_app)  # Add web sockets to app
     create_tables()
+    populate_db()
     return app
 
 

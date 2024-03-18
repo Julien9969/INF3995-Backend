@@ -1,6 +1,6 @@
 from sqlalchemy import Enum, Column, Integer, String, ForeignKey
 from sqlalchemy.orm import relationship
-from backend_server.db.session import Base
+from backend_server.db.session import Base, SessionLocal
 from backend_server.schemas.something_type import SomethingType
 
 
@@ -48,3 +48,15 @@ class Robot(Base):
     robot_id = Column(Integer, primary_key=True)
     # Add other robot-related columns as needed
     logs = relationship('Log', back_populates='robot')
+
+def populate_db(session=SessionLocal()):
+    # Add code to populate the database with initial data
+    session.add_all([
+        Mission(mission_id=1),
+        Robot(robot_id=1),
+        Robot(robot_id=0),
+        Robot(robot_id=2)
+    ])
+    session.commit()
+    session.close()
+    print("Database populated")

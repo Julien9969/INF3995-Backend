@@ -1,5 +1,5 @@
 import logging
-from ..db.models.exemples_models import Log as LogDB
+from ..db.models.tables_models import Log as LogDB
 
 
 from ..db.session import SessionLocal
