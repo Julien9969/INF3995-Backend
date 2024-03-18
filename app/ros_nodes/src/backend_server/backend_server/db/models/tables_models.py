@@ -51,12 +51,15 @@ class Robot(Base):
 
 def populate_db(session=SessionLocal()):
     # Add code to populate the database with initial data
-    session.add_all([
-        Mission(mission_id=1),
-        Robot(robot_id=1),
-        Robot(robot_id=0),
-        Robot(robot_id=2)
-    ])
-    session.commit()
-    session.close()
-    print("Database populated")
+    try:
+        session.add_all([
+            Mission(mission_id=1),
+            Robot(robot_id=1),
+            Robot(robot_id=0),
+            Robot(robot_id=2)
+        ])
+        session.commit()
+        session.close()
+        print("Database populated")
+    except Exception as e:
+        pass
