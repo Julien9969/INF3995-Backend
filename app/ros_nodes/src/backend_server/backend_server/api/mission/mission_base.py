@@ -36,7 +36,7 @@ def start_mission():
     mission_client = Mission()
     MissionData().start_timestamp = int(time.time())
     MissionData().stop_timestamp = 0
-    MissionData().State = MissionState.ONGOING
+    MissionData().state = MissionState.ONGOING
 
     if not hasattr(mission_client, 'req'):
         mission_client.destroy_node()
@@ -62,7 +62,7 @@ def stop_mission():
     result = f"Robots response to stop: {response1}, {response2}"
     # mission_client.get_logger().info(result)
     MissionData().stop_timestamp = int(time.time())
-    MissionData().State = MissionState.ENDED
+    MissionData().state = MissionState.ENDED
 
     mission_client.destroy_node()
     return result
@@ -105,10 +105,10 @@ class MissionData(metaclass=Singleton):
     def __init__(self):
         self.start_timestamp: int = 0
         self.stop_timestamp: int = 0
-        self.State = MissionState.NOT_STARTED
+        self.state = MissionState.NOT_STARTED
 
     def get_mission_state(self):
-        return self.State.value
+        return self.state.value
 
     def get_mission_duration(self):
         if self.stop_timestamp != 0:

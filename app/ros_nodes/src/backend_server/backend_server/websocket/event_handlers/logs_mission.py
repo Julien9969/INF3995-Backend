@@ -21,8 +21,8 @@ class LogSubscriber(Node):
             self.listener_callback,
             10)
         self.subscription  # prevent unused variable warning
-        self.lastRosLog : RosLog = None
-        self.isNewLog = False
+        self.last_ros_log : RosLog = None
+        self.is_new_log = False
 
     def get_robot_id(self,name:str):
         
@@ -58,31 +58,30 @@ class LogSubscriber(Node):
         logType = self.get_event_type(raw_log.msg)
         formatted_message = f"{self.get_severity(raw_log.level)}: {raw_log.name}: {raw_log.msg}"
         logging.debug(formatted_message)
-        self.lastRosLog = RosLog(source_id, formatted_message, logType)
-        self.isNewLog = True
+        self.last_ros_log = RosLog(source_id, formatted_message, logType)
+        self.is_new_log = True
         
 class LogManager():
-    isRecording = True
+    is_recording = True
     
     @staticmethod
     async def start_record_logs():
-        LogManager.isRecording = True
-        logSubscriber = LogSubscriber()
-        while LogManager.isRecording:
-            # print(LogManager.isRecording)
+        LogManager.is_recording = True
+        log_subscriber = LogSubscriber()
+        while LogManager.is_recording:
             try:
-                await run_in_threadpool(lambda:rclpy.spin_once(logSubscriber, timeout_sec=4))
-                if logSubscriber.isNewLog and logSubscriber.lastRosLog is not None:
-                    log = logSubscriber.lastRosLog
+                await run_in_threadpool(lambda:rclpy.spin_once(log_subscriber, timeout_sec=4))
+                if log_subscriber.is_new_log and log_subscriber.last_ros_log is not None:
+                    log = log_subscriber.last_ros_log
                     await send_log(log.message, log.source_id, log.logType)
-                    logSubscriber.isNewLog = False
+                    log_subscriber.is_new_log = False
             except Exception as e:
                 pass
-        logSubscriber.destroy_node()
+        log_subscriber.destroy_node()
 
     @staticmethod
     def stop_record_logs():
-        LogManager.isRecording = False
+        LogManager.is_recording = False
         logging.debug("stopping recording")
     
 
