@@ -1,4 +1,4 @@
-import asyncio
+import asyncio, fastapi
 from unittest.mock import AsyncMock, Mock, PropertyMock, patch, MagicMock
 from backend_server.websocket.logs import LogType, send_log
 import pytest
@@ -118,29 +118,36 @@ def test_stop_record_logs():
         log_manager.isRecording = True
         LogManager.stop_record_logs()
         assert not log_manager.isRecording
-# @pytest.mark.asyncio
-# @patch("backend_server.websocket.event_handlers.logs_mission.LogManager.isRecording")
-# @patch("backend_server.websocket.event_handlers.logs_mission.send_log")
-# async def test_start_record_logs(send_log_mock, is_recording_mock):
-#     send_log_mock.return_value = None
-#     is_recording_mock = PropertyMock()
-#     is_recording_mock.side_effect = [True, False]
 
 
-#     log_subscriber = Mock()
-#     log_subscriber.isNewLog = True
-#     log_subscriber.lastRosLog = Mock()
-#     log_subscriber.lastRosLog.message = "message"
-#     log_subscriber.lastRosLog.source_id = 88
-#     log_subscriber.lastRosLog.logType = LogType.LOG
+import asyncio
+from unittest.mock import patch, MagicMock, PropertyMock
 
-#     with patch('backend_server.websocket.event_handlers.logs_mission.LogSubscriber', return_value=log_subscriber):
-
-#         # Set isRecording to True for the first call and False for the second call
-
-#         await LogManager.start_record_logs()
-#         asyncio.sleep(1)
-#         LogManager.isRecording = False
-#         send_log_mock.assert_called_once_with("message", 88, LogType.LOG)
+@pytest.mark.asyncio
+@patch.object(fastapi.concurrency, 'run_in_threadpool', return_value=None)
+@patch("backend_server.websocket.event_handlers.logs_mission.LogSubscriber", return_value=MagicMock())
+@patch("backend_server.websocket.event_handlers.logs_mission.send_log")
+async def test_start_record_logs(send_log_mock, logSubscriber_mock, run_in_threadpool_mock):
     
+    async def mock_side_effect():
+        await asyncio.sleep(1)
 
+    run_in_threadpool_mock.side_effect = mock_side_effect 
+
+    with patch('backend_server.websocket.event_handlers.logs_mission.LogManager.isRecording', new_callable=PropertyMock) as is_recording_mock:
+        is_recording_mock.side_effect = [True, False]
+
+        logSubscriber_mock.return_value.isNewLog = MagicMock(return_value=True)
+        logSubscriber_mock.lastRosLog = MagicMock()
+        logSubscriber_mock.lastRosLog.message.ret = "message"
+        logSubscriber_mock.lastRosLog.source_id = 88
+        logSubscriber_mock.lastRosLog.logType = LogType.LOG
+
+        task = asyncio.create_task(LogManager.start_record_logs())
+
+        try:
+            await asyncio.wait_for(task, timeout=0.1) 
+        except asyncio.TimeoutError:
+            pass
+
+        send_log_mock.assert_called()

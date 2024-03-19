@@ -63,11 +63,13 @@ class LogSubscriber(Node):
         
 class LogManager():
     isRecording = True
+    
     @staticmethod
     async def start_record_logs():
         LogManager.isRecording = True
         logSubscriber = LogSubscriber()
         while LogManager.isRecording:
+            # print(LogManager.isRecording)
             try:
                 await run_in_threadpool(lambda:rclpy.spin_once(logSubscriber, timeout_sec=4))
                 if logSubscriber.isNewLog and logSubscriber.lastRosLog is not None:
@@ -83,3 +85,5 @@ class LogManager():
         LogManager.isRecording = False
         logging.debug("stopping recording")
     
+
+        
