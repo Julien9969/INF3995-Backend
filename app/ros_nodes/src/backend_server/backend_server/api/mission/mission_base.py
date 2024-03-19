@@ -64,18 +64,24 @@ class Mission(Node):
     """
     def __init__(self):
         super().__init__('identify_client_async')
-        ros_route = f"/mission_switch"
+        ros_route = f"robot{1}/mission_switch"
         self.cli1 = self.create_client(MissionSwitch, ros_route)
 
+        ros_route = f"robot{2}/mission_switch"
+        self.cli2 = self.create_client(MissionSwitch, ros_route)
+
         if self.cli1.wait_for_service(timeout_sec=5.0):
-            self.req = MissionSwitch.Request()
+            if self.cli2.wait_for_service(timeout_sec=5.0):
+                self.req = MissionSwitch.Request()
         else:
             self.get_logger().info(f'Mission service not available, waiting again...')
 
     def send_request(self, cmd: str):
         self.req.command = cmd
         self.future1 = self.cli1.call_async(self.req)
+        self.future2 = self.cli2.call_async(self.req)
         rclpy.spin_until_future_complete(self, self.future1)
-        return self.future1.result(), 'self.future1.result()'
+        rclpy.spin_until_future_complete(self, self.future2)
+        return self.future1.result(), self.future2.result()
 
 

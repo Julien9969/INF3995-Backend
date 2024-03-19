@@ -23,7 +23,14 @@ async def get_identify_id(robot_id: int) -> responses.JSONResponse:
 
 @router.get("/connected")
 async def get_connected_robot() -> responses.JSONResponse:
-    result = await IdentifyBase.list_connected_robot()
+
+    while True:
+        try:
+            result = await IdentifyBase.list_connected_robot()
+            break
+        except:
+            await asyncio.sleep(3)
+            
     if(not result):
         return responses.JSONResponse ({ 'data':  "Request to identify service failed !" } , status_code=status.HTTP_404_NOT_FOUND)
     else:
