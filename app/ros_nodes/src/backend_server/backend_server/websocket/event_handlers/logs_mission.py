@@ -1,8 +1,6 @@
-import asyncio
 from collections import namedtuple
 import re
 from typing import List
-from backend_server.api.mission.mission_base import MissionState, MissionData
 from fastapi.concurrency import run_in_threadpool
 from ..logs import LogType, send_log
 import logging
@@ -26,17 +24,17 @@ class LogSubscriber(Node):
         self.lastRosLog : RosLog = None
         self.isNewLog = False
 
-    def get_robot_id(self,log_msg):
-
+    def get_robot_id(self,name:str):
+        
         pattern = r"robot(\d+)"
-        match = re.search(pattern, log_msg.name)
+        match = re.search(pattern, name)
         if match:
             robot_id = match.group(1)
+            return int(robot_id)
         else:
-            robot_id = 0
-        return robot_id
+            return 0
 
-    def get_severity(self,log_msg):
+    def get_severity(self,level:int):
         severity_levels = {
             10: 'DEBUG',
             20: 'INFO',
@@ -44,11 +42,11 @@ class LogSubscriber(Node):
             40: 'ERROR',
             50: 'FATAL'
         }
-        severity = severity_levels.get(log_msg.level, 'UNKNOWN')
+        severity = severity_levels.get(level, 'UNKNOWN')
         return severity
     
-    def get_event_type(self,log_msg):
-        if "command" in log_msg.msg:
+    def get_event_type(self,msg):
+        if "command" in msg:
             event_type = LogType.COMMAND
         else:
             event_type = LogType.LOG
@@ -56,9 +54,9 @@ class LogSubscriber(Node):
         
 
     def listener_callback(self, raw_log):
-        source_id : int = self.get_robot_id(raw_log)
-        logType = self.get_event_type(raw_log)
-        formatted_message = f"{self.get_severity(raw_log)}: {raw_log.name}: {raw_log.msg}"
+        source_id : int = self.get_robot_id(raw_log.name)
+        logType = self.get_event_type(raw_log.msg)
+        formatted_message = f"{self.get_severity(raw_log.level)}: {raw_log.name}: {raw_log.msg}"
         logging.debug(formatted_message)
         self.lastRosLog = RosLog(source_id, formatted_message, logType)
         self.isNewLog = True
@@ -72,7 +70,6 @@ class LogManager():
         while LogManager.isRecording:
             try:
                 await run_in_threadpool(lambda:rclpy.spin_once(logSubscriber, timeout_sec=4))
-                # rclpy.spin_once(logSubscriber, timeout_sec=4)
                 if logSubscriber.isNewLog and logSubscriber.lastRosLog is not None:
                     log = logSubscriber.lastRosLog
                     await send_log(log.message, log.source_id, log.logType)
