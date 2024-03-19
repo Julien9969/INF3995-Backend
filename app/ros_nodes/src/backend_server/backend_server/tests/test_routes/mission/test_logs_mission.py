@@ -1,8 +1,9 @@
 import asyncio, fastapi
-from unittest.mock import AsyncMock, Mock, PropertyMock, patch, MagicMock
-from backend_server.websocket.logs import LogType, send_log
+from unittest.mock import  Mock, PropertyMock, patch, MagicMock
+from backend_server.websocket.logs import LogType
 import pytest
 from backend_server.websocket.event_handlers.logs_mission import LogSubscriber, RosLog, LogManager
+
 
 
 #                                                   TEST CASES FOR get_robot_id
@@ -112,16 +113,6 @@ def test_listener_callback(create_subscription_mock ):
 #                                                   TEST CASES FOR LogManager
     
 #                                                   TEST CASES FOR start_record_logs
-    
-def test_stop_record_logs():
-        log_manager = LogManager()
-        log_manager.isRecording = True
-        LogManager.stop_record_logs()
-        assert not log_manager.isRecording
-
-
-import asyncio
-from unittest.mock import patch, MagicMock, PropertyMock
 
 @pytest.mark.asyncio
 @patch.object(fastapi.concurrency, 'run_in_threadpool', return_value=None)
@@ -151,3 +142,8 @@ async def test_start_record_logs(send_log_mock, logSubscriber_mock, run_in_threa
             pass
 
         send_log_mock.assert_called()
+
+def test_stop_record_logs():
+    LogManager.isRecording = True
+    LogManager.stop_record_logs()
+    assert not LogManager.isRecording
