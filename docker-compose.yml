@@ -3,8 +3,8 @@ version: '3.8'
 services:
   fastapi:
     build: .
-    ports:
-      - "8000:8000"
+    # ports:
+    #   - "8000:8000"
     #   - "22900:22900"
     #   - "22901:22901"
     #   - "22902:22902"
@@ -21,11 +21,12 @@ services:
     # command: ["uvicorn", "app.main:app", "--reload","--host", "0.0.0.0", "--port", "80"]
     # command: ["/bin/bash"]
     image: fastapi
+    network_mode: host
     container_name: fastapi-container
     environment:
       - ROS_DOMAIN_ID=62
       - TERM='xterm-256color'
-      - SQLALCHEMY_DATABASE_HOST=host.docker.internal
+      - SQLALCHEMY_DATABASE_HOST=localhost
       - WATCHFILES_FORCE_POLLING=true
     # devices:
     #   - /dev/ttyTHS1

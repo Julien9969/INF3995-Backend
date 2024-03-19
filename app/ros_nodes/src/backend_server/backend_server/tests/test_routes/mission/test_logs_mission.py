@@ -1,8 +1,8 @@
 import asyncio
 from unittest.mock import patch, MagicMock
-from app.ros_nodes.src.backend_server.backend_server.websocket.logs import LogType
+from backend_server.websocket.logs import LogType
 import pytest
-from backend_server.websocket.event_handlers.logs_mission import LogSubscriber, RosLog, start_record_logs
+from backend_server.websocket.event_handlers.logs_mission import LogSubscriber, RosLog
 
 
 @patch('logs_mission.rclpy')
@@ -13,7 +13,7 @@ from backend_server.websocket.event_handlers.logs_mission import LogSubscriber, 
 def log_subscriber():
     return LogSubscriber()
 
-#                                                   TEST CASES FOR get_robot_id
+#                                                  TEST CASES FOR get_robot_id
 def test_get_robot_id(log_subscriber):    
     message = "LoremipsumLoremrobot99trr992924ur489mission_switch"
     assert log_subscriber.get_robot_id(message) == 99
@@ -72,8 +72,9 @@ def test_get_event_type_empty_msg(log_subscriber):
 
 
 #                                                   TEST CASES FOR listener_callback
-
-@patch(LogSubscriber, 'get_robot_id','get_severity','get_event_type')
+@patch.object(LogSubscriber, 'get_event_type')
+@patch.object(LogSubscriber, 'get_severity',)
+@patch.object(LogSubscriber, 'get_robot_id')
 def test_listener_callback(mock_get_robot_id, mock_get_severity, mock_get_event_type ,log_subscriber):    
     # Mock the raw_log object
     raw_log = MagicMock()
@@ -88,7 +89,10 @@ def test_listener_callback(mock_get_robot_id, mock_get_severity, mock_get_event_
     assert log_subscriber.isNewLog == True
     assert log_subscriber.lastRosLog == RosLog(0,"DEBUG: publisher: This is a normal LOG message", LogType.LOG)
 
-@patch(LogSubscriber, 'get_robot_id','get_severity','get_event_type')
+
+@patch.object(LogSubscriber, 'get_event_type')
+@patch.object(LogSubscriber, 'get_severity',)
+@patch.object(LogSubscriber, 'get_robot_id')
 def test_listener_callback_stop(mock_get_robot_id, mock_get_severity, mock_get_event_type ,log_subscriber):    
     # Mock the raw_log object
     raw_log = MagicMock()

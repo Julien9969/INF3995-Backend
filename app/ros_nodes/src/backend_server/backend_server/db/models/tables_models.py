@@ -50,15 +50,18 @@ class Robot(Base):
     logs = relationship('Log', back_populates='robot')
 
 def populate_db(session=SessionLocal()):
-    # Check if mission with mission_id=1 exists
-    if not session.query(Mission).filter(Mission.mission_id == 1).first():
-        session.add(Mission(mission_id=1))
+    # Add code to populate the database with initial data
+    try:
+        # Check if mission with mission_id=1 exists
+        if not session.query(Mission).filter(Mission.mission_id == 1).first():
+            session.add(Mission(mission_id=1))
 
-    # Check if robots with robot_id=1, 0, 2 exist
-    for robot_id in [1, 0, 2]:
-        if not session.query(Robot).filter(Robot.robot_id == robot_id).first():
-            session.add(Robot(robot_id=robot_id))
-
-    session.commit()
-    session.close()
-    print("Database populated")
+        # Check if robots with robot_id=1, 0, 2 exist
+        for robot_id in [1, 0, 2]:
+            if not session.query(Robot).filter(Robot.robot_id == robot_id).first():
+                session.add(Robot(robot_id=robot_id))
+        session.commit()
+        session.close()
+        print("Database populated")
+    except Exception as e:
+        pass

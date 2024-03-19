@@ -77,7 +77,7 @@ class LogManager():
                     log = logSubscriber.lastRosLog
                     await send_log(log.message, log.source_id, log.logType)
                     logSubscriber.isNewLog = False
-            except KeyboardInterrupt:
+            except Exception as e:
                 pass
         logSubscriber.destroy_node()
 

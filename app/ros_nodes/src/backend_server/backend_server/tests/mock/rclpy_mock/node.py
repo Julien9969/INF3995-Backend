@@ -32,3 +32,6 @@ class Node:
 
     def spin_until_future_complete(self, node, future):
         pass
+
+    def create_subscription(self, msg, topic, listener_callback, qos_profile):
+        pass
