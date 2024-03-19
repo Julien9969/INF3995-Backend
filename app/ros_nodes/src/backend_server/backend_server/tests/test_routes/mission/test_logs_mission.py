@@ -112,6 +112,12 @@ def test_listener_callback(create_subscription_mock ):
 #                                                   TEST CASES FOR LogManager
     
 #                                                   TEST CASES FOR start_record_logs
+    
+def test_stop_record_logs():
+        log_manager = LogManager()
+        log_manager.isRecording = True
+        LogManager.stop_record_logs()
+        assert not log_manager.isRecording
 # @pytest.mark.asyncio
 # @patch("backend_server.websocket.event_handlers.logs_mission.LogManager.isRecording")
 # @patch("backend_server.websocket.event_handlers.logs_mission.send_log")
@@ -133,7 +139,8 @@ def test_listener_callback(create_subscription_mock ):
 #         # Set isRecording to True for the first call and False for the second call
 
 #         await LogManager.start_record_logs()
-
+#         asyncio.sleep(1)
+#         LogManager.isRecording = False
 #         send_log_mock.assert_called_once_with("message", 88, LogType.LOG)
     
 
