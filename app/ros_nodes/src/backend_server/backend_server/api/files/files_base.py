@@ -32,7 +32,6 @@ class ROSFilesBase:
 
         files_client.destroy_node()
         
-
         return response
 
     @staticmethod

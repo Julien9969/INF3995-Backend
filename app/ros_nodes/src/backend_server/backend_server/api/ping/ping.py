@@ -31,7 +31,6 @@ class PingBase:
             # rate.sleep()
 
         node.destroy_node()
-        
 
         return asyncio.sleep(0)
 

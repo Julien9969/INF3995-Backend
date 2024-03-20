@@ -1,18 +1,18 @@
 import asyncio
 import time
-from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Response, HTTPException
 from fastapi.responses import JSONResponse
-from httpx import AsyncClient
 from starlette.status import HTTP_504_GATEWAY_TIMEOUT
 import rclpy
 
-from backend_server.db.models.exemples_models import Base
+from backend_server.db.models.tables_models import Base, populate_db
 from backend_server.db.utils import check_db_connected, check_db_disconnected
 from backend_server.db.session import engine
 from backend_server.api.base import api_router
+
+from backend_server.websocket.base import socket_app
 
 @asynccontextmanager
 async def app_lifespan(app: FastAPI):
@@ -21,26 +21,28 @@ async def app_lifespan(app: FastAPI):
     rclpy.init()
     await check_db_connected()
     print(app.title)
-    
+
     yield
     rclpy.shutdown()
     # Shutdown event
     await check_db_disconnected()
 
+
 def include_router(app):
     app.include_router(api_router)
 
-# def configure_static(app):
-#     app.mount("/static", StaticFiles(directory="static"), name="static")
 
 def create_tables():
     Base.metadata.create_all(bind=engine)
+
 
 def start_application() -> FastAPI:
     app = FastAPI(lifespan=app_lifespan, debug=True, title="API", version="0.1")
     include_router(app)
     # configure_static(app)
+    app.mount("/", socket_app)  # Add web sockets to app
     create_tables()
+    populate_db()
     return app
 
 app = start_application()
@@ -58,9 +60,9 @@ async def timeout_middleware(request: Request, call_next):
                             status_code=HTTP_504_GATEWAY_TIMEOUT)
 
 origins = [
-    "http://localhost",
-    "http://localhost:8000",
-    "http://127.0.0.1:8000",
+    # "http://localhost",
+    # "http://localhost:8000",
+    # "http://127.0.0.1:8000",
     "*"
 ]
 
@@ -72,11 +74,3 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# @app.on_event("startup")
-# async def app_startup():
-#     await check_db_connected()
-# 
-# 
-# @app.on_event("shutdown")
-# async def app_shutdown():
-#     await check_db_disconnected()

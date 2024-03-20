@@ -1,6 +1,12 @@
-import uvicorn, sys,os
+import uvicorn
+import sys
+import os
+from dotenv import load_dotenv
 
 sys.path.append(".")
+load_dotenv()
+
+
 def main():
     print("Starting server", os.listdir("."))
     uvicorn.run("src.backend_server.backend_server.app:app", workers=4, host="0.0.0.0", port=8000, reload=True)

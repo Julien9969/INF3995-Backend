@@ -29,6 +29,9 @@ class Node:
 
     def create_client(self, srv, topic):
         pass
+    
+    def create_subscription(self, srv, topic):
+        pass
 
     def spin_until_future_complete(self, node, future):
         pass

@@ -26,6 +26,9 @@ patch.dict("sys.modules", geometry_msgs=geometry_msgs_mock).start()
 import backend_server.tests.mock.nav_msgs as odometry_msgs_mock
 patch.dict("sys.modules", nav_msgs=odometry_msgs_mock).start()
 
+import backend_server.tests.mock.rcl_interfaces_mock as rcl_interfaces_mock
+patch.dict("sys.modules", rcl_interfaces=rcl_interfaces_mock).start()
+
 import backend_server.tests.mock.interfaces_mock as interfaces_mock
 patch.dict("sys.modules", interfaces=interfaces_mock).start()
 
