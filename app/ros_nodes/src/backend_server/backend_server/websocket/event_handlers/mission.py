@@ -18,7 +18,7 @@ async def get_mission_status(sid):
 
 
 @sio.on(Events.MISSION_START.value)
-async def set_mission_start(sid):
+async def set_mission_start(sid, _=None):
     """
     Confirm to clients that the mission has been started
     """
@@ -30,7 +30,7 @@ async def set_mission_start(sid):
 
 
 @sio.on(Events.MISSION_END.value)
-async def set_mission_end(sid):
+async def set_mission_end(sid, _=None):
     """
     Confirm to clients that the mission has been stopped
     """
