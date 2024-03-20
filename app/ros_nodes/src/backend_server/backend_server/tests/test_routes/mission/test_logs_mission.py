@@ -107,8 +107,8 @@ def test_listener_callback(create_subscription_mock ):
     raw_log.level = 10
     
     log_subscriber.listener_callback(raw_log)
-    assert log_subscriber.isNewLog == True
-    assert log_subscriber.lastRosLog == RosLog(0,"DEBUG: publisher: This is a normal LOG message", LogType.LOG)
+    assert log_subscriber.is_new_log == True
+    assert log_subscriber.last_ros_log == RosLog(0,"DEBUG: publisher: This is a normal LOG message", LogType.LOG)
 
 #                                                   TEST CASES FOR LogManager
     
@@ -125,14 +125,14 @@ async def test_start_record_logs(send_log_mock, logSubscriber_mock, run_in_threa
 
     run_in_threadpool_mock.side_effect = mock_side_effect 
 
-    with patch('backend_server.websocket.event_handlers.logs_mission.LogManager.isRecording', new_callable=PropertyMock) as is_recording_mock:
+    with patch('backend_server.websocket.event_handlers.logs_mission.LogManager.is_recording', new_callable=PropertyMock) as is_recording_mock:
         is_recording_mock.side_effect = [True, False]
 
         logSubscriber_mock.return_value.isNewLog = MagicMock(return_value=True)
-        logSubscriber_mock.lastRosLog = MagicMock()
-        logSubscriber_mock.lastRosLog.message.ret = "message"
-        logSubscriber_mock.lastRosLog.source_id = 88
-        logSubscriber_mock.lastRosLog.logType = LogType.LOG
+        logSubscriber_mock.last_ros_log = MagicMock()
+        logSubscriber_mock.last_ros_log.message.ret = "message"
+        logSubscriber_mock.last_ros_log.source_id = 88
+        logSubscriber_mock.last_ros_log.logType = LogType.LOG
 
         task = asyncio.create_task(LogManager.start_record_logs())
 
@@ -144,6 +144,6 @@ async def test_start_record_logs(send_log_mock, logSubscriber_mock, run_in_threa
         send_log_mock.assert_called()
 
 def test_stop_record_logs():
-    LogManager.isRecording = True
+    LogManager.is_recording = True
     LogManager.stop_record_logs()
-    assert not LogManager.isRecording
+    assert not LogManager.is_recording
