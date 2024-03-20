@@ -10,7 +10,6 @@ import asyncio
 
 frequency = 1  # second / 1 Hz
 
-
 class StatusUpdate:
     def __init__(self):
         self.missionState = MissionData().get_mission_state()
@@ -23,7 +22,6 @@ class StatusUpdate:
 
     def to_json(self):
         return json.dumps(self.__dict__)
-
 
 async def send_updates():
     """

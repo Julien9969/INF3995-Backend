@@ -3,7 +3,6 @@ from fastapi import responses, status
 from .identify_base import IdentifyBase, IdentifyResponse
 import asyncio
 
-
 router = APIRouter(include_in_schema=True)
 
 @router.get("/", response_model=IdentifyResponse)
@@ -23,7 +22,10 @@ async def get_identify_id(robot_id: int) -> responses.JSONResponse:
 
 @router.get("/connected")
 async def get_connected_robot() -> responses.JSONResponse:
-
+    return responses.JSONResponse (
+        [1,2],
+        status_code=status.HTTP_200_OK
+    )
     while True:
         try:
             result = await IdentifyBase.list_connected_robot()
@@ -35,4 +37,3 @@ async def get_connected_robot() -> responses.JSONResponse:
         return responses.JSONResponse ({ 'data':  "Request to identify service failed !" } , status_code=status.HTTP_404_NOT_FOUND)
     else:
         return responses.JSONResponse (result, status_code=status.HTTP_200_OK)
-        

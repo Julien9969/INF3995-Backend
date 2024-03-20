@@ -5,7 +5,7 @@ import asyncio
 
 router = APIRouter(include_in_schema=True)
 
-@router.get("/", response_model=PingResponse)
+@router.get("", response_model=PingResponse)
 async def get_ping() -> responses.JSONResponse:
     return responses.JSONResponse (
         {'data':  PingBase.ping()}, 
