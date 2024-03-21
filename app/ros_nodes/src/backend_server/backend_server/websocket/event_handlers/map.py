@@ -43,15 +43,17 @@ class MapPublisher(Node):
         logging.debug("============= map backend 0")
         width = grid.info.width
         height = grid.info.height
-        width_b = width
-        height_b = height
-        if width > 127:
-            width_b = twos_comp_byte(width)
-        if height > 127:
-            height_b = twos_comp_byte(height)
-        logging.debug(f"============= map backend W: {width} H: {height}")
+        height_msb = math.floor(height/256)
+        height_lsb = height % 256
+        width_msb = math.floor(width/256)
+        width_lsb = width % 256
+        if width_lsb > 127:
+            width_lsb = twos_comp_byte(width_lsb)
+        if height_lsb > 127:
+            height_lsb = twos_comp_byte(height)
+        logging.debug(f"============= map backend W: {width} H: {height}, ---- W msb: {width_msb} W lsb: {width_lsb} ; H msb: {height_msb} H lsb: {height_lsb}")
         try:
-            data = array('b', [0x42, 0x4D, twos_comp_byte(0xBA), twos_comp_byte(0xA5), 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x36, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, width_b, 0x00, 0x00, 0x00, height_b, 0x00, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, twos_comp_byte(0x84), twos_comp_byte(0xA5), 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+            data = array('b', [0x42, 0x4D, twos_comp_byte(0xBA), twos_comp_byte(0xA5), 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x36, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, width_lsb, width_msb, 0x00, 0x00, height_lsb, height_msb, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, twos_comp_byte(0x84), twos_comp_byte(0xA5), 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
         except Exception as err:
             logging.debug(f"============= CRASH {err}")
 
@@ -64,9 +66,10 @@ class MapPublisher(Node):
                     # format = BGR , donc voici du rose
                     data.append(twos_comp_byte(175))
                     data.append(twos_comp_byte(175))
-                    data.append(twos_comp_byte(254))
+                    data.append(twos_comp_byte(175))
                 else:
-                    point_color = math.floor(point_value/100*255)
+                    point_color = math.floor((point_value)/100*255)
+                    point_color = 255 - point_color #invert colors for black walls and white empty
                     if point_color > 127:
                         point_color = twos_comp_byte(point_color)
                     data.append(point_color)
@@ -75,10 +78,12 @@ class MapPublisher(Node):
                 # data.append(twos_comp_byte(0xff)) # pas de transparence! uniquement BGR
             # end of a row, add padding
             pad_n = 4 - ((width * 3) % 4)
+            if pad_n == 4:
+                pad_n = 0
             for _ in range(pad_n):
                 data.append(0)
+        # logging.debug(f"============= pad_n = {pad_n}")
 
-        logging.debug("============= map backend 2")
 
         # pil_img = Image.fromarray(img)
         # buff = BytesIO()
