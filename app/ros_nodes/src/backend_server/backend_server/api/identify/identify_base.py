@@ -11,12 +11,12 @@ class IdentifyBase:
 
     @staticmethod
     async def launch_client(robot_id: int = 1):
-        rclpy.init()
+        if(not rclpy.ok()):
+            rclpy.init()
         identify_client = IdentifyClientAsync(robot_id)
 
         if not hasattr(identify_client, 'req'):
             identify_client.destroy_node()
-            rclpy.shutdown()
             return None
 
         response = await identify_client.send_request(4)
@@ -25,7 +25,6 @@ class IdentifyBase:
             (4, response.b))
 
         identify_client.destroy_node()
-        rclpy.shutdown()
         return 'Result of identify: for %d * 2 = %d' % (4, response.b)
     
 class IdentifyResponse(BaseModel):
