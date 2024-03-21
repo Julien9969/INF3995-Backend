@@ -33,7 +33,8 @@ class SpinRobot(Node):
 
 
 def main(args=None):
-    rclpy.init(args=args)
+    if(not rclpy.ok()):
+        rclpy.init(args=args)
 
     minimal_publisher = SpinRobot()
 
@@ -43,7 +44,6 @@ def main(args=None):
     # (optional - otherwise it will be done automatically
     # when the garbage collector destroys the node object)
     minimal_publisher.destroy_node()
-    rclpy.shutdown()
 
 
 if __name__ == '__main__':

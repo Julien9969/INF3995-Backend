@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from fastapi import Request
-from backend_server.db.models.exemples_models import Something, stringTable
+from backend_server.db.models.tables_models import Something, stringTable
 
 class SomethingBase:
     def __init__(self, request: Request, id: int, name: str):

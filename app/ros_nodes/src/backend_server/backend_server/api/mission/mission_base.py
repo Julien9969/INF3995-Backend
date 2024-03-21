@@ -31,27 +31,28 @@ class Singleton(type):
 
 
 def start_mission():
-    rclpy.init()
+    if(not rclpy.ok()):
+        rclpy.init()
     mission_client = Mission()
     MissionData().start_timestamp = int(time.time())
+    MissionData().stop_timestamp = 0
+    MissionData().state = MissionState.ONGOING
 
     if not hasattr(mission_client, 'req'):
         mission_client.destroy_node()
-        rclpy.shutdown()
         return None
 
     response1, response2 = mission_client.send_request('start')
     result = f"{response1}, {response2}"
-    mission_client.get_logger().info(result)
+    # mission_client.get_logger().info(result)
 
     mission_client.destroy_node()
-    rclpy.shutdown()
     return result
 
 
 def stop_mission():
     mission_client = Mission()
-    MissionData().stop_timestamp = int(time.time())
+    # MissionData().stop_timestamp = int(time.time())
 
     if not hasattr(mission_client, 'req'):
         mission_client.destroy_node()
@@ -59,10 +60,11 @@ def stop_mission():
 
     response1, response2 = mission_client.send_request('stop')
     result = f"Robots response to stop: {response1}, {response2}"
-    mission_client.get_logger().info(result)
+    # mission_client.get_logger().info(result)
+    MissionData().stop_timestamp = int(time.time())
+    MissionData().state = MissionState.ENDED
 
     mission_client.destroy_node()
-
     return result
 
 
@@ -103,14 +105,10 @@ class MissionData(metaclass=Singleton):
     def __init__(self):
         self.start_timestamp: int = 0
         self.stop_timestamp: int = 0
+        self.state = MissionState.NOT_STARTED
 
     def get_mission_state(self):
-        if self.start_timestamp == 0:
-            return MissionState.NOT_STARTED.value
-        elif self.start_timestamp > 0 and self.stop_timestamp == 0:
-            return MissionState.ONGOING.value
-        elif self.start_timestamp > 0 and self.stop_timestamp > 0:
-            return MissionState.ENDED.value
+        return self.state.value
 
     def get_mission_duration(self):
         if self.stop_timestamp != 0:
