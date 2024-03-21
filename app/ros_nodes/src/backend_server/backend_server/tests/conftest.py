@@ -23,17 +23,8 @@ patch.dict("sys.modules", rclpy=rclpy_mock).start()
 import backend_server.tests.mock.geometry_msgs_mock as geometry_msgs_mock
 patch.dict("sys.modules", geometry_msgs=geometry_msgs_mock).start()
 
-import backend_server.tests.mock.interfaces_mock as interfaces_mock
-patch.dict("sys.modules", interfaces=interfaces_mock).start()
-
-from backend_server.api.base import api_router
-
-# ROS2 Mock (make ros2 installation not required for testing)
-import backend_server.tests.mock.rclpy_mock as rclpy_mock
-patch.dict("sys.modules", rclpy=rclpy_mock).start()
-
-import backend_server.tests.mock.geometry_msgs_mock as geometry_msgs_mock
-patch.dict("sys.modules", geometry_msgs=geometry_msgs_mock).start()
+import backend_server.tests.mock.rcl_interfaces_mock as rcl_interfaces_mock
+patch.dict("sys.modules", rcl_interfaces=rcl_interfaces_mock).start()
 
 import backend_server.tests.mock.interfaces_mock as interfaces_mock
 patch.dict("sys.modules", interfaces=interfaces_mock).start()

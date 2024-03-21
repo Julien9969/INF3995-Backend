@@ -25,13 +25,13 @@ class IdentifyService(Node):
 
 
 def main():
-    rclpy.init()
+    if(not rclpy.ok()):
+        rclpy.init()
 
     identify_service = IdentifyService()
 
     rclpy.spin(identify_service)
 
-    rclpy.shutdown()
 
 
 if __name__ == '__main__':

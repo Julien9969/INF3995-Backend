@@ -1,80 +1,95 @@
+import os
 
 from interfaces.srv import MissionSwitch
+
 import rclpy
 from rclpy.node import Node
 
+import time
 
-# TODO Logigique de base modifiable au besoin 
-class MissionBase:
-    """Singleton mission base class."""
-    mission = None
+ROBOT_COUNT = 2  # Store the number of robots as a constant
 
-    @staticmethod
-    def get_mission():
-        """Get mission object."""
-        if MissionBase.mission is None:
-            MissionBase.mission = Mission()
-        return MissionBase.mission
-    
-    @staticmethod
-    def start_mission():
-        """Start mission."""
+SIMULATION = os.environ.get('ROS_DOMAIN_ID') == '0'
+
+from enum import Enum
+
+
+class MissionState(str, Enum):
+    ONGOING = "ongoing"
+    ENDED = "ended"
+    NOT_STARTED = "not-started"
+
+
+# Source: https://stackoverflow.com/questions/6760685/what-is-the-best-way-of-implementing-singleton-in-python
+class Singleton(type):
+    _instances = {}
+
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+
+def start_mission():
+    if(not rclpy.ok()):
         rclpy.init()
-        mission_client = Mission()
+    mission_client = Mission()
+    MissionData().start_timestamp = int(time.time())
+    MissionData().stop_timestamp = 0
+    MissionData().state = MissionState.ONGOING
 
-        # if not hasattr(identify_client, 'req'):
-        if not hasattr(mission_client, 'req'):
-            mission_client.destroy_node()
-            rclpy.shutdown()
-            return None
-
-        response1, response2 = mission_client.send_request('start')
-        
-        mission_client.get_logger().info(f"{response1}, {response2}")
-
+    if not hasattr(mission_client, 'req'):
         mission_client.destroy_node()
-        rclpy.shutdown()
+        return None
 
-        return "Mission started !"
+    response1, response2 = mission_client.send_request('start')
+    result = f"{response1}, {response2}"
+    # mission_client.get_logger().info(result)
 
-    @staticmethod
-    def stop_mission():
-        """Stop mission."""
-        rclpy.init()
-        mission_client = Mission()
+    mission_client.destroy_node()
+    return result
 
-        if not hasattr(mission_client, 'req'):
-            mission_client.destroy_node()
-            rclpy.shutdown()
-            return None
-        
-        response1, response2 = mission_client.send_request('stop')
 
-        mission_client.get_logger().info(f"{response1}, {response2}")
+def stop_mission():
+    mission_client = Mission()
+    # MissionData().stop_timestamp = int(time.time())
 
+    if not hasattr(mission_client, 'req'):
         mission_client.destroy_node()
-        rclpy.shutdown()
+        return None
 
-        return "Mission stopped"
+    response1, response2 = mission_client.send_request('stop')
+    result = f"Robots response to stop: {response1}, {response2}"
+    # mission_client.get_logger().info(result)
+    MissionData().stop_timestamp = int(time.time())
+    MissionData().state = MissionState.ENDED
+
+    mission_client.destroy_node()
+    return result
 
 
 class Mission(Node):
     """
     This class is used to call the ROS service 'identify' from the backend.
     """
+
     def __init__(self):
         super().__init__('identify_client_async')
-        ros_route = f"robot{1}/mission_switch"
-        self.cli1 = self.create_client(MissionSwitch, ros_route)
+        self.future2 = None
+        self.future1 = None
 
-        ros_route = f"robot{2}/mission_switch"
-        self.cli2 = self.create_client(MissionSwitch, ros_route)
+        try:
+            ros_route = f"robot{1}/mission_switch"
+            self.cli1 = self.create_client(MissionSwitch, ros_route)
 
-        if self.cli1.wait_for_service(timeout_sec=5.0):
-            if self.cli2.wait_for_service(timeout_sec=5.0):
-                self.req = MissionSwitch.Request()
-        else:
-            self.get_logger().info(f'Mission service not available, waiting again...')
+            ros_route = f"robot{2}/mission_switch"
+            self.cli2 = self.create_client(MissionSwitch, ros_route)
+            if self.cli1.wait_for_service(timeout_sec=5.0):  # Active Waiting
+                if self.cli2.wait_for_service(timeout_sec=5.0):
+                    self.req = MissionSwitch.Request()
+        except Exception as e:
+            self.get_logger().error(f"Error creating ROS clients: {e}")
+            raise
 
     def send_request(self, cmd: str):
         self.req.command = cmd
@@ -85,3 +100,24 @@ class Mission(Node):
         return self.future1.result(), self.future2.result()
 
 
+class MissionData(metaclass=Singleton):
+
+    def __init__(self):
+        self.start_timestamp: int = 0
+        self.stop_timestamp: int = 0
+        self.state = MissionState.NOT_STARTED
+
+    def get_mission_state(self):
+        return self.state.value
+
+    def get_mission_duration(self):
+        if self.stop_timestamp != 0:
+            return self.stop_timestamp - self.start_timestamp
+        else:
+            return int(time.time()) - self.start_timestamp
+
+    def get_battery(self):
+        return [50, 50]  # TODO
+
+    def get_robot_status(self):
+        return [0.2, 0.2]  # TODO
