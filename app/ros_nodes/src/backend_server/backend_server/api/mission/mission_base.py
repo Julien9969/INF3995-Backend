@@ -51,6 +51,8 @@ def start_mission():
 
 
 def stop_mission():
+    if(not rclpy.ok()):
+        rclpy.init()
     mission_client = Mission()
     # MissionData().stop_timestamp = int(time.time())
 

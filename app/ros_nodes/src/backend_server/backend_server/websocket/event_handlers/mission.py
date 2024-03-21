@@ -35,9 +35,8 @@ async def start_record_map(sid, _=None):
     Start sending map to client
     """
     logging.debug("Map")
-    result = start_mission()
     await sio.emit(Events.MISSION_MAP.value)
-    await send_log(f"Start receive map: {result}")
+    await send_log(f"Start receive map")
     await MapManager.start_map_listener()
 
 
