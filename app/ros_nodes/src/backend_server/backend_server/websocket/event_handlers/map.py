@@ -9,6 +9,7 @@ from rclpy.node import Node
 
 from nav_msgs.msg import OccupancyGrid
 from array import array
+import asyncio
 
 import base64
 
@@ -73,9 +74,9 @@ class MapPublisher(Node):
                     data.append(point_color)
                 # data.append(twos_comp_byte(0xff)) # pas de transparence! uniquement BGR
             # end of a row, add padding
-            data.append(0)
-            data.append(0)
-            data.append(0)
+            pad_n = 4 - ((width * 3) % 4)
+            for _ in range(pad_n):
+                data.append(0)
 
         logging.debug("============= map backend 2")
 
@@ -103,6 +104,7 @@ class MapManager():
         while MapManager.missionOngoing:
             try:
                 await run_in_threadpool(lambda:rclpy.spin_once(mapPublisher, timeout_sec=4))
+                # await asyncio.sleep(1)
                 logging.debug("=== node finished spinning map pub")
                 if mapPublisher.newMapAvailable and mapPublisher.base_64_map_img is not None:
                     await send_map_image(mapPublisher.base_64_map_img)
