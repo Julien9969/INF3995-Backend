@@ -54,6 +54,9 @@ def stop_mission():
     mission_client = Mission()
     # MissionData().stop_timestamp = int(time.time())
 
+    MissionData().stop_timestamp = int(time.time())
+    MissionData().state = MissionState.ENDED
+    
     if not hasattr(mission_client, 'req'):
         mission_client.destroy_node()
         return None
@@ -61,8 +64,6 @@ def stop_mission():
     response1, response2 = mission_client.send_request('stop')
     result = f"Robots response to stop: {response1}, {response2}"
     # mission_client.get_logger().info(result)
-    MissionData().stop_timestamp = int(time.time())
-    MissionData().state = MissionState.ENDED
 
     mission_client.destroy_node()
     return result
