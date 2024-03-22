@@ -198,11 +198,10 @@ pytest --ignore=./test --cov-config=.coveragerc --ignore=./tests/mock --cov-repo
 [Pydantic](https://pydantic-docs.helpmanual.io/)
 
 
-FOR WINDOWS:
+## For Windows:
 
-docker run --rm -p 5430:5432 -v postgres_data:/var/lib/postgresql/data -e POSTGRES_DB=inf3995 -e POSTGRES_USER=eq102 
--e POSTGRES_PASSWORD=root -it postgres:13
+```bash
+docker run --rm -p 5430:5432 -v postgres_data:/var/lib/postgresql/data -e POSTGRES_DB=inf3995 -e POSTGRES_USER=eq102 -e POSTGRES_PASSWORD=root -it postgres:13
 
 docker run --rm -p 8000:8000 -v C://full-path/INF3995-Backend/app:/src/app -v /app/ros_nodes/build -v /app/ros_nodes/install -v /app/ros_nodes/log -e ROS_DOMAIN_ID=62 -e TERM='xterm-256color' -e SQLALCHEMY_DATABASE_HOST=host.docker.internal -e WATCHFILES_FORCE_POLLING=true -it fastapi bash -c "/bin/bash -c '/start-app.sh'"
-
-^ check if correct
+```
