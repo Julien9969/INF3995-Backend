@@ -1,5 +1,5 @@
 import asyncio
-import time
+import time, rclpy
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Response, HTTPException
@@ -17,12 +17,16 @@ from backend_server.websocket.base import socket_app
 @asynccontextmanager
 async def app_lifespan(app: FastAPI):
     # Start up event
+    if(not rclpy.ok()):
+        rclpy.init()
     print("Starting up")
     await check_db_connected()
     print(app.title)
 
     yield
 
+    if(rclpy.ok()):
+        rclpy.shutdown()
     # Shutdown event
     await check_db_disconnected()
 
