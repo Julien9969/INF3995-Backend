@@ -6,7 +6,6 @@ import asyncio
 
 router = APIRouter(include_in_schema=True)
 
-
 @router.get("/", response_model=IdentifyResponse)
 async def get_identify() -> responses.JSONResponse:
     return responses.JSONResponse (
