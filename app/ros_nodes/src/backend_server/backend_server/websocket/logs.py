@@ -17,8 +17,10 @@ from enum import Enum
 class LogType(Enum):
     LOG = "log"
     COMMAND = "command"
+    BATTERY = "battery"
     SENSOR = "sensor"
-    
+    COORDS = "coords"
+
 
 class Log:
     def __init__(self, message: str, robotId:int , logType : LogType= LogType.LOG, missionId = 1):
@@ -46,3 +48,13 @@ async def send_log(message: str, robot_id=2, event_type=LogType.LOG):
     # Sending the log to the frontend
     await sio.emit(Events.LOG_DATA.value, log.to_json())
 
+async def update_battery(message: str, robot_id=2, event_type=LogType.BATTERY):
+    """
+    Emits formatted battery log to the clients
+    """
+    # Extract battery level from the message
+    battery_level = message.split(":")[1].strip().replace("%", "")
+    
+    battery_level = int(battery_level)
+    
+    await sio.emit(Events.LOG_DATA.value, Log(battery_level, robot_id, event_type).to_json())

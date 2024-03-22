@@ -2,7 +2,7 @@ from collections import namedtuple
 import re
 from typing import List
 from fastapi.concurrency import run_in_threadpool
-from ..logs import LogType, send_log
+from ..logs import LogType, send_log, update_battery
 import logging
 import rclpy
 from rclpy.node import Node
@@ -47,10 +47,11 @@ class LogSubscriber(Node):
     
     def get_event_type(self,msg):
         if "command" in msg:
-            event_type = LogType.COMMAND
+            return LogType.COMMAND
+        elif "BATTERY" in msg:
+            return LogType.BATTERY
         else:
-            event_type = LogType.LOG
-        return event_type
+            return LogType.LOG
         
 
     def listener_callback(self, raw_log):
@@ -73,7 +74,10 @@ class LogManager():
                 await run_in_threadpool(lambda:rclpy.spin_once(log_subscriber, timeout_sec=4))
                 if log_subscriber.is_new_log and log_subscriber.last_ros_log is not None:
                     log = log_subscriber.last_ros_log
-                    await send_log(log.message, log.source_id, log.logType)
+                    if log.logType == LogType.BATTERY:
+                        await update_battery(log.message, log.source_id)
+                    else:
+                        await send_log(log.message, log.source_id, log.logType)
                     log_subscriber.is_new_log = False
             except Exception as e:
                 pass
