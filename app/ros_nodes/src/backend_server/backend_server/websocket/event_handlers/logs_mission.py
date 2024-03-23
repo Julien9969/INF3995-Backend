@@ -57,9 +57,11 @@ class LogSubscriber(Node):
     def listener_callback(self, raw_log):
         source_id : int = self.get_robot_id(raw_log.name)
         logType = self.get_event_type(raw_log.msg)
-        formatted_message = f"{self.get_severity(raw_log.level)}: {raw_log.name}: {raw_log.msg}"
-        logging.debug(formatted_message)
-        self.last_ros_log = RosLog(source_id, formatted_message, logType)
+        if logType == LogType.BATTERY:
+            self.last_ros_log = RosLog(source_id, raw_log.msg, logType)
+        else:
+            formatted_message = f"{self.get_severity(raw_log.level)}: {raw_log.name}: {raw_log.msg}"
+            self.last_ros_log = RosLog(source_id, formatted_message, logType)
         self.is_new_log = True
         
 class LogManager():
@@ -75,7 +77,8 @@ class LogManager():
                 if log_subscriber.is_new_log and log_subscriber.last_ros_log is not None:
                     log = log_subscriber.last_ros_log
                     if log.logType == LogType.BATTERY:
-                        await update_battery(log.message, log.source_id)
+                        logging.debug("updating battery")
+                        update_battery(log.message, log.source_id)
                     else:
                         await send_log(log.message, log.source_id, log.logType)
                     log_subscriber.is_new_log = False

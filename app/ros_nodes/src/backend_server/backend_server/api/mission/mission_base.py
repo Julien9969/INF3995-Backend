@@ -109,6 +109,7 @@ class MissionData(metaclass=Singleton):
         self.start_timestamp: int = 0
         self.stop_timestamp: int = 0
         self.state = MissionState.NOT_STARTED
+        self.batteries = []
 
     def get_mission_state(self):
         return self.state.value
@@ -120,7 +121,7 @@ class MissionData(metaclass=Singleton):
             return int(time.time()) - self.start_timestamp
 
     def get_battery(self):
-        return [50, 50]  # TODO
+        return self.batteries
 
     def get_robot_status(self):
         return [0.2, 0.2]  # TODO
