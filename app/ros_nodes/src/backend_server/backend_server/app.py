@@ -19,7 +19,6 @@ async def app_lifespan(app: FastAPI):
     if(not rclpy.ok()):
         rclpy.init()
     print("Starting up")
-    rclpy.init()
     await check_db_connected()
     print(app.title)
 
