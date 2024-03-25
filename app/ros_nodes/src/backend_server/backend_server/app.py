@@ -1,11 +1,10 @@
 import asyncio
-import time
+import time, rclpy
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request, Response, HTTPException
 from fastapi.responses import JSONResponse
 from starlette.status import HTTP_504_GATEWAY_TIMEOUT
-import rclpy
 
 from backend_server.db.models.tables_models import Base, populate_db
 from backend_server.db.utils import check_db_connected, check_db_disconnected
@@ -17,6 +16,8 @@ from backend_server.websocket.base import socket_app
 @asynccontextmanager
 async def app_lifespan(app: FastAPI):
     # Start up event
+    if(not rclpy.ok()):
+        rclpy.init()
     print("Starting up")
     rclpy.init()
     await check_db_connected()

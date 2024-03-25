@@ -5,3 +5,5 @@ class Odometry():
     def __str__(self) -> str:
         return "Odometry"
         
+class OccupancyGrid:
+    pass

@@ -17,7 +17,7 @@ async def disconnect(sid):
 
 
 # Websocket files must be imported at the end to avoid circular dependency error
-from backend_server.websocket.event_handlers import mission
+from backend_server.websocket.event_handlers import mission, map
 from backend_server.websocket.status import send_updates
 
 # With mission start, start sending status updates to the clients

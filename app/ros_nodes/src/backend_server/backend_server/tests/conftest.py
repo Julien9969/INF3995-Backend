@@ -32,6 +32,10 @@ patch.dict("sys.modules", rcl_interfaces=rcl_interfaces_mock).start()
 import backend_server.tests.mock.interfaces_mock as interfaces_mock
 patch.dict("sys.modules", interfaces=interfaces_mock).start()
 
+import backend_server.tests.mock.nav_msgs as nav_msgs_msg_mock 
+patch.dict("sys.modules", nav_msgs=nav_msgs_msg_mock).start()
+
+
 from backend_server.api.base import api_router
 
 def start_application():
