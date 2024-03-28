@@ -14,8 +14,8 @@ async def get_missions() -> responses.JSONResponse:
     )
 
 @router.get("/id/{mission_id}")
-async def get_mission(robot_id: int) -> responses.JSONResponse:
-    result = await HistoryBase.launch_client(robot_id)
+async def get_mission(mission_id: int) -> responses.JSONResponse:
+    result = await HistoryBase.get_complete_mission(mission_id)
     if(not result):
         return responses.JSONResponse ({ 'data':  "Request to History service failed !" } , status_code=status.HTTP_404_NOT_FOUND)
     else:
