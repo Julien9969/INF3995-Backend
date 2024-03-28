@@ -77,5 +77,28 @@ def retrieve_mission(mission_id_to_retrieve):
     # Add code to retrieve a specific mission from the database
     session = SessionLocal()
     result = session.query(Mission).get(mission_id_to_retrieve)
+
+    # Process the result to make it JSON serializable
+    if result:
+        mission_data = {
+            "mission_id": result.mission_id,
+            "start_date": result.start_date.isoformat() if result.start_date else None,
+            "duration": str(result.duration) if result.duration else None,
+            # Include other mission attributes as needed
+        }
+        # Include logs associated with the mission
+        mission_data["logs"] = [
+            {
+                "log_id": log.log_id,
+                "robot_id": log.robot_id,
+                "log_type": log.log_type,
+                "message": log.message,
+                # Include other log attributes as needed
+            }
+            for log in result.logs
+        ]
+    else:
+        mission_data = None
+
     session.close()
-    return result
+    return mission_data
