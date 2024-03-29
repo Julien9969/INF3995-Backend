@@ -20,7 +20,7 @@ class MapSubscriber(Node):
         super().__init__('map_subscriber')
         self.subscription = self.create_subscription(
             OccupancyGrid,
-            'map',
+            'robot1/map',
             self.listener_callback,
             10)
         self.subscription  # prevent unused variable warning
@@ -53,7 +53,7 @@ class MapSubscriber(Node):
     def create_data_array(self, width, height, width_msb, width_lsb, height_msb, height_lsb, grid):
         data = []
         try:
-            data = array('b', [0x42, 0x4D, twos_comp_byte(0xBA), twos_comp_byte(0xA5), 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x36, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, width_lsb, width_msb, 0x00, 0x00, height_lsb, height_msb, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, twos_comp_byte(0x84), twos_comp_byte(0xA5), 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
+            data = array('b', [0x42, 0x4D, twos_comp_byte(0xBA), twos_comp_byte(0xA5), 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x36, 0x00, 0x00, 0x00, 0x28, 0x00, 0x00, 0x00, width_lsb, width_msb, 0x00, 0x00, height_lsb, height_msb, 0x00, 0x00, 0x01, 0x00, 0x18, 0x00, 0x00, 0x00, 0x00, 0x00, twos_comp_byte(0x84), twos_comp_byte(0xA5), 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
         except Exception as err:
             logging.debug(f"Crashed while transforming map to image: {err}")
         self.append_grid_data_to_array(data, width, height, grid)
@@ -68,7 +68,7 @@ class MapSubscriber(Node):
             
     def append_point_value_to_data(self, data, point_value):
         if point_value == -1:
-            # format = BGR , donc voici du rose
+            # format = BGR , donc voici du gris pour les zones non explorées
             data.append(twos_comp_byte(175))
             data.append(twos_comp_byte(175))
             data.append(twos_comp_byte(175))
