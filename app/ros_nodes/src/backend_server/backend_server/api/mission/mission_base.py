@@ -1,23 +1,9 @@
-import os
-
-from interfaces.srv import MissionSwitch
-
-import rclpy
-from rclpy.node import Node
-
 import time
 
-ROBOT_COUNT = 2  # Store the number of robots as a constant
-
-SIMULATION = os.environ.get('ROS_DOMAIN_ID') == '0'
-
-from enum import Enum
-
-
-class MissionState(str, Enum):
-    ONGOING = "ongoing"
-    ENDED = "ended"
-    NOT_STARTED = "not-started"
+import rclpy
+from interfaces.srv import MissionSwitch
+from rclpy.node import Node
+from backend_server.common import MissionState
 
 
 # Source: https://stackoverflow.com/questions/6760685/what-is-the-best-way-of-implementing-singleton-in-python
@@ -31,7 +17,7 @@ class Singleton(type):
 
 
 def start_mission():
-    if(not rclpy.ok()):
+    if not rclpy.ok():
         rclpy.init()
     mission_client = Mission()
     MissionData().start_timestamp = int(time.time())
@@ -51,14 +37,14 @@ def start_mission():
 
 
 def stop_mission():
-    if(not rclpy.ok()):
+    if not rclpy.ok():
         rclpy.init()
     mission_client = Mission()
     # MissionData().stop_timestamp = int(time.time())
 
     MissionData().stop_timestamp = int(time.time())
     MissionData().state = MissionState.ENDED
-    
+
     if not hasattr(mission_client, 'req'):
         mission_client.destroy_node()
         return None
@@ -118,9 +104,3 @@ class MissionData(metaclass=Singleton):
             return self.stop_timestamp - self.start_timestamp
         else:
             return int(time.time()) - self.start_timestamp
-
-    def get_battery(self):
-        return [50, 50]  # TODO
-
-    def get_robot_status(self):
-        return [0.2, 0.2]  # TODO

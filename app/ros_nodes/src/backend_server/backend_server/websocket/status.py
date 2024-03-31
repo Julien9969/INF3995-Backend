@@ -1,28 +1,11 @@
-from backend_server.websocket.events import Events
-from backend_server.websocket.base import sio
-from backend_server.api.mission.mission_base import MissionData
-from backend_server.api.mission.mission_base import ROBOT_COUNT
-
-import json
-import time
 import asyncio
+import time
 
+from backend_server.api.mission.mission_base import MissionData
+from backend_server.common import WebsocketsEvents, MissionStatus
+from backend_server.websocket.base import sio
 
-frequency = 1  # second / 1 Hz
-
-
-class StatusUpdate:
-    def __init__(self):
-        self.missionState = MissionData().get_mission_state()
-        self.elapsedTime = MissionData().get_mission_duration()
-        self.startTimestamp = MissionData().start_timestamp
-        self.batteries = MissionData().get_battery()
-        self.distances = MissionData().get_robot_status()
-        self.count = ROBOT_COUNT
-        self.timestamp = int(time.time())  # Timestamp of when the status was updated
-
-    def to_json(self):
-        return json.dumps(self.__dict__)
+FREQUENCY = 1  # second / 1 Hz
 
 
 async def send_updates():
@@ -30,7 +13,13 @@ async def send_updates():
     Emits formatted log to the client
     """
     while True:
-        update = StatusUpdate()
+        mission_data = MissionData()
+        update = MissionUpdate(missionState=mission_data.state,
+                               timestamp=int(time.time()),
+                               elapsed=int(time.time()) - mission_data.start_timestamp,
+                               isSimulation=False,
+                               startTimestamp=mission_data.start_timestamp
+                               )
         # JSON is used to ensure compatibility with the frontend
-        await sio.emit(Events.MISSION_STATUS.value, update.to_json())
-        await asyncio.sleep(frequency)
+        await sio.emit(WebsocketsEvents.MISSION_STATUS.value, update.to_json())
+        await asyncio.sleep(FREQUENCY)
