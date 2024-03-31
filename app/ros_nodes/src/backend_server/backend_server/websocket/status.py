@@ -14,12 +14,12 @@ async def send_updates():
     """
     while True:
         mission_data = MissionData()
-        update = MissionUpdate(missionState=mission_data.state,
+        update = MissionStatus(missionState=mission_data.state,
                                timestamp=int(time.time()),
                                elapsed=int(time.time()) - mission_data.start_timestamp,
                                isSimulation=False,
                                startTimestamp=mission_data.start_timestamp
                                )
         # JSON is used to ensure compatibility with the frontend
-        await sio.emit(WebsocketsEvents.MISSION_STATUS.value, update.to_json())
+        await sio.emit(WebsocketsEvents.MISSION_STATUS.value, update)
         await asyncio.sleep(FREQUENCY)

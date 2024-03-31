@@ -1,8 +1,7 @@
-from sqlalchemy import Enum, Column, Integer, String, ForeignKey, Interval, DateTime, exists
-from sqlalchemy.orm import relationship
 from backend_server.db.session import Base, SessionLocal
-from backend_server.schemas.something_type import SomethingType
-from datetime import datetime, timedelta
+from sqlalchemy import Column, Integer, String, ForeignKey, Interval, DateTime, exists
+from sqlalchemy.orm import relationship
+
 
 class Log(Base):
     __tablename__ = 'logs'
@@ -16,6 +15,7 @@ class Log(Base):
     # Define relationships with Mission and Robot tables
     mission = relationship('Mission', back_populates='logs')
     robot = relationship('Robot', back_populates='logs')
+
 
 class Mission(Base):
     __tablename__ = 'missions'
@@ -32,12 +32,13 @@ class Robot(Base):
     robot_id = Column(Integer, primary_key=True)
     logs = relationship('Log', back_populates='robot')
 
+
 def populate_db(session=SessionLocal()):
     # Add code to populate the database with initial data
     try:
         mission_exists = session.query(exists().where(Mission.mission_id == 1)).scalar()
         if not mission_exists:
-            session.add(Mission(mission_id=1, start_date= None, duration= None))
+            session.add(Mission(mission_id=1, start_date=None, duration=None))
 
         for robot_id in [1, 0, 2]:
             robot_exists = session.query(exists().where(Robot.robot_id == 1)).scalar()
@@ -48,6 +49,7 @@ def populate_db(session=SessionLocal()):
         print("Database populated")
     except Exception as e:
         pass
+
 
 def retrieve_missions_resume():
     # Add code to retrieve mission history from the database
@@ -69,9 +71,10 @@ def retrieve_missions_resume():
                 'duration': duration,
                 'robots': []
             }
-        missions_data[mission_id]['robots'].append({'robot_id': robot_id,})
+        missions_data[mission_id]['robots'].append({'robot_id': robot_id, })
     session.close()
     return missions_data
+
 
 def retrieve_mission(mission_id_to_retrieve):
     # Add code to retrieve a specific mission from the database
