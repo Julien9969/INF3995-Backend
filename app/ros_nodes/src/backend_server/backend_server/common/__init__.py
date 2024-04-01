@@ -43,6 +43,8 @@ class WebsocketsEvents(str, Enum):
     IDENTIFY_REQUEST = "identify-request"
     HEADBACKBASE_FEEDBACK = "headbackbase-feedback"
     HEADBACKBASE_REQUEST = "headbackbase-request"
+    CONNECT = "connect"
+    DISCONNECT = "disconnect"
 
 
 class Position(TypedDict):

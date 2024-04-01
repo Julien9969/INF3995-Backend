@@ -5,7 +5,7 @@ from array import array
 
 import rclpy
 from backend_server.common import WebsocketsEvents
-from backend_server.websocket.base import sio
+from backend_server.websocket.emitter import send_raw
 from fastapi.concurrency import run_in_threadpool
 from nav_msgs.msg import OccupancyGrid
 from rclpy.node import Node
@@ -26,7 +26,7 @@ class MapManager:
             try:
                 await run_in_threadpool(lambda: rclpy.spin_once(mapPublisher, timeout_sec=4))
                 if mapPublisher.newMapAvailable and mapPublisher.base_64_map_img is not None:
-                    await send_map_image(mapPublisher.base_64_map_img)
+                    await send_raw(WebsocketsEvents.MAP_DATA, mapPublisher.base_64_map_img)
                     mapPublisher.newMapAvailable = False
             except Exception as err:
                 logging.debug(f"Exception in Map manager: {err}")
@@ -50,7 +50,7 @@ class MapPublisher(Node):
 
     def listener_callback(self, occupancy_grid: OccupancyGrid):
         base_64_map_data = self.convertDataToBase64Str(occupancy_grid)
-        self.base_64_map_img = f'logic:image/bmp;base64,{base_64_map_data}'
+        self.base_64_map_img = f'data:image/bmp;base64,{base_64_map_data}'
         self.newMapAvailable = True
 
     def convertDataToBase64Str(self, grid):
@@ -100,13 +100,6 @@ class MapPublisher(Node):
                 data.append(0)
 
         return base64.b64encode(data).decode('utf-8')
-
-
-async def send_map_image(map_data):
-    """
-    Send the map logic to the client
-    """
-    await sio.emit(WebsocketsEvents.MAP_DATA.value, map_data)
 
 
 def twos_comp_byte(val):

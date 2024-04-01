@@ -1,18 +1,13 @@
-import os
 import time
 from typing import Generator
-
+from backend_server.constants import SQLALCHEMY_DATABASE_URL
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 while True:
     try:
-
-        environment = os.getenv("SQLALCHEMY_DATABASE_HOST", "host.docker.internal")  # TODO: environment file / dotfile
-        SQLALCHEMY_DATABASE_URL = f"postgresql://eq102:root@{environment}:5430/inf3995"
         Base = declarative_base()
-
         engine = create_engine(
             SQLALCHEMY_DATABASE_URL
         )

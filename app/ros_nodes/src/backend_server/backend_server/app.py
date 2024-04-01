@@ -49,7 +49,6 @@ def start_application() -> FastAPI:
     return app
 
 
-# ENLEVE TEMPORAIREMENT POUR ETRE LANCE PAR ROS A LA PLACE
 app = start_application()
 
 
@@ -57,7 +56,7 @@ app = start_application()
 async def timeout_middleware(request: Request, call_next):
     try:
         start_time = time.time()
-        return await asyncio.wait_for(call_next(request), timeout=20)
+        return await asyncio.wait_for(call_next(request), timeout=5)
 
     except asyncio.TimeoutError:
         process_time = time.time() - start_time
@@ -67,9 +66,6 @@ async def timeout_middleware(request: Request, call_next):
 
 
 origins = [
-    # "http://localhost",
-    # "http://localhost:8000",
-    # "http://127.0.0.1:8000",
     "*"
 ]
 

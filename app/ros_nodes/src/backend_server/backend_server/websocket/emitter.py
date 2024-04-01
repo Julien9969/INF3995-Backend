@@ -18,14 +18,14 @@ async def send(event: WebsocketsEvents, data: dict = None, sid=None):
     Emits the event to the clients
     """
     json_data = json.dumps(data)
-    await sio.emit(event, json_data, to=sid)
+    await sio.emit(event.value, json_data, to=sid)
 
 
-async def send_map(event: WebsocketsEvents, map, sid=None):
+async def send_raw(event: WebsocketsEvents, data, sid=None):
     """
     Emits the event to the clients
     """
-    await sio.emit(event.value, map, to=sid)
+    await sio.emit(event.value, data, to=sid)
 
 
 async def send_log(message: str, robot_id=2, event_type=LogType.LOG):
@@ -39,15 +39,18 @@ async def send_log(message: str, robot_id=2, event_type=LogType.LOG):
               missionId=1)
 
     # Creating and sending of the log to the Database
-    new_log_row = LogDB(mission_id=log.missionId, robot_id=log.robotId, log_type=log.eventType, message=log.message)
+    new_log_row = LogDB(mission_id=log['missionId'],
+                        robot_id=log['robotId'],
+                        log_type=log['eventType'],
+                        message=log['message'])
     session = SessionLocal()
     session.add_all([new_log_row])
     session.commit()
     # Sending the log to the frontend
-    await send(WebsocketsEvents.LOG_DATA.value, log)
+    await send(WebsocketsEvents.LOG_DATA, log)
 
 
-async def send_updates():
+async def send_mission_updates():
     """
     Emits formatted log to the client
     """
@@ -60,5 +63,21 @@ async def send_updates():
                                startTimestamp=mission_data.start_timestamp
                                )
         # JSON is used to ensure compatibility with the frontend
-        await send(WebsocketsEvents.MISSION_STATUS.value, update)
+        await send(WebsocketsEvents.MISSION_STATUS, update)
         await asyncio.sleep(FREQUENCY)
+
+
+async def send_robot_updates():
+    """
+    Emits formatted log to the client
+    """
+    while True:
+        mission_data = MissionData()
+        update = MissionStatus(missionState=mission_data.state,
+                               timestamp=int(time.time()),
+                               elapsed=int(time.time()) - mission_data.start_timestamp,
+                               isSimulation=False,
+                               startTimestamp=mission_data.start_timestamp
+                               )
+        # JSON is used to ensure compatibility with the frontend
+        await send(WebsocketsEvents.ROBOT_STATUS, update)

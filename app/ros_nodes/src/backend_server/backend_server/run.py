@@ -2,10 +2,8 @@ import logging
 import sys
 
 import uvicorn
-from dotenv import load_dotenv
 
-sys.path.append(".")  # TODO: could be changed
-load_dotenv()
+sys.path.append(".")  # TODO: could be changed, messes with IDE
 
 
 def main():
