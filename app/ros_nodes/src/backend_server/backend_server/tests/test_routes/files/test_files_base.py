@@ -55,11 +55,11 @@ async def test_send_command_failure(mock_files_client):
 
 
 @pytest.mark.asyncio
-@patch.object(ROSFilesBase, "send_command", return_value=Response("Success", "Tree data"))
+@patch.object(ROSFilesBase, "send_command", return_value=Response("Success", "Tree logic"))
 async def test_get_files_tree_success(mock_send_command):
     response = await ROSFilesBase.get_files_tree(789)
 
-    assert response == ("Success", "Tree data")
+    assert response == ("Success", "Tree logic")
     mock_send_command.assert_called_once_with(789, Commands.FILES_TREE)
 
 

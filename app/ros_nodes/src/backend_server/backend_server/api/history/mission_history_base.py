@@ -1,6 +1,6 @@
+from backend_server.db.queries import retrieve_mission, retrieve_missions_resume
 from pydantic import BaseModel
 
-from backend_server.db.models.tables_models import retrieve_mission, retrieve_missions_resume
 
 class HistoryBase:
 
@@ -20,11 +20,7 @@ class HistoryBase:
         """
         mission = retrieve_mission(mission_id)
         return mission
-        
-    
+
+
 class HistoryResponse(BaseModel):
     data: str
-
-
-
-

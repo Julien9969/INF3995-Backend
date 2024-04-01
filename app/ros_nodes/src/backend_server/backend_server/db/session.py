@@ -1,28 +1,29 @@
-import time, os
+import os
+import time
 from typing import Generator
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 
-
 while True:
-	try:
-            
-		environment = os.getenv("SQLALCHEMY_DATABASE_HOST", "host.docker.internal")
-		SQLALCHEMY_DATABASE_URL = f"postgresql://eq102:root@{environment}:5430/inf3995"
-		Base = declarative_base()
+    try:
 
-		engine = create_engine(
-			SQLALCHEMY_DATABASE_URL
-		)
-		SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-		time.sleep(1)
-		break
-	except Exception as e:
-		print("Waiting for db to be ready...")
-		continue
-     
+        environment = os.getenv("SQLALCHEMY_DATABASE_HOST", "host.docker.internal")  # TODO: environment file / dotfile
+        SQLALCHEMY_DATABASE_URL = f"postgresql://eq102:root@{environment}:5430/inf3995"
+        Base = declarative_base()
+
+        engine = create_engine(
+            SQLALCHEMY_DATABASE_URL
+        )
+        SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+        time.sleep(1)
+        break
+    except Exception as e:
+        print("Waiting for db to be ready...")
+        continue
+
+
 def get_db() -> Generator:
     try:
         db = SessionLocal()

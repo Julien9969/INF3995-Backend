@@ -9,7 +9,7 @@ router = APIRouter(include_in_schema=True)
 @router.get("/", response_model=IdentifyResponse)
 async def get_identify() -> responses.JSONResponse:
     return responses.JSONResponse (
-        { 'data':  await IdentifyBase.launch_client() }, 
+        { 'logic':  await IdentifyBase.launch_client() },
         status_code=status.HTTP_200_OK
     )
 
@@ -17,6 +17,6 @@ async def get_identify() -> responses.JSONResponse:
 async def get_identify_id(robot_id: int) -> responses.JSONResponse:
     result = await IdentifyBase.launch_client(robot_id)
     if(not result):
-        return responses.JSONResponse ({ 'data':  "Request to identify service failed !" } , status_code=status.HTTP_404_NOT_FOUND)
+        return responses.JSONResponse ({ 'logic':  "Request to identify service failed !" } , status_code=status.HTTP_404_NOT_FOUND)
     else:
-        return responses.JSONResponse ({ 'data':  result }, status_code=status.HTTP_200_OK)
+        return responses.JSONResponse ({ 'logic':  result }, status_code=status.HTTP_200_OK)

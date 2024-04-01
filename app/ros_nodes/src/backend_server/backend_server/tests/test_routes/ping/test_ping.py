@@ -18,7 +18,7 @@ def test_get_ping(ping_mock, client):
     response = client.get("/api/ping/")
     assert response.status_code == 200
     assert ping_mock.called
-    assert str(response.json()["data"]).find("mocked pong!") != -1
+    assert str(response.json()["logic"]).find("mocked pong!") != -1
 
 @patch("backend_server.api.ping.ping.PingBase.ping")
 @patch("backend_server.api.ping.ping.PingBase.send_cmd_vel")
@@ -29,7 +29,7 @@ def test_get_ping_robot(cmd_vel_mock: MagicMock, ping_mock: MagicMock, client):
     response = client.get("/api/ping/robot/")
     assert response.status_code == 200
     assert cmd_vel_mock.calledwith(0.0, 0.0, False)
-    assert str(response.json()["data"]).find("mocked pong!") != -1
+    assert str(response.json()["logic"]).find("mocked pong!") != -1
 
 
 from backend_server.api.ping.ping import PingBase

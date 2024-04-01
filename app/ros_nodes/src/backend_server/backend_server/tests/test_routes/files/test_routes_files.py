@@ -6,11 +6,11 @@ from backend_server.schemas.schemas import FileObject, File
 from backend_server.api.files.files_base import ROSFilesBase
 
 @pytest.mark.asyncio
-@patch.object(ROSFilesBase, "get_files_tree", return_value=("Success", {"data": "tree"}))
+@patch.object(ROSFilesBase, "get_files_tree", return_value=("Success", {"logic": "tree"}))
 async def test_get_files_tree_success(get_files_tree_mock, client: AsyncClient):
     response = client.get("/api/files/tree/1")
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == {"data": "tree"}
+    assert response.json() == {"logic": "tree"}
     get_files_tree_mock.assert_called_once_with(1)
 
 @pytest.mark.asyncio
@@ -75,4 +75,4 @@ async def test_patch_update_robot_failure(update_robot_mock, client: AsyncClient
 async def test_test(client: AsyncClient):
     response = client.get("/api/files/test")
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == {"data": "test"}
+    assert response.json() == {"logic": "test"}
