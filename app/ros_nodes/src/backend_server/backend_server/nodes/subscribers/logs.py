@@ -1,12 +1,10 @@
 import logging
 import re
+from collections import namedtuple
 
+from backend_server.common import LogType
 from rcl_interfaces.msg import Log
 from rclpy.node import Node
-from fastapi.concurrency import run_in_threadpool
-from backend_server.websocket.emitter import send_log
-from collections import namedtuple
-from backend_server.common import LogType
 
 logging.basicConfig(level=logging.DEBUG)
 RosLog = namedtuple('RosLog', ['source_id', 'message', 'logType'])
@@ -60,27 +58,3 @@ class LogSubscriber(Node):
         logging.debug(formatted_message)
         self.last_ros_log = RosLog(source_id, formatted_message, logType)
         self.is_new_log = True
-
-
-class LogManager():
-    is_recording = True
-
-    @staticmethod
-    async def start_record_logs():
-        LogManager.is_recording = True
-        log_subscriber = LogSubscriber()
-        while LogManager.is_recording:
-            try:
-                await run_in_threadpool(lambda: rclpy.spin_once(log_subscriber, timeout_sec=4))
-                if log_subscriber.is_new_log and log_subscriber.last_ros_log is not None:
-                    log = log_subscriber.last_ros_log
-                    await send_log(log.message, log.source_id, log.logType)
-                    log_subscriber.is_new_log = False
-            except Exception as e:
-                pass
-        log_subscriber.destroy_node()
-
-    @staticmethod
-    def stop_record_logs():
-        LogManager.is_recording = False
-        logging.debug("stopping recording")

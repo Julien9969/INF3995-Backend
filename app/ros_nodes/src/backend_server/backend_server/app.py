@@ -30,20 +30,12 @@ async def app_lifespan(app: FastAPI):
     await check_db_disconnected()
 
 
-def include_router(app):
-    app.include_router(api_router)
-
-
-def create_tables():
-    Base.metadata.create_all(bind=engine)
-
-
 def start_application() -> FastAPI:
     app = FastAPI(lifespan=app_lifespan, debug=True, title="Limousine Backend Server 3995", version="1.0")
-    include_router(app)
+    app.include_router(api_router)
     # configure_static(app)
     app.mount("/", socket_app)  # Add web sockets to app
-    create_tables()
+    Base.metadata.create_all(bind=engine)
     if app.debug:
         populate_db()
     return app

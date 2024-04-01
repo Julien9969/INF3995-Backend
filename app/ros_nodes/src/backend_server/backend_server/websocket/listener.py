@@ -1,12 +1,12 @@
 import logging
 
-from backend_server.nodes.mission import Mission
+from backend_server.nodes.clients.mission import Mission
 from backend_server.websocket.base import sio
-from backend_server.nodes.map import MapManager
-from backend_server.nodes.logs import LogManager
+from backend_server.nodes.managers.map import MapManager
+from backend_server.nodes.managers.logs import LogManager
 from backend_server.common import WebsocketsEvents, MissionStatus
 from backend_server.websocket.emitter import send, send_log
-from backend_server.nodes.robot import IdentifyBase
+from backend_server.nodes.clients.robot import IdentifyBase
 
 
 @sio.event

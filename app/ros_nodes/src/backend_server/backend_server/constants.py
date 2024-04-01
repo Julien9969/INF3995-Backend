@@ -1,4 +1,5 @@
 import os
+PORT = 8000
 RCL_TIMEOUT = 10
 RCL_MAX_RETRIES = 3
 SQLALCHEMY_DATABASE_HOST = os.getenv("SQLALCHEMY_DATABASE_HOST", "host.docker.internal")

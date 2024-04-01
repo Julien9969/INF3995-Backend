@@ -1,7 +1,6 @@
 import time
-from backend_server.common import MissionState
+from backend_server.common import MissionState, MissionStatus
 from backend_server.helpers.singleton import Singleton
-from backend_server.models import MissionStatus
 
 
 class MissionData(metaclass=Singleton):
