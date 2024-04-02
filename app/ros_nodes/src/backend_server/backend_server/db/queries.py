@@ -1,5 +1,5 @@
 from backend_server.common import RobotInformation, MissionStatus
-from backend_server.db.models import Mission, Robot, Log
+from backend_server.db.models import Mission, Robot, Log, Map
 from backend_server.db.session import SessionLocal
 import json
 
@@ -40,7 +40,6 @@ def retrieve_mission(mission_id: int) -> MissionStatus:
 
 
 def retrieve_mission_logs(mission_id: int) -> list[Log]:
-    # Add code to retrieve logs for a specific mission from the database
     session = SessionLocal()
     result = session.query(Log).filter(Log.mission_id == mission_id).all()
     session.close()
@@ -56,7 +55,8 @@ def retrieve_robot_status(mission_id: int) -> list[RobotInformation]:
 
 def retrieve_map_data(mission_id: int) -> str:
     session = SessionLocal()
-    result = session.query(Mission).get(mission_id)
+    result = session.query(Map).get(Map.mission_id == mission_id)
+    # TODO: could maybe also save size of image in db
     assert str(result).startswith("data:image/bmp;base64,"), "Invalid image data"
     session.close()
     return result
