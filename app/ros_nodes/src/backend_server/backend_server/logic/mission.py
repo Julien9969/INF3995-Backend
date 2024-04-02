@@ -2,6 +2,8 @@ import logging
 import time
 
 from backend_server.common import MissionState, MissionStatus
+from backend_server.db.insertions import save_mission
+from backend_server.db.queries import get_new_mission_id
 from backend_server.helpers.singleton import Singleton
 from backend_server.nodes.clients.mission import MissionNode
 
@@ -15,7 +17,7 @@ class Mission(metaclass=Singleton):
         self.start_timestamp: int = 0
         self.stop_timestamp: int = 0
         self.state = MissionState.NOT_STARTED
-        self.is_simulation = False  # TODO: run some fort of check (perhaps ROS Channel ID)
+        self.mission_id = get_new_mission_id()
 
     def get_duration(self):
         if self.stop_timestamp != 0:
@@ -29,7 +31,8 @@ class Mission(metaclass=Singleton):
         if self.state != MissionState.ONGOING:
             self.start_timestamp = int(time.time())
             self.state = MissionState.ONGOING
-            logging.info("Starting mission node")
+            self.mission_id = get_new_mission_id()
+            logging.info(f"Starting mission node for mission {self.mission_id}")
             mission = MissionNode()
             mission.start_mission()
 
@@ -38,16 +41,10 @@ class Mission(metaclass=Singleton):
         mission = MissionNode()
         mission.stop_mission()
         self.state = MissionState.ENDED
-        self.terminate_mission()
-        pass
-
-    def terminate_mission(self):
-        # TODO: write to the database
-        pass
+        save_mission(self.get_status())
 
     def get_status(self) -> MissionStatus:
         return MissionStatus(missionState=self.state,
                              elapsedTime=self.get_duration(),
                              startTimestamp=self.start_timestamp,
-                             timestamp=int(time.time()),
-                             isSimulation=self.is_simulation)
+                             timestamp=int(time.time()))

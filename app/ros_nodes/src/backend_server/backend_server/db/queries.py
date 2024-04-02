@@ -1,31 +1,19 @@
 from backend_server.common import RobotInformation, MissionStatus
 from backend_server.db.models import Mission, Robot, Log
 from backend_server.db.session import SessionLocal
+import json
 
 
 def retrieve_missions_resume():
-    # Add code to retrieve mission history from the database
     session = SessionLocal()
     results = session.query(
         Mission.mission_id,
         Mission.start_date,
         Mission.duration,
-        Robot.robot_id).all(
-    )
+        Robot.robot_id).all()
 
-    # Process the results
-    missions_data = {}
-    for mission_id, start_date, duration, robot_id in results:
-        if mission_id not in missions_data:
-            missions_data[mission_id] = {
-                'mission_id': mission_id,
-                'start_date': start_date,
-                'duration': duration,
-                'robots': []
-            }
-        missions_data[mission_id]['robots'].append({'robot_id': robot_id, })
     session.close()
-    return missions_data
+    return results
 
 
 def retrieve_history() -> list:
@@ -72,3 +60,10 @@ def retrieve_map_data(mission_id: int) -> str:
     assert str(result).startswith("data:image/bmp;base64,"), "Invalid image data"
     session.close()
     return result
+
+
+def get_new_mission_id() -> int:
+    session = SessionLocal()
+    result = session.query(Mission).count()
+    session.close()
+    return result + 1
