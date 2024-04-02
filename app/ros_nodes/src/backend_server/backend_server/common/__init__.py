@@ -66,3 +66,9 @@ class EmitFeedback(TypedDict):
     timestamp: int
     message: str
     robotId: int
+
+
+class RobotState(str, Enum):
+    IDLE = "idle"
+    RUNNING = "running"
+    DISCONNECTED = "disconnected"

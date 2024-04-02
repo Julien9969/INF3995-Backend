@@ -1,11 +1,12 @@
 import asyncio
 import json
+import logging
 import time
 
 from backend_server.db.models import Log as LogDB
 from backend_server.common import Log, LogType
 from backend_server.common import WebsocketsEvents, MissionStatus
-from backend_server.logic.mission import MissionData
+from backend_server.logic.mission import Mission
 from backend_server.websocket.base import sio
 
 from ..db.session import SessionLocal
@@ -55,14 +56,9 @@ async def send_mission_updates():
     Emits formatted log to the client
     """
     while True:
-        mission_data = MissionData()
-        update = MissionStatus(missionState=mission_data.state,
-                               timestamp=int(time.time()),
-                               elapsed=int(time.time()) - mission_data.start_timestamp,
-                               isSimulation=False,
-                               startTimestamp=mission_data.start_timestamp
-                               )
-        # JSON is used to ensure compatibility with the frontend
+        mission = Mission()
+        update = mission.get_status()
+        logging.debug(f"Sending updates {update['timestamp']}")
         await send(WebsocketsEvents.MISSION_STATUS, update)
         await asyncio.sleep(FREQUENCY)
 
@@ -71,13 +67,5 @@ async def send_robot_updates():
     """
     Emits formatted log to the client
     """
-    while True:
-        mission_data = MissionData()
-        update = MissionStatus(missionState=mission_data.state,
-                               timestamp=int(time.time()),
-                               elapsed=int(time.time()) - mission_data.start_timestamp,
-                               isSimulation=False,
-                               startTimestamp=mission_data.start_timestamp
-                               )
-        # JSON is used to ensure compatibility with the frontend
-        await send(WebsocketsEvents.ROBOT_STATUS, update)
+    # TODO: read from the result
+    pass

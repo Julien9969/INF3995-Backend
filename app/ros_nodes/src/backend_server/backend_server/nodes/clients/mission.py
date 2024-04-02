@@ -1,13 +1,10 @@
-import time
-
+import logging
 import rclpy
-from backend_server.common import MissionState
-from backend_server.logic.mission import MissionData
 from interfaces.srv import MissionSwitch
 from rclpy.node import Node
 
 
-class Mission(Node):
+class MissionNode(Node):
     """
     This class is used to call the ROS service 'identify' from the backend.
     """
@@ -23,15 +20,15 @@ class Mission(Node):
 
             ros_route = f"robot{2}/mission_switch"
             self.cli2 = self.create_client(MissionSwitch, ros_route)
-            if self.cli1.wait_for_service(timeout_sec=2.0):  # Active Waiting
+            if self.cli1.wait_for_service(timeout_sec=2.0):  # TODO: could this be in parallel
                 if self.cli2.wait_for_service(timeout_sec=2.0):
                     self.req = MissionSwitch.Request()
         except Exception as e:
-            self.get_logger().error(f"Error creating ROS clients: {e}")
+            logging.error(f"Error creating ROS clients: {e}")
             raise
 
     def send_request(self, cmd: str):
-        self.req.command = cmd
+        self.req.command = cmd  # TODO: what if more that tree robots
         self.future1 = self.cli1.call_async(self.req)
         self.future2 = self.cli2.call_async(self.req)
         rclpy.spin_until_future_complete(self, self.future1)
@@ -41,38 +38,27 @@ class Mission(Node):
     def start_mission(self):
         if not rclpy.ok():
             rclpy.init()
-        mission_client = Mission()
-        MissionData().start_timestamp = int(time.time())
-        MissionData().stop_timestamp = 0
-        MissionData().state = MissionState.ONGOING
 
-        if not hasattr(mission_client, 'req'):
-            mission_client.destroy_node()
+        if not hasattr(self, 'req'):
+            self.destroy_node()
             return None
 
-        response1, response2 = mission_client.send_request('start')
-        result = f"{response1}, {response2}"
-        # mission_client.get_logger().info(result)
+        response1, response2 = self.send_request('start')
+        result = f"{response1}, {response2}"  # TODO: what if more that tree robots
 
-        mission_client.destroy_node()
+        self.destroy_node()
         return result
 
     def stop_mission(self):
         if not rclpy.ok():
             rclpy.init()
-        mission_client = Mission()
-        # MissionData().stop_timestamp = int(time.time())
 
-        MissionData().stop_timestamp = int(time.time())
-        MissionData().state = MissionState.ENDED
-
-        if not hasattr(mission_client, 'req'):
-            mission_client.destroy_node()
+        if not hasattr(self, 'req'):
+            self.destroy_node()
             return None
 
-        response1, response2 = mission_client.send_request('stop')
+        response1, response2 = self.send_request('stop')
         result = f"Robots response to stop: {response1}, {response2}"
-        # mission_client.get_logger().info(result)
 
-        mission_client.destroy_node()
+        self.destroy_node()
         return result
