@@ -98,15 +98,16 @@ class MapManager():
         if(not rclpy.ok()):
             rclpy.init() # will be removed later
         mapSubscriber = MapSubscriber()
-        while MapManager.mission_ongoing:
+        while MapManager.mission_ongoing and rclpy.ok():
             try:
-                multi_executor = rclpy.executors.MultiThreadedExecutor()
-                await run_in_threadpool(lambda:rclpy.spin_once(mapSubscriber, executor=multi_executor, timeout_sec=2))
+                await run_in_threadpool(lambda:rclpy.spin_once(mapSubscriber, timeout_sec=4))
                 if mapSubscriber.newMapAvailable and mapSubscriber.base_64_map_img is not None:
                     await send_map_image(mapSubscriber.base_64_map_img)
                     mapSubscriber.newMapAvailable = False
             except Exception as err:
                 logging.debug(f"Exception in Map manager: {err}") #not important
+                pass
+        mapSubscriber.destroy_node()
         
     @staticmethod
     def stop_map_listener():
