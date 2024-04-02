@@ -71,7 +71,7 @@ class LogManager():
     async def start_record_logs():
         LogManager.is_recording = True
         log_subscriber = LogSubscriber()
-        while LogManager.is_recording:
+        while LogManager.is_recording and rclpy.ok():
             try:
                 await run_in_threadpool(lambda:rclpy.spin_once(log_subscriber, timeout_sec=4))
                 if log_subscriber.is_new_log and log_subscriber.last_ros_log is not None:
@@ -82,7 +82,8 @@ class LogManager():
                     else:
                         await send_log(log.message, log.source_id, log.logType)
                     log_subscriber.is_new_log = False
-            except Exception as e:
+            except Exception as err:
+                logging.debug(f"Exception in Log manager: {err}")
                 pass
         log_subscriber.destroy_node()
 
