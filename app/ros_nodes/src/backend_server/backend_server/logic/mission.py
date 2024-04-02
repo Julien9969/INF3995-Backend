@@ -25,17 +25,19 @@ class Mission(metaclass=Singleton):
     def start_mission(self):
         if self.state != MissionState.ONGOING:
             self.start_timestamp = int(time.time())
+            self.state = MissionState.ONGOING
             logging.info("Starting mission node")
             mission = Mission()
             mission.start_mission()
         else:
-            logging.info("Mission already started")
+            logging.debug("Mission already started")
         pass
 
     def stop_mission(self):
         self.stop_timestamp = int(time.time())
         mission = Mission()
         mission.stop_mission()
+        self.state = MissionState.ENDED
         self.terminate_mission()
         pass
 
