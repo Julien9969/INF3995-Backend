@@ -3,6 +3,7 @@ import time
 
 from backend_server.common import MissionState, MissionStatus
 from backend_server.helpers.singleton import Singleton
+from backend_server.nodes.clients.mission import MissionNode
 
 
 class Mission(metaclass=Singleton):
@@ -23,19 +24,18 @@ class Mission(metaclass=Singleton):
             return int(time.time()) - self.start_timestamp
 
     def start_mission(self):
+        if self.state == MissionState.ENDED:  # if restart
+            self.stop_timestamp = 0
         if self.state != MissionState.ONGOING:
             self.start_timestamp = int(time.time())
             self.state = MissionState.ONGOING
             logging.info("Starting mission node")
-            mission = Mission()
+            mission = MissionNode()
             mission.start_mission()
-        else:
-            logging.debug("Mission already started")
-        pass
 
     def stop_mission(self):
         self.stop_timestamp = int(time.time())
-        mission = Mission()
+        mission = MissionNode()
         mission.stop_mission()
         self.state = MissionState.ENDED
         self.terminate_mission()
