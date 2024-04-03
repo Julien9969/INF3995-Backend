@@ -1,6 +1,5 @@
 from rclpy.node import Node
 from nav_msgs.msg import OccupancyGrid
-from backend_server.logic.map import MapData
 
 
 class MapPublisher(Node):

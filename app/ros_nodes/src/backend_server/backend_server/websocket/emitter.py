@@ -3,7 +3,6 @@ import json
 import logging
 import time
 
-from backend_server.db.models import Log as LogDB
 from backend_server.common import Log, LogType
 from backend_server.common import WebsocketsEvents, MissionStatus
 from backend_server.logic.mission import Mission
@@ -39,15 +38,6 @@ async def send_log(message: str, robot_id=2, event_type=LogType.LOG):
               eventType=event_type,
               missionId=1)
 
-    # Creating and sending of the log to the Database
-    new_log_row = LogDB(mission_id=log['missionId'],
-                        robot_id=log['robotId'],
-                        log_type=log['eventType'],
-                        message=log['message'])
-    session = SessionLocal()
-    session.add_all([new_log_row])
-    session.commit()
-    # Sending the log to the frontend
     await send(WebsocketsEvents.LOG_DATA, log)
 
 
@@ -58,7 +48,6 @@ async def send_mission_updates():
     while True:
         mission = Mission()
         update = mission.get_status()
-        logging.debug(f"Sending updates {update['timestamp']}")
         await send(WebsocketsEvents.MISSION_STATUS, update)
         await asyncio.sleep(FREQUENCY)
 

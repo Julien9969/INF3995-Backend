@@ -13,6 +13,7 @@ class MissionStatus(TypedDict):
     elapsedTime: int
     startTimestamp: int
     timestamp: int
+    missionId: int
 
 
 class LogType(str, Enum):

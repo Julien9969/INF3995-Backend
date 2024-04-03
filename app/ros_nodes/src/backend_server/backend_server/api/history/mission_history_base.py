@@ -5,7 +5,7 @@ from pydantic import BaseModel
 class HistoryBase:
 
     @staticmethod
-    async def get_missions_resume() -> str:
+    async def get_missions_resume():
         """
         Get the mission history from the database
         """
@@ -14,7 +14,7 @@ class HistoryBase:
         return missions_resume
 
     @staticmethod
-    async def get_complete_mission(mission_id: int) -> str:
+    async def get_complete_mission(mission_id: int):
         """
         Get the mission history from the database
         """

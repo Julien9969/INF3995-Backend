@@ -2,7 +2,7 @@ import json
 from enum import Enum
 
 import rclpy
-from backend_server.api.schemas import File, serviceError
+from backend_server.api.files.schemas import File, serviceError
 
 from .files_client import FilesClientAsync
 
