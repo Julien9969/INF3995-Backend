@@ -5,14 +5,18 @@ from backend_server.db.session import SessionLocal
 
 def retrieve_missions_resume():
     session = SessionLocal()
-    results = session.query(
-        Mission.id,
-        Mission.start_timestamp,
-        Mission.duration,
-        Robot.robot_id).all()
-
+    results = session.query(Mission).all()
     session.close()
-    return results
+    status = []
+    for result in results:
+        mission = MissionStatus(
+            mission_id=result.id,
+            start_timestamp=result.start_timestamp,
+            duration=result.duration,
+            is_simulation=result.is_simulation
+        )
+        status.append(mission)
+    return status
 
 
 def retrieve_history() -> list:
