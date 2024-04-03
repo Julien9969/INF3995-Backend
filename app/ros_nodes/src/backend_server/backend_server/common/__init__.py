@@ -56,6 +56,7 @@ class RobotInformation(TypedDict):
     id: int
     name: str
     battery: int
+    distance: int
     state: str
     lastUpdate: int
     position: Position

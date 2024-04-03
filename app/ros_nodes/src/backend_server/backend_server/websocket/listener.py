@@ -1,5 +1,4 @@
 import logging
-import asyncio
 
 from backend_server.logic.mission import Mission
 from backend_server.websocket.base import sio
