@@ -1,4 +1,5 @@
 import logging
+import rclpy
 from fastapi.concurrency import run_in_threadpool
 from backend_server.websocket.emitter import send_log
 from backend_server.nodes.subscribers.logs import LogSubscriber

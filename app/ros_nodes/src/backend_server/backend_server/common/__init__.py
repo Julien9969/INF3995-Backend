@@ -20,7 +20,9 @@ class MissionStatus(TypedDict):
 class LogType(str, Enum):
     LOG = "log"
     COMMAND = "command"
+    BATTERY = "battery"
     SENSOR = "sensor"
+    COORDS = "coords"
 
 
 class Log(TypedDict):
