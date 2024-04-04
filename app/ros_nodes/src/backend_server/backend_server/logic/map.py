@@ -4,12 +4,21 @@ import math
 from array import array
 
 from backend_server.common import Singleton
+from backend_server.db.models import Map
+from backend_server.db.session import SessionLocal
 
 
 class MapData(metaclass=Singleton):
     def __init__(self):
         self.map = None
         self.map_image = None
+
+    def set_map(self, map):
+        self.map = map
+        self.map_image = convert_data_to_b64_rtr(map)
+
+    def get_map(self):
+        return self.map
 
 
 def convert_data_to_b64_rtr(grid):

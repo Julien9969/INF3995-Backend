@@ -6,7 +6,7 @@ from backend_server.constants import RCL_TIMEOUT
 
 
 class LogManager:
-    is_recording = True
+    is_recording = True  # TODO: shouldn't this be False?
 
     @staticmethod
     async def start_record_logs():

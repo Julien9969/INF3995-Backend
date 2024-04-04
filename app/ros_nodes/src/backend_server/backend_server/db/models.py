@@ -13,6 +13,15 @@ class Mission(Base):
     robots = relationship('Robot')
 
 
+class Log(Base):
+    __tablename__ = 'logs'
+
+    id = Column(Integer, primary_key=True)
+    timestamp = Column(Integer)
+    eventType = Column(Integer)
+    message = Column(String)
+
+
 class Robot(Base):
     __tablename__ = 'robots'
 

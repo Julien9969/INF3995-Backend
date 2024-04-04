@@ -2,10 +2,12 @@ import logging
 import time
 
 from backend_server.common import MissionState, MissionStatus
-from backend_server.db.insertions import save_mission
+from backend_server.db.insertions import save_mission, save_logs, save_robots
 from backend_server.db.queries import get_new_mission_id
 from backend_server.helpers.singleton import Singleton
 from backend_server.nodes.clients.mission import MissionNode
+from backend_server.logic.logs import Logs
+from backend_server.logic.robots import RobotsData
 
 
 class Mission(metaclass=Singleton):
@@ -41,11 +43,19 @@ class Mission(metaclass=Singleton):
 
     def stop_mission(self):
         self.stop_timestamp = int(time.time())
+        self.state = MissionState.ENDED
         mission = MissionNode()
         mission.stop_mission()
-        self.state = MissionState.ENDED
-        logging.info(f"Stopping mission node for mission {self.mission_id}")
+
         save_mission(self.get_status())
+
+        logs = Logs()
+        logs = logs.get_logs()
+        save_logs(logs)
+        robots = RobotsData()
+        robots = robots.save_status()
+        save_robots(robots)
+        logging.info(f"Stopping mission node for mission {self.mission_id}")
 
     def get_status(self) -> MissionStatus:
         return MissionStatus(missionId=self.mission_id,

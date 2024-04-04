@@ -1,5 +1,8 @@
 from backend_server.helpers.singleton import Singleton
 from backend_server.common import RobotInformation, Position, RobotState
+from backend_server.db.models import Robot as RobotDB
+from backend_server.db.session import SessionLocal
+
 
 import time
 import logging
@@ -53,3 +56,16 @@ class RobotsData(metaclass=Singleton):
                                  position=robot.position,
                                  initialPosition=robot.position)
                 for robot in self.robots]
+
+    def save_status(self):
+        session = SessionLocal()
+        for robot in self.robots:
+            new_robot_row = RobotDB(id=robot.id,
+                                    battery=robot.battery,
+                                    distance=robot.distance,
+                                    state=robot.state,
+                                    last_update=int(time.time()),
+                                    position=robot.position,
+                                    initial_position=robot.initial_position)
+            session.add_all([new_robot_row])
+            session.commit()

@@ -12,7 +12,7 @@ while True:
             SQLALCHEMY_DATABASE_URL
         )
         SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-        time.sleep(1)
+        time.sleep(1)  # TODO: ehourdebaigt: is this sleep necessary?
         break
     except Exception as e:
         print("Waiting for db to be ready...")

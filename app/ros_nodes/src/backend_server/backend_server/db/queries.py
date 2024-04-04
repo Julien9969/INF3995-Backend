@@ -1,5 +1,5 @@
 from backend_server.common import RobotInformation, MissionStatus
-from backend_server.db.models import Mission, Robot, Map
+from backend_server.db.models import Mission, Robot, Map, Log
 from backend_server.db.session import SessionLocal
 
 
@@ -10,33 +10,38 @@ def retrieve_missions_resume():
     status = []
     for result in results:
         mission = MissionStatus(
-            mission_id=result.id,
-            start_timestamp=result.start_timestamp,
-            duration=result.duration,
-            is_simulation=result.is_simulation
+            missionId=result.id,
+            startTimestamp=result.start_timestamp,
+            elapsedTime=result.duration,
+            isSimulation=result.is_simulation,
+            robotCount=0,
+            missionState='ENDED',
         )
         status.append(mission)
     return status
 
 
-def retrieve_history() -> list:
-    pass
+def retrieve_logs() -> list:
+    session = SessionLocal()
+    results = session.query(Log).filter(Log.mission_id == 1).all()
+    session.close()
+    return results
 
 
 def retrieve_mission(mission_id: int) -> MissionStatus:
     session = SessionLocal()
     result = session.query(Mission).get(mission_id)
-
     if result:
         mission_data = MissionStatus(
-            mission_id=result.id,
-            start_timestamp=result.start_timestamp,
-            duration=result.duration,
-            is_simulation=result.is_simulation
+            missionId=result.id,
+            startTimestamp=result.start_timestamp,
+            elapsedTime=result.duration,
+            isSimulation=result.is_simulation,
+            missionState='ENDED',
+            robotCount=0,
         )
     else:
         mission_data = None
-
     session.close()
     return mission_data
 

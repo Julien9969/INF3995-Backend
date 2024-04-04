@@ -5,7 +5,6 @@ from contextlib import asynccontextmanager
 
 from backend_server.api.base import api_router
 from backend_server.db.models import Base
-from backend_server.db.populate import populate_db
 from backend_server.db.session import engine
 from backend_server.db.utils import check_db_connected, check_db_disconnected
 from backend_server.websocket.base import socket_app
@@ -36,8 +35,6 @@ def start_application() -> FastAPI:
     # configure_static(app)
     app.mount("/", socket_app)  # Add web sockets to app
     Base.metadata.create_all(bind=engine)
-    if app.debug:
-        populate_db()
     return app
 
 

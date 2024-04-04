@@ -12,6 +12,7 @@ class MissionStatus(TypedDict):
     missionState: MissionState
     elapsedTime: int
     startTimestamp: int
+    robotCount: int
     timestamp: int
     missionId: int
 
