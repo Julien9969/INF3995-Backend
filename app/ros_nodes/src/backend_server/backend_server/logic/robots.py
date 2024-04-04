@@ -1,5 +1,3 @@
-import logging
-from backend_server.logic.mission import Mission
 from backend_server.helpers.singleton import Singleton
 from backend_server.common import RobotInformation, Position, RobotState
 from backend_server.db.models import Robot as RobotDB
@@ -7,7 +5,6 @@ from backend_server.db.session import SessionLocal
 
 
 import time
-import logging
 
 
 class Robot:
