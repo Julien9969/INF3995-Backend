@@ -13,7 +13,7 @@ class MissionStatus(TypedDict):
     elapsedTime: int
     startTimestamp: int
     timestamp: int
-    isSimulation: bool
+    missionId: int
 
 
 class LogType(str, Enum):
@@ -58,6 +58,7 @@ class RobotInformation(TypedDict):
     id: int
     name: str
     battery: int
+    distance: int
     state: str
     lastUpdate: int
     position: Position

@@ -3,10 +3,16 @@ from backend_server.logic.mission import Mission
 from backend_server.helpers.singleton import Singleton
 from backend_server.common import RobotInformation, Position, RobotState
 
+import time
+import logging
+
 
 class Robot:
     def __init__(self, id: int, initial_position: Position):
         self.id = id
+        self.battery = 100
+        self.distance = 0
+        self.initial_position = initial_position
         self.position = initial_position
         self.state = RobotState.IDLE
 
@@ -25,6 +31,10 @@ class RobotsData(metaclass=Singleton):
     """
     def __init__(self):
         self.robots: list[Robot] = []
+        robot1 = Robot(1, Position(x=40, y=120))
+        robot2 = Robot(2, Position(x=100, y=25))
+        self.robots.append(robot1)
+        self.robots.append(robot2)
 
     def connect_robot(self, robot: Robot):
         self.robots.append(robot)
@@ -36,4 +46,12 @@ class RobotsData(metaclass=Singleton):
         """
         Generate the object that will be written to the database
         """
-        pass
+        return [RobotInformation(id=robot.id,
+                                 name=f"robot{robot.id}",
+                                 battery=100,
+                                 state=robot.state,
+                                 distance=robot.distance,
+                                 lastUpdate=int(time.time()),
+                                 position=robot.position,
+                                 initialPosition=robot.position)
+                for robot in self.robots]

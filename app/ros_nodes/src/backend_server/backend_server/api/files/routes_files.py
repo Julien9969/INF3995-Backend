@@ -1,4 +1,4 @@
-from backend_server.api.schemas import File
+from backend_server.api.files.schemas import File
 from fastapi import APIRouter, status, responses
 
 from .files_base import ROSFilesBase

@@ -1,3 +1,5 @@
+import logging
+
 from sqlalchemy import exists
 from sqlalchemy.orm import Session
 from backend_server.db.models import Mission, Robot
@@ -17,5 +19,6 @@ def populate_db(session=SessionLocal()):
                 session.add(Robot(robot_id=robot_id))
         session.commit()
         session.close()
+
     except Exception as e:
-        pass
+        logging.debug("Can't insert into database")
