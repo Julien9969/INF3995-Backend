@@ -1,8 +1,8 @@
 import logging
 
+from backend_server.nodes.subscribers.map import MapSubscriber
 import rclpy
 from backend_server.common import WebsocketsEvents
-from backend_server.nodes.publishers.map import MapPublisher
 from backend_server.websocket.emitter import send_raw
 from fastapi.concurrency import run_in_threadpool
 
@@ -15,7 +15,7 @@ class MapManager:
         MapManager.missionOngoing = True
         if not rclpy.ok():
             rclpy.init()
-        map_publisher = MapPublisher()
+        map_publisher = MapSubscriber()
         while MapManager.missionOngoing:
             try:
                 await run_in_threadpool(lambda: rclpy.spin_once(map_publisher, timeout_sec=4))

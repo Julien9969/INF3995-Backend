@@ -1,6 +1,6 @@
 import math
+from backend_server.common import WebsocketsEvents
 from backend_server.websocket.base import sio
-from backend_server.websocket.events import Events
 
 import logging
 from fastapi.concurrency import run_in_threadpool
@@ -119,7 +119,7 @@ async def send_map_image(map_data):
     """
     Send the map data to the client
     """
-    await sio.emit(Events.MAP_DATA.value, map_data)
+    await sio.emit(WebsocketsEvents.MAP_DATA.value, map_data)
 
 def twos_comp_byte(val):
     bits = 8
