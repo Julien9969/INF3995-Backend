@@ -29,6 +29,8 @@ async def send_log(message: str, robot_id=2, event_type=LogType.LOG):
 
     await send(WebsocketsEvents.LOG_DATA, log)
 
+async def send_map_image(map_data):
+    await sio.emit(WebsocketsEvents.MAP_DATA.value, map_data)
 
 async def send_mission_updates():
     while True:

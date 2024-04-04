@@ -39,13 +39,14 @@ class Mission(metaclass=Singleton):
             self.mission_id = get_new_mission_id()
             logging.info(f"Starting mission node for mission {self.mission_id}")
             mission = MissionNode()
-            mission.start_mission()
+            response = mission.start_mission()
+            return response
 
     def stop_mission(self):
         self.stop_timestamp = int(time.time())
         self.state = MissionState.ENDED
         mission = MissionNode()
-        mission.stop_mission()
+        result = mission.stop_mission()
 
         save_mission(self.get_status())
 
@@ -56,6 +57,7 @@ class Mission(metaclass=Singleton):
         robots = robots.get_status()
         save_robots(robots)
         logging.info(f"Stopping mission node for mission {self.mission_id}")
+        return result
 
     def get_status(self) -> MissionStatus:
         return MissionStatus(missionId=self.mission_id,
