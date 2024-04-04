@@ -53,7 +53,7 @@ class Mission(metaclass=Singleton):
         logs = logs.get_logs()
         save_logs(logs)
         robots = RobotsData()
-        robots = robots.save_status()
+        robots = robots.get_status()
         save_robots(robots)
         logging.info(f"Stopping mission node for mission {self.mission_id}")
 
