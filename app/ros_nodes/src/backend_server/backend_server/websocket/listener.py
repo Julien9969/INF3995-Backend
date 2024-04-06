@@ -4,8 +4,8 @@ from backend_server.logic.mission import Mission
 from backend_server.websocket.base import sio
 from backend_server.nodes.managers.map import MapManager
 from backend_server.nodes.managers.logs import LogManager
-from backend_server.common import WebsocketsEvents, MissionStatus
-from backend_server.websocket.emitter import send, send_log, send_mission_updates
+from backend_server.common import WebsocketsEvents
+from backend_server.websocket.emitter import send, send_log
 from backend_server.nodes.clients.robot import IdentifyBase
 
 
@@ -15,9 +15,18 @@ async def set_mission_start(sid, _=None):
     Confirm to clients that the mission has been started
     """
     mission = Mission()
-    mission.start_mission()
-    await MapManager.start_map_listener()
+    result = mission.start_mission()
+    await send_log(f"Robots response to start mission: {result}")
     await LogManager.start_record_logs()
+
+@sio.on(WebsocketsEvents.MISSION_MAP.value)
+async def start_record_map(sid, _=None):
+    """
+    Start sending map to client
+    """
+    await sio.emit(WebsocketsEvents.MISSION_MAP.value)
+    await MapManager.start_map_listener()
+
 
 
 @sio.on(WebsocketsEvents.MISSION_END.value)
