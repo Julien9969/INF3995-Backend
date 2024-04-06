@@ -1,25 +1,28 @@
-from backend_server.db.queries import retrieve_mission, retrieve_missions_resume
+from backend_server.db.queries import retrieve_mission, retrieve_missions, retrieve_map, retrieve_robots, retrieve_logs
 from pydantic import BaseModel
 
 
 class HistoryBase:
 
     @staticmethod
-    async def get_missions_resume():
-        """
-        Get the mission history from the database
-        """
-        # Retrieve specific information for each mission from the database using a query
-        missions_resume = retrieve_missions_resume()
-        return missions_resume
+    async def get_missions():
+        return retrieve_missions()
 
     @staticmethod
-    async def get_complete_mission(mission_id: int):
-        """
-        Get the mission history from the database
-        """
-        mission = retrieve_mission(mission_id)
-        return mission
+    async def get_mission(mission_id: int):
+        return retrieve_mission(mission_id)
+
+    @staticmethod
+    async def get_map(mission_id: int):
+        return retrieve_map(mission_id)
+
+    @staticmethod
+    async def get_robots(mission_id: int):
+        return retrieve_robots(mission_id)
+
+    @staticmethod
+    async def get_logs(mission_id: int):
+        return retrieve_logs(mission_id)
 
 
 class HistoryResponse(BaseModel):

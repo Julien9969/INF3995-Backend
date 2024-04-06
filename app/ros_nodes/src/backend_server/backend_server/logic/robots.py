@@ -1,10 +1,8 @@
-from backend_server.helpers.singleton import Singleton
-from backend_server.common import RobotInformation, Position, RobotState
-from backend_server.db.models import Robot as RobotDB
-from backend_server.db.session import SessionLocal
-
-
 import time
+
+from backend_server.common import RobotInformation, Position, RobotState
+from backend_server.helpers.singleton import Singleton
+from backend_server.nodes.publishers.identify import send_cmd_vel
 
 
 class Robot:
@@ -21,14 +19,12 @@ class Robot:
         assert position.y >= 0
         self.position = position
 
-    def poll_for_state(self):
-        pass
-
 
 class RobotsData(metaclass=Singleton):
     """
     Singleton to store the data during the mission
     """
+
     def __init__(self):
         self.robots: list[Robot] = []
         robot1 = Robot(1, Position(x=40, y=120))
@@ -55,3 +51,10 @@ class RobotsData(metaclass=Singleton):
                                  position=robot.position,
                                  initialPosition=robot.position)
                 for robot in self.robots]
+
+    def identify_robot(self, robot_id: int):
+        for robot in self.robots:
+            if robot.id == robot_id:
+                robot.state = RobotState.IDENTIFYING
+                send_cmd_vel(0.1, 0.1, robot_id)
+                return robot

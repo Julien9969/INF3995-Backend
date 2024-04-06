@@ -1,5 +1,5 @@
 from backend_server.db.session import Base, SessionLocal
-from sqlalchemy import Column, Integer, String, ForeignKey, Boolean
+from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Float
 from sqlalchemy.orm import relationship
 
 
@@ -18,15 +18,22 @@ class Log(Base):
 
     id = Column(Integer, primary_key=True)
     timestamp = Column(Integer)
-    eventType = Column(Integer)
+    event_type = Column(Integer)
     message = Column(String)
+    robot_id = Column(Integer, ForeignKey('robots.id'))
+    mission_id = Column(Integer, ForeignKey('missions.id'))
 
 
 class Robot(Base):
     __tablename__ = 'robots'
 
     mission_id = Column(Integer, ForeignKey('missions.id'), primary_key=True)
-    status = Column(String)
+    status = Column(String)  # see RobotState
+    distance = Column(Float)
+    battery = Column(Float)
+    position = Column(String)  # json of x, y
+    initial_position = Column(String)  # json of x, y
+    last_update = Column(Integer)
     id = Column(Integer)
 
 

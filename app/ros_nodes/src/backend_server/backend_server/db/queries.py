@@ -1,11 +1,11 @@
-from backend_server.common import RobotInformation, MissionStatus
-from backend_server.db.models import Mission, Robot, Map, Log
+from backend_server.common import RobotInformation, MissionStatus, Log
+from backend_server.db.models import Mission as MissionDB, Robot as RobotDB, Map as MapDB, Log as LogDB
 from backend_server.db.session import SessionLocal
 
 
-def retrieve_missions_resume():
+def retrieve_missions():
     session = SessionLocal()
-    results = session.query(Mission).all()
+    results = session.query(MissionDB).all()
     session.close()
     status = []
     for result in results:
@@ -21,16 +21,26 @@ def retrieve_missions_resume():
     return status
 
 
-def retrieve_logs() -> list:
+def retrieve_logs(mission_id: int) -> list:
     session = SessionLocal()
-    results = session.query(Log).filter(Log.mission_id == 1).all()
+    results = session.query(LogDB).filter(LogDB.mission_id == mission_id).all()
     session.close()
-    return results
+    logs = []
+    for result in results:
+        log = Log(
+            message=result.message,
+            timestamp=result.timestamp,
+            robotId=result.robot_id,
+            eventType=result.event_type,
+            missionId=result.mission_id,
+        )
+        logs.append(log)
+    return logs
 
 
 def retrieve_mission(mission_id: int) -> MissionStatus:
     session = SessionLocal()
-    result = session.query(Mission).get(mission_id)
+    result = session.query(MissionDB).get(mission_id)
     if result:
         mission_data = MissionStatus(
             missionId=result.id,
@@ -46,24 +56,39 @@ def retrieve_mission(mission_id: int) -> MissionStatus:
     return mission_data
 
 
-def retrieve_robot_status(mission_id: int) -> list[RobotInformation]:
+def retrieve_robots(mission_id: int) -> list[RobotInformation]:
     session = SessionLocal()
-    result = session.query(Robot).filter(Robot.id == mission_id).all()
+    result = session.query(RobotDB).filter(RobotDB.mission_id == mission_id).all()
     session.close()
-    return result
+    robots = []
+    for robot in result:
+        robot_data = RobotInformation(
+            id=robot.id,
+            name=robot.id,
+            battery=robot.battery,
+            position=robot.position,
+            distance=robot.distance,
+            state=robot.status,
+            lastUpdate=robot.last_update,
+            initialPosition=robot.initial_position,
+        )
+        robots.append(robot_data)
+    return robots
 
 
-def retrieve_map_data(mission_id: int) -> str:
+def retrieve_map(mission_id: int) -> str:
     session = SessionLocal()
-    result = session.query(Map).get(Map.id == mission_id)
-    # TODO: could maybe also save size of image in db
-    assert str(result).startswith("data:image/bmp;base64,"), "Invalid image data"
+    result = session.query(MapDB).get(mission_id)
     session.close()
-    return result
+    map_data = None
+    if result:
+        map_data = result.map_data
+        assert str(map_data).startswith("data:image/bmp;base64,"), "Invalid image data"
+    return map_data
 
 
 def get_new_mission_id() -> int:
     session = SessionLocal()
-    result = session.query(Mission).count()
+    result = session.query(MissionDB).count()
     session.close()
     return result + 1

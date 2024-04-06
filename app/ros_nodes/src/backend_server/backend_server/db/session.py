@@ -15,7 +15,6 @@ while True:
         time.sleep(1)  # TODO: ehourdebaigt: is this sleep necessary?
         break
     except Exception as e:
-        print("Waiting for db to be ready...")
         continue
 
 
