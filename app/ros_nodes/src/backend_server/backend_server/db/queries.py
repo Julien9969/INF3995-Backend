@@ -1,6 +1,7 @@
 from backend_server.common import RobotInformation, MissionStatus, Log
 from backend_server.db.models import Mission as MissionDB, Robot as RobotDB, Map as MapDB, Log as LogDB
 from backend_server.db.session import SessionLocal
+import logging
 
 
 def retrieve_missions():
@@ -47,8 +48,9 @@ def retrieve_mission(mission_id: int) -> MissionStatus:
             startTimestamp=result.start_timestamp,
             elapsedTime=result.duration,
             isSimulation=result.is_simulation,
-            missionState='ENDED',
-            robotCount=0,
+            missionState=result.mission_state,
+            distance=result.distance,
+            robotCount=result.robot_count,
         )
     else:
         mission_data = None
@@ -78,12 +80,11 @@ def retrieve_robots(mission_id: int) -> list[RobotInformation]:
 
 def retrieve_map(mission_id: int) -> str:
     session = SessionLocal()
-    result = session.query(MapDB).get(mission_id)
+    result = session.query(MapDB).filter(MapDB.mission_id == mission_id).one_or_none()
     session.close()
     map_data = None
     if result:
         map_data = result.map_data
-        assert str(map_data).startswith("data:image/bmp;base64,"), "Invalid image data"
     return map_data
 
 

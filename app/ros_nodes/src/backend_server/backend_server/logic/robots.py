@@ -38,7 +38,7 @@ class RobotsData(metaclass=Singleton):
     def disconnect_robot(self, robot: Robot):
         self.robots.remove(robot)
 
-    def get_status(self) -> list[RobotInformation]:
+    def get_robots(self) -> list[RobotInformation]:
         """
         Generate the object that will be written to the database
         """

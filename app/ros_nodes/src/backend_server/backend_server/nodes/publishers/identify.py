@@ -5,7 +5,6 @@ import asyncio
 
 
 def send_cmd_vel(x: float, z: float, robot: bool):
-    # TODO: could be moved into the node folder
     if not rclpy.ok():
         rclpy.init()
 

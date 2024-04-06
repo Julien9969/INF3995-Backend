@@ -18,15 +18,7 @@ async def set_mission_start(sid, _=None):
     result = mission.start_mission()
     await send_log(f"Robots response to start mission: {result}")
     await LogManager.start_record_logs()
-
-@sio.on(WebsocketsEvents.MISSION_MAP.value)
-async def start_record_map(sid, _=None):
-    """
-    Start sending map to client
-    """
-    await sio.emit(WebsocketsEvents.MISSION_MAP.value)
     await MapManager.start_map_listener()
-
 
 
 @sio.on(WebsocketsEvents.MISSION_END.value)

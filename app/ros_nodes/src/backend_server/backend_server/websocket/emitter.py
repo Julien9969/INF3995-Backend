@@ -3,7 +3,7 @@ import json
 import time
 
 from backend_server.common import Log, LogType
-from backend_server.common import WebsocketsEvents, MissionStatus
+from backend_server.common import WebsocketsEvents
 from backend_server.logic.mission import Mission
 from backend_server.logic.robots import RobotsData
 from backend_server.websocket.base import sio
@@ -29,8 +29,13 @@ async def send_log(message: str, robot_id=2, event_type=LogType.LOG):
 
     await send(WebsocketsEvents.LOG_DATA, log)
 
+
 async def send_map_image(map_data):
+    """
+    Called by the node at an undermined frequency
+    """
     await sio.emit(WebsocketsEvents.MAP_DATA.value, map_data)
+
 
 async def send_mission_updates():
     while True:
@@ -43,6 +48,6 @@ async def send_mission_updates():
 async def send_robot_updates():
     while True:
         robots = RobotsData()
-        update = robots.get_status()
+        update = robots.get_robots()
         await send(WebsocketsEvents.ROBOT_STATUS, update)
         await asyncio.sleep(FREQUENCY)

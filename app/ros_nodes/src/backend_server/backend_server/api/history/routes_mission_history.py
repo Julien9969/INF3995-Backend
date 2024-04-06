@@ -31,13 +31,13 @@ async def get_mission(mission_id: int) -> responses.JSONResponse:
 
 
 @router.get("/map/{mission_id}")
-async def get_mission(mission_id: int) -> responses.JSONResponse:
+async def get_mission(mission_id: int) -> responses.PlainTextResponse:
     map_data = await HistoryBase.get_map(mission_id)
     if not map_data:
-        return responses.JSONResponse({},
-                                      status_code=status.HTTP_404_NOT_FOUND)
+        return responses.PlainTextResponse("",
+                                           status_code=status.HTTP_404_NOT_FOUND)
     else:
-        return responses.JSONResponse(map_data, status_code=status.HTTP_200_OK)
+        return responses.PlainTextResponse(map_data, status_code=status.HTTP_200_OK)
 
 
 @router.get("/robots/{mission_id}")

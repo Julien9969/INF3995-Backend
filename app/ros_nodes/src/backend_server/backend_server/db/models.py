@@ -1,6 +1,5 @@
 from backend_server.db.session import Base, SessionLocal
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Float
-from sqlalchemy.orm import relationship
 
 
 class Mission(Base):
@@ -10,7 +9,9 @@ class Mission(Base):
     start_timestamp = Column(Integer)
     duration = Column(Integer)
     is_simulation = Column(Boolean)
-    robots = relationship('Robot')
+    robot_count = Column(Integer)
+    distance = Column(Float)
+    mission_state = Column(String)  # see MissionState
 
 
 class Log(Base):
