@@ -53,7 +53,7 @@ class Mission(metaclass=Singleton):
         save_mission(self.get_status(),
                      robots.get_robots(),
                      logs.get_logs(),
-                     mission_map.get_map_data())
+                     mission_map.get_map())
 
     def get_status(self) -> MissionStatus:
         return MissionStatus(missionId=self.mission_id,

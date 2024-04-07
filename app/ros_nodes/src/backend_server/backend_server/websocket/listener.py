@@ -15,8 +15,8 @@ async def set_mission_start(sid, _=None):
     Confirm to clients that the mission has been started
     """
     mission = Mission()
-    result = mission.start_mission()
-    await send_log(f"Robots response to start mission: {result}")
+    mission.start_mission()
+    logging.info("Mission started")
     await LogManager.start_record_logs()
     await MapManager.start_map_listener()
 
@@ -26,8 +26,8 @@ async def set_mission_end(sid, _=None):
     """
     Confirm to clients that the mission has been stopped
     """
-    result = Mission().stop_mission()
-    await send_log(f"Robots response to stop: {result}")
+    Mission().stop_mission()
+    logging.info("Mission ended")
     LogManager.stop_record_logs()
     MapManager.stop_map_listener()
 

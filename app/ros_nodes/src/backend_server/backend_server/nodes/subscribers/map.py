@@ -20,7 +20,7 @@ class MapSubscriber(Node):
         super().__init__('map_subscriber')
         self.subscription = self.create_subscription(
             OccupancyGrid,
-            'robot1/map',
+            'map',
             self.listener_callback,
             10)
         self.subscription  # prevent unused variable warning
