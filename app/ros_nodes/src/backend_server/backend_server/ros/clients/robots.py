@@ -4,14 +4,15 @@ import time
 import rclpy
 import logging
 
-from backend_server.nodes.clients.identify import IdentifyClientAsync
 from fastapi.concurrency import run_in_threadpool
 from geometry_msgs.msg import Twist
 from interfaces.srv import Identify
 from nav_msgs.msg import Odometry
 from rclpy.node import Node
 
-from backend_server.logic.robots import RobotsData
+from backend_server.models.robots import RobotsData
+
+MAX_ROBOTS = 10
 
 
 class RobotNode(Node):
@@ -34,7 +35,7 @@ class RobotNode(Node):
 
         return self.future.result()
 
-    async def launch_client(self, robot_id: int = 1) -> str:
+    async def launch_client(self, robot_id: int) -> str:
 
         identify_client = IdentifyClientAsync(robot_id)
 
@@ -54,7 +55,7 @@ class RobotNode(Node):
 
     async def get_connected_robot(self) -> list[int]:
         connected_robots = set()
-        for i in range(1, 3):
+        for i in range(1, MAX_ROBOTS):
             node = rclpy.create_node('robot_connector_node')
             odom_topic = f'/robot{i}/odom'
             subscriber = node.create_subscription(Odometry, odom_topic, self.odom_callback, 10)
@@ -68,9 +69,8 @@ class RobotNode(Node):
         return list(connected_robots)
 
     def odom_callback(self, msg):
-        robots = RobotsData()
-        robots.add_robot(msg)
-        logging.debug(f"Received odom data from robot {i} :")
+        logging.debug(f"Received odom data {msg} :")
+        r
 
     def send_cmd_vel(self, x: float, z: float):
         if not rclpy.ok():
@@ -89,5 +89,3 @@ class RobotNode(Node):
             time.sleep(0.3)
 
         node.destroy_node()
-
-        return asyncio.sleep(0)

@@ -1,9 +1,9 @@
 import logging
-
-from backend_server.constants import RCL_TIMEOUT
-from backend_server.nodes.subscribers.map import MapSubscriber
 import rclpy
-from backend_server.common import WebsocketsEvents
+
+from backend_server.classes.constants import RCL_TIMEOUT
+from backend_server.ros.subscribers.map import MapSubscriber
+from backend_server.classes.common import WebsocketsEvents
 from backend_server.websocket.emitter import send_map_image, send_raw
 from fastapi.concurrency import run_in_threadpool
 

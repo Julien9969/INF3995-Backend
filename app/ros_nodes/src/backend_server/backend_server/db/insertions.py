@@ -1,4 +1,4 @@
-from backend_server.common import MissionStatus, RobotInformation, Log
+from backend_server.classes.common import MissionStatus, RobotInformation, Log
 from backend_server.db.models import Mission as MissionDB, Log as LogDB, Map as MapDB, Robot as RobotDB
 from backend_server.db.session import SessionLocal
 

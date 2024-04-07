@@ -1,6 +1,6 @@
 import time
 from typing import Generator
-from backend_server.constants import SQLALCHEMY_DATABASE_URL
+from backend_server.classes.constants import SQLALCHEMY_DATABASE_URL
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker

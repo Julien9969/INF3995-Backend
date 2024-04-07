@@ -1,8 +1,8 @@
 import time
 import logging
 
-from backend_server.common import RobotInformation, Position, RobotState
-from backend_server.helpers.singleton import Singleton
+from backend_server.classes.common import RobotInformation, Position, RobotState
+from backend_server.classes.singleton import Singleton
 
 
 class Robot:
@@ -62,4 +62,8 @@ class RobotsData(metaclass=Singleton):
             if robot.id == robot_id:
                 robot.state = RobotState.IDENTIFYING
                 # TODO: send_cmd_vel(0.1, 0.1, robot_id)
-                return robot
+
+    def head_back_to_base(self):
+        for robot in self.robots:
+            robot.state = RobotState.HEADING_BACK
+            # TODO: head_back_to_base(robot.id)

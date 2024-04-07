@@ -4,7 +4,7 @@ import sys
 
 sys.path.append(".")  # TODO: could be changed, messes with IDE
 
-from backend_server.constants import PORT
+from backend_server.classes.constants import PORT
 
 
 def main():

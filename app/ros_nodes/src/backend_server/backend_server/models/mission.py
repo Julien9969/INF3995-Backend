@@ -1,14 +1,14 @@
 import logging
 import time
 
-from backend_server.common import MissionState, MissionStatus
+from backend_server.classes.common import MissionState, MissionStatus
 from backend_server.db.insertions import save_mission
 from backend_server.db.queries import get_new_mission_id
-from backend_server.helpers.singleton import Singleton
-from backend_server.nodes.clients.mission import MissionNode
-from backend_server.logic.logs import Logs
-from backend_server.logic.robots import RobotsData
-from backend_server.logic.map import MapData
+from backend_server.classes.singleton import Singleton
+from backend_server.ros.clients.mission import MissionNode
+from backend_server.models.logs import Logs
+from backend_server.models.robots import RobotsData
+from backend_server.models.map import MapData
 
 
 class Mission(metaclass=Singleton):
@@ -21,6 +21,8 @@ class Mission(metaclass=Singleton):
         self.stop_timestamp: int = 0
         self.state = MissionState.NOT_STARTED
         self.mission_id = get_new_mission_id()
+        # is_simulation is a constant: the server has to restart to change it
+        self.is_simulation = False  # TODO: @perron
 
     def get_duration(self):
         if self.state == MissionState.NOT_STARTED:

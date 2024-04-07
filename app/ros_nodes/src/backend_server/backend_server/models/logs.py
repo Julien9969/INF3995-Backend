@@ -1,7 +1,6 @@
 
-from backend_server.common import LogType, Log
-from backend_server.helpers.singleton import Singleton
-from backend_server.db.queries import retrieve_logs
+from backend_server.classes.common import LogType, Log
+from backend_server.classes.singleton import Singleton
 
 
 class Logs(metaclass=Singleton):
