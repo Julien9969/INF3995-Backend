@@ -1,4 +1,6 @@
 import logging
+from backend_server.common import LogType
+from backend_server.logic.robots import RobotsData
 import rclpy
 from fastapi.concurrency import run_in_threadpool
 from backend_server.websocket.emitter import send_log
@@ -19,7 +21,10 @@ class LogManager:
                 await run_in_threadpool(lambda: rclpy.spin_once(log_subscriber, timeout_sec=RCL_TIMEOUT))
                 if log_subscriber.is_new_log and log_subscriber.last_ros_log is not None:
                     log = log_subscriber.last_ros_log
-                    await send_log(log.message, log.source_id, log.logType)
+                    if log.logType == LogType.BATTERY:
+                        RobotsData().update_battery(log.message, log.source_id)
+                    else:
+                        await send_log(log.message, log.source_id, log.logType)
                     log_subscriber.is_new_log = False
             except Exception as err:
                 logging.debug(f"Exception in Log manager: {err}")
