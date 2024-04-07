@@ -2,6 +2,30 @@ from backend_server.common import MissionStatus, RobotInformation, Log
 from backend_server.db.models import Mission as MissionDB, Log as LogDB, Map as MapDB, Robot as RobotDB
 from backend_server.db.session import SessionLocal
 
+def init_missions():
+    session = SessionLocal()
+    mission = MissionDB(
+        start_timestamp=0,
+        duration=0,
+        is_simulation=False,
+        robot_count=0,
+        distance=0,
+        mission_state='CREATED',
+    )
+    session.add(mission)
+    robot  = RobotDB(
+        mission_id=mission.id,
+        status='CREATED',
+        distance=0,
+        battery=0,
+        position='{}',
+        initial_position='{}',
+        last_update=0,
+        robot_id = 0,
+    )
+    session.add(robot)
+    session.commit()
+    session.close()
 
 def save_mission(mission: MissionStatus, robots: list[RobotInformation], logs: list[Log], map_data: str):
     total_distance = 0.0

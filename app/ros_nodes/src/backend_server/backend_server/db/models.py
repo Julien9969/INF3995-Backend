@@ -28,14 +28,15 @@ class Log(Base):
 class Robot(Base):
     __tablename__ = 'robots'
 
-    mission_id = Column(Integer, ForeignKey('missions.id'), primary_key=True)
+    mission_id = Column(Integer, ForeignKey('missions.id'))
     status = Column(String)  # see RobotState
     distance = Column(Float)
     battery = Column(Float)
     position = Column(String)  # json of x, y
     initial_position = Column(String)  # json of x, y
     last_update = Column(Integer)
-    id = Column(Integer)
+    robot_id = Column(Integer)
+    id = Column(Integer, primary_key=True)
 
 
 class Map(Base):
