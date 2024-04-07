@@ -6,7 +6,7 @@ from backend_server.nodes.managers.map import MapManager
 from backend_server.nodes.managers.logs import LogManager
 from backend_server.common import WebsocketsEvents
 from backend_server.websocket.emitter import send, send_log
-from backend_server.nodes.clients.robot import IdentifyBase
+# from backend_server.nodes.clients.robots import IdentifyBase
 
 
 @sio.on(WebsocketsEvents.MISSION_START.value)
@@ -38,8 +38,8 @@ async def identify_request(sid, robot_id):
     Confirm to clients that the mission has been aborted
     """
     logging.info("Identify request received")
-    result = await IdentifyBase.launch_client(robot_id)
-    await send(WebsocketsEvents.IDENTIFY_FEEDBACK, result)
+    # TODO: result = await IdentifyBase.launch_client(robot_id)
+    await send(WebsocketsEvents.IDENTIFY_FEEDBACK, "result")
 
 
 @sio.on(WebsocketsEvents.HEADBACKBASE_REQUEST.value)

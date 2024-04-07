@@ -2,7 +2,6 @@ import time
 
 from backend_server.common import RobotInformation, Position, RobotState
 from backend_server.helpers.singleton import Singleton
-from backend_server.nodes.publishers.identify import send_cmd_vel
 
 
 class Robot:
@@ -44,7 +43,7 @@ class RobotsData(metaclass=Singleton):
         """
         return [RobotInformation(id=robot.id,
                                  name=f"robot{robot.id}",
-                                 battery=100,
+                                 battery=None,
                                  state=robot.state,
                                  distance=robot.distance,
                                  lastUpdate=int(time.time()),
@@ -56,5 +55,5 @@ class RobotsData(metaclass=Singleton):
         for robot in self.robots:
             if robot.id == robot_id:
                 robot.state = RobotState.IDENTIFYING
-                send_cmd_vel(0.1, 0.1, robot_id)
+                # TODO: send_cmd_vel(0.1, 0.1, robot_id)
                 return robot

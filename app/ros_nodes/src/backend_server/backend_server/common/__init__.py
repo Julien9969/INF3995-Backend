@@ -8,6 +8,14 @@ class MissionState(str, Enum):
     NOT_STARTED = "not-started"
 
 
+class RobotState(str, Enum):
+    IDLE = "idle"
+    MOVING = "moving"
+    DISCONNECTED = "disconnected"
+    IDENTIFYING = "identifying"
+    HEADING_BACK_BASE = "heading-back-base"
+
+
 class MissionStatus(TypedDict):
     missionState: MissionState
     elapsedTime: int
@@ -60,7 +68,7 @@ class RobotInformation(TypedDict):
     name: str
     battery: int
     distance: int
-    state: str
+    state: RobotState
     lastUpdate: int
     position: Position
     initialPosition: Position
