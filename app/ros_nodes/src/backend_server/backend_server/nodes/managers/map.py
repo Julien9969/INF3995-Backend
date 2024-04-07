@@ -1,5 +1,6 @@
 import logging
 
+from backend_server.constants import RCL_TIMEOUT
 from backend_server.nodes.subscribers.map import MapSubscriber
 import rclpy
 from backend_server.common import WebsocketsEvents
@@ -16,13 +17,13 @@ class MapManager:
         map_subscriber = MapSubscriber()
         while MapManager.mission_ongoing and rclpy.ok():
             try:
-                await run_in_threadpool(lambda:rclpy.spin_once(map_subscriber, timeout_sec=4))
+                await run_in_threadpool(lambda:rclpy.spin_once(map_subscriber, timeout_sec=RCL_TIMEOUT))
                 if map_subscriber.newMapAvailable and map_subscriber.base_64_map_img is not None:
                     await send_map_image(map_subscriber.base_64_map_img)
                     map_subscriber.newMapAvailable = False
             except Exception as err:
-                logging.debug(f"Exception in Map manager: {err}") #not important
-                pass
+                if str(err) != "generator already executing":
+                    logging.debug(f"Exception in Map manager: {err}")
         map_subscriber.destroy_node()
         
     @staticmethod

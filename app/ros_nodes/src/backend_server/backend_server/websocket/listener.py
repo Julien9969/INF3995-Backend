@@ -18,8 +18,14 @@ async def set_mission_start(sid, _=None):
     mission.start_mission()
     logging.info("Mission started")
     await LogManager.start_record_logs()
-    await MapManager.start_map_listener()
 
+@sio.on(WebsocketsEvents.MISSION_MAP.value)
+async def start_record_map(sid, _=None):
+    """
+    Start sending map to client
+    """
+    await sio.emit(WebsocketsEvents.MISSION_MAP.value)
+    await MapManager.start_map_listener()
 
 @sio.on(WebsocketsEvents.MISSION_END.value)
 async def set_mission_end(sid, _=None):

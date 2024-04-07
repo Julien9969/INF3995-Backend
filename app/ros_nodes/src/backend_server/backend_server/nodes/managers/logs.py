@@ -27,8 +27,8 @@ class LogManager:
                         await send_log(log.message, log.source_id, log.logType)
                     log_subscriber.is_new_log = False
             except Exception as err:
-                logging.debug(f"Exception in Log manager: {err}")
-                pass
+                if str(err) != "generator already executing":
+                    logging.debug(f"Exception in Map manager: {err}")
         log_subscriber.destroy_node()
 
     @staticmethod

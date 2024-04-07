@@ -34,7 +34,7 @@ async def send_map_image(map_data):
     """
     Called by the node at an undermined frequency
     """
-    await sio.emit(WebsocketsEvents.MAP_DATA.value, map_data)
+    await sio.emit(WebsocketsEvents.MISSION_MAP.value, map_data)
 
 
 async def send_mission_updates():
