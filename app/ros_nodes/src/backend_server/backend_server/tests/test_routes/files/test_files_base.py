@@ -1,8 +1,8 @@
 import json
 import pytest
 from unittest.mock import patch, MagicMock, AsyncMock
+from backend_server.api.files.schemas import File
 from backend_server.api.files.files_base import ROSFilesBase, Commands
-from backend_server.schemas.schemas import File, serviceError
 
 
 class Response:
