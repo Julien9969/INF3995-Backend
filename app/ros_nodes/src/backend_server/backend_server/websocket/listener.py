@@ -38,14 +38,14 @@ async def set_mission_end(sid, _=None):
     MapManager.stop_map_listener()
 
 
-@sio.on(WebsocketsEvents.IDENTIFY_REQUEST.value)
-async def identify_request(sid, robot_id):
-    """
-    Confirm to clients that the mission has been aborted
-    """
-    logging.info("Identify request received")
-    # TODO: result = await IdentifyBase.launch_client(robot_id)
-    await send(WebsocketsEvents.IDENTIFY_FEEDBACK, "result")
+# @sio.on(WebsocketsEvents.IDENTIFY_REQUEST.value)
+# async def identify_request(sid, robot_id):
+#     """
+#     Confirm to clients that the mission has been aborted
+#     """
+#     logging.info("Identify request received")
+#     # TODO: result = await IdentifyBase.launch_client(robot_id)
+#     await send(WebsocketsEvents.IDENTIFY_FEEDBACK, "result")
 
 
 @sio.on(WebsocketsEvents.HEADBACKBASE_REQUEST.value)
