@@ -8,8 +8,8 @@ from backend_server.classes.singleton import Singleton
 class Robot:
     def __init__(self, id: int, initial_position: Position):
         self.id = id
-        self.battery = 100
-        self.distance = 0
+        self.battery = 35
+        self.distance = 0.1
         self.initial_position = initial_position
         self.position = initial_position
         self.state = RobotState.IDLE
@@ -52,8 +52,8 @@ class RobotsData(metaclass=Singleton):
                                  state=robot.state,
                                  distance=robot.distance,
                                  lastUpdate=int(time.time()),
-                                 position=robot.position,
-                                 initialPosition=robot.position)
+                                 position=str(robot.position),
+                                 initialPosition=str(robot.position))
                 for robot in self.robots]
 
     def identify_robot(self, robot_id: int):
