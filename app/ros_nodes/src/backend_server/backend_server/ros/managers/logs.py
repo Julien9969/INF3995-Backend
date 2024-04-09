@@ -1,11 +1,11 @@
 import logging
-from backend_server.common import LogType
-from backend_server.logic.robots import RobotsData
+from backend_server.classes.common import LogType
+from backend_server.models.robots import RobotsData
 import rclpy
 from fastapi.concurrency import run_in_threadpool
 from backend_server.websocket.emitter import send_log
-from backend_server.nodes.subscribers.logs import LogSubscriber
-from backend_server.constants import RCL_TIMEOUT
+from backend_server.ros.subscribers.logs import LogSubscriber
+from backend_server.classes.constants import RCL_TIMEOUT
 
 
 class LogManager:

@@ -65,7 +65,6 @@ class Position(TypedDict):
 
 class RobotInformation(TypedDict):
     id: int
-    name: str
     battery: int
     distance: int
     state: RobotState

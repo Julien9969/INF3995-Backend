@@ -2,10 +2,9 @@ import asyncio
 import json
 import time
 
-from backend_server.common import Log, LogType
-from backend_server.common import WebsocketsEvents
-from backend_server.logic.mission import Mission
-from backend_server.logic.robots import RobotsData
+from backend_server.classes.common import Log, LogType, WebsocketsEvents
+from backend_server.models.mission import Mission
+from backend_server.models.robots import RobotsData
 from backend_server.websocket.base import sio
 
 FREQUENCY = 1  # second / 1 Hz

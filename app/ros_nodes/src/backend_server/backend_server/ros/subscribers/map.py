@@ -1,5 +1,5 @@
 import math
-from backend_server.common import WebsocketsEvents
+from backend_server.classes.common import WebsocketsEvents
 from backend_server.websocket.base import sio
 
 import logging

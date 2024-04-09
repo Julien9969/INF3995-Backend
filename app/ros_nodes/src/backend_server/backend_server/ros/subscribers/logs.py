@@ -6,7 +6,7 @@ import logging
 import re
 from collections import namedtuple
 
-from backend_server.common import LogType
+from backend_server.classes.common import LogType
 from rcl_interfaces.msg import Log
 from rclpy.node import Node
 

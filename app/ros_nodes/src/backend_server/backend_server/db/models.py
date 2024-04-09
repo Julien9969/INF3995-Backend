@@ -29,7 +29,7 @@ class Robot(Base):
     __tablename__ = 'robots'
 
     mission_id = Column(Integer, ForeignKey('missions.id'))
-    status = Column(String)  # see RobotState
+    state = Column(String)  # see RobotState
     distance = Column(Float)
     battery = Column(Float)
     position = Column(String)  # json of x, y

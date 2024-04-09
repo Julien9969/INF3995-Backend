@@ -3,7 +3,7 @@ import logging
 import math
 from array import array
 
-from backend_server.helpers.singleton import Singleton
+from backend_server.classes.singleton import Singleton
 
 
 class MapData(metaclass=Singleton):

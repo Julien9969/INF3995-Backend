@@ -1,12 +1,12 @@
 import logging
 
-from backend_server.logic.mission import Mission
+from backend_server.models.mission import Mission
 from backend_server.websocket.base import sio
-from backend_server.nodes.managers.map import MapManager
-from backend_server.nodes.managers.logs import LogManager
-from backend_server.common import WebsocketsEvents
+from backend_server.ros.managers.map import MapManager
+from backend_server.ros.managers.logs import LogManager
+from backend_server.classes.common import WebsocketsEvents
 from backend_server.websocket.emitter import send, send_log
-# from backend_server.nodes.clients.robots import IdentifyBase
+# from backend_server.ros.clients.robots import IdentifyBase
 
 
 @sio.on(WebsocketsEvents.MISSION_START.value)
