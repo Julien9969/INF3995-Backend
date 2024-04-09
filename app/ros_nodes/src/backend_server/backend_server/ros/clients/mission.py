@@ -2,8 +2,9 @@ import logging
 import rclpy
 from interfaces.srv import MissionSwitch
 from rclpy.node import Node
+from backend_server.common import Environment
 
-
+logging.basicConfig(level=logging.INFO)
 class MissionNode(Node):
     """
     This class is used to call the ROS service 'identify' from the backend.
@@ -44,9 +45,12 @@ class MissionNode(Node):
             return None
 
         response1, response2 = self.send_request('start')
-        result = f"{response1}, {response2}"  # TODO: what if more that tree robots
-
-        self.destroy_node()
+        if response1.environment == response2.environment:
+            result = f"{response1.environment}"
+        else:
+            result = f"different environments {response1.environment}, {response2.environment}"
+            logging.info(f"Error: {result}")
+        self.destroy_node()        
         return result
 
     def stop_mission(self):

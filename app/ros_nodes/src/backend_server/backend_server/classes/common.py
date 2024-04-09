@@ -24,6 +24,7 @@ class MissionStatus(TypedDict):
     distance: float
     timestamp: int
     missionId: int
+    is_simulation: bool
 
 
 class LogType(str, Enum):
@@ -57,6 +58,9 @@ class WebsocketsEvents(str, Enum):
     CONNECT = "connect"
     DISCONNECT = "disconnect"
 
+class Environment(str, Enum):
+    SIMULATED = "simulated"
+    REAL = "real"
 
 class Position(TypedDict):
     x: int

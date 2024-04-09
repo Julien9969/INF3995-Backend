@@ -1,7 +1,7 @@
 import logging
 import time
 
-from backend_server.classes.common import MissionState, MissionStatus
+from backend_server.common import Environment, MissionState, MissionStatus
 from backend_server.db.insertions import save_mission
 from backend_server.db.queries import get_new_mission_id
 from backend_server.classes.singleton import Singleton
@@ -21,8 +21,7 @@ class Mission(metaclass=Singleton):
         self.stop_timestamp: int = 0
         self.state = MissionState.NOT_STARTED
         self.mission_id = get_new_mission_id()
-        # is_simulation is a constant: the server has to restart to change it
-        self.is_simulation = False  # TODO: @perron
+        self.is_simulation: bool
 
     def get_duration(self):
         if self.state == MissionState.NOT_STARTED:
@@ -42,7 +41,12 @@ class Mission(metaclass=Singleton):
             self.mission_id = get_new_mission_id()
             logging.info(f"Starting mission node for mission {self.mission_id}")
             mission = MissionNode()
-            mission.start_mission()
+            result = mission.start_mission()
+            if(result == Environment.SIMULATED):
+                self.is_simulation = True
+            elif(result == Environment.REAL):
+                self.is_simulation = False
+            return result
 
     def stop_mission(self):
         self.stop_timestamp = int(time.time())
@@ -62,4 +66,5 @@ class Mission(metaclass=Singleton):
                              missionState=self.state,
                              elapsedTime=self.get_duration(),
                              startTimestamp=self.start_timestamp,
-                             timestamp=int(time.time()))
+                             timestamp=int(time.time()),
+                             is_simulation=self.is_simulation)

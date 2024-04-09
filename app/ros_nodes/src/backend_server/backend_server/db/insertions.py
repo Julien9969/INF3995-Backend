@@ -87,7 +87,7 @@ def save_mission(mission: MissionStatus, robots: list[RobotInformation], logs: l
                           distance=total_distance,
                           robot_count=robot_count,
                           mission_state=mission['missionState'],
-                          is_simulation=False))
+                          is_simulation=mission['is_simulation']))
     session.commit()
 
     for robot in robots:
