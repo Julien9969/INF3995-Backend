@@ -48,7 +48,6 @@ class RobotsData(metaclass=Singleton):
         Generate the object that will be written to the database
         """
         return [RobotInformation(id=robot.id,
-                                 name=f"robot{robot.id}",
                                  battery=robot.battery,
                                  state=robot.state,
                                  distance=robot.distance,
