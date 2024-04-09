@@ -1,7 +1,7 @@
 import logging
 import time
 
-from backend_server.common import Environment, MissionState, MissionStatus
+from backend_server.classes.common import Environment, MissionState, MissionStatus
 from backend_server.db.insertions import save_mission
 from backend_server.db.queries import get_new_mission_id
 from backend_server.classes.singleton import Singleton
@@ -21,7 +21,7 @@ class Mission(metaclass=Singleton):
         self.stop_timestamp: int = 0
         self.state = MissionState.NOT_STARTED
         self.mission_id = get_new_mission_id()
-        self.is_simulation: bool
+        self.is_simulation: bool = False
 
     def get_duration(self):
         if self.state == MissionState.NOT_STARTED:

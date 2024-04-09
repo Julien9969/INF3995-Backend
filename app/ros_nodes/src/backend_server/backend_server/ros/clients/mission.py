@@ -2,7 +2,6 @@ import logging
 import rclpy
 from interfaces.srv import MissionSwitch
 from rclpy.node import Node
-from backend_server.common import Environment
 
 logging.basicConfig(level=logging.INFO)
 class MissionNode(Node):

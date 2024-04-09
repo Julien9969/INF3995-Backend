@@ -1,9 +1,9 @@
 import asyncio, fastapi
 from unittest.mock import  Mock, PropertyMock, patch, MagicMock
 import pytest
-from backend_server.nodes.managers.logs import LogManager
-from backend_server.common import LogType
-from backend_server.nodes.subscribers.logs import LogSubscriber, RosLog
+from backend_server.ros.subscribers.logs import LogSubscriber, RosLog
+from backend_server.ros.managers.logs import LogManager
+from backend_server.classes.common import LogType
 
 
 
@@ -117,8 +117,8 @@ def test_listener_callback(create_subscription_mock ):
 
 @pytest.mark.asyncio
 @patch.object(fastapi.concurrency, 'run_in_threadpool', return_value=None)
-@patch("backend_server.nodes.managers.logs.LogSubscriber", return_value=MagicMock())
-@patch("backend_server.nodes.managers.logs.send_log")
+@patch("backend_server.ros.managers.logs.LogSubscriber", return_value=MagicMock())
+@patch("backend_server.ros.managers.logs.send_log")
 async def test_start_record_logs(send_log_mock, logSubscriber_mock, run_in_threadpool_mock):
     
     async def mock_side_effect():
@@ -126,7 +126,7 @@ async def test_start_record_logs(send_log_mock, logSubscriber_mock, run_in_threa
 
     run_in_threadpool_mock.side_effect = mock_side_effect 
 
-    with patch('backend_server.nodes.managers.logs.LogManager.is_recording', new_callable=PropertyMock) as is_recording_mock:
+    with patch('backend_server.ros.managers.logs.LogManager.is_recording', new_callable=PropertyMock) as is_recording_mock:
         is_recording_mock.side_effect = [True, False]
 
         logSubscriber_mock.return_value.isNewLog = MagicMock(return_value=True)
