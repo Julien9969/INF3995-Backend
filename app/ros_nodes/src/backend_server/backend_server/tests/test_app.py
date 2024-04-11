@@ -2,18 +2,18 @@ from unittest.mock import AsyncMock, patch, MagicMock
 import fastapi
 import pytest
 
-from backend_server.app import app_lifespan
+from backend_server.app import app_lifespan, start_application
 
 
-# # Cant get the fastapi mock for the moment
-# @patch("backend_server.app.create_tables")
-# @patch("backend_server.app.include_router")
-# @patch("fastapi.FastAPI.__init__", new=MagicMock(return_value=None))
-# def test_start_application(include_router_mock, create_tables_mock):
-#     app = start_application()
-# 
-#     assert include_router_mock.called
-#     assert create_tables_mock.called
+# Cant get the fastapi mock for the moment
+@patch("backend_server.app.create_tables")
+@patch("backend_server.app.include_router")
+@patch("fastapi.FastAPI.__init__", new=MagicMock(return_value=None))
+def test_start_application(include_router_mock, create_tables_mock):
+    app = start_application()
+
+    assert include_router_mock.called
+    assert create_tables_mock.called
 
 
 @pytest.mark.asyncio
