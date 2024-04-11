@@ -5,9 +5,6 @@ from backend_server.db.session import SQLALCHEMY_DATABASE_URL
 async def check_db_connected():
     try:
         database = Database(SQLALCHEMY_DATABASE_URL)
-
-        print(database)
-        print("test")
         if not database.is_connected:
             await database.connect()
             await database.execute("SELECT 1")

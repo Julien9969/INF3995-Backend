@@ -14,7 +14,7 @@ def test_get_identify(launch_client_mock, client):
 @patch.object(IdentifyBase, "launch_client", return_value="launch_client")
 async def test_get_identify_id(launch_client_mock, client):
     robot_id = 1
-    response = client.get(f"/api/identify/id/{robot_id}")
+    response = client.get(f"/api/identify/{robot_id}")
     assert response.status_code == status.HTTP_200_OK
     assert launch_client_mock.calledwith(robot_id)
     assert str(response.json()["data"]) == "launch_client"
@@ -23,7 +23,7 @@ async def test_get_identify_id(launch_client_mock, client):
 @patch.object(IdentifyBase, "launch_client", return_value=False)
 async def test_get_identify_id_failure(launch_client_mock, client):
     robot_id = 1
-    response = client.get(f"/api/identify/id/{robot_id}")
+    response = client.get(f"/api/identify/{robot_id}")
     assert response.status_code == status.HTTP_404_NOT_FOUND
     assert launch_client_mock.calledwith(robot_id)
     assert str(response.json()["data"]) == "Request to identify service failed !"

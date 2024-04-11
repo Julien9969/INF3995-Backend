@@ -2,7 +2,7 @@ import pytest
 from httpx import AsyncClient
 from fastapi import status
 from unittest.mock import patch, MagicMock, AsyncMock
-from backend_server.schemas.schemas import FileObject, File
+from backend_server.api.files.schemas import File, FileObject
 from backend_server.api.files.files_base import ROSFilesBase
 
 @pytest.mark.asyncio

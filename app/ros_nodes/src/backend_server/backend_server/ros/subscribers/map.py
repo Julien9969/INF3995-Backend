@@ -1,6 +1,6 @@
 import math
+from backend_server.classes.common import WebsocketsEvents
 from backend_server.websocket.base import sio
-from backend_server.websocket.events import Events
 
 import logging
 from fastapi.concurrency import run_in_threadpool
@@ -20,7 +20,7 @@ class MapSubscriber(Node):
         super().__init__('map_subscriber')
         self.subscription = self.create_subscription(
             OccupancyGrid,
-            'robot1/map',
+            'map',
             self.listener_callback,
             10)
         self.subscription  # prevent unused variable warning
@@ -90,36 +90,6 @@ class MapSubscriber(Node):
             data.append(0)
 
 
-class MapManager():
-    mission_ongoing = False
-    @staticmethod
-    async def start_map_listener():
-        MapManager.mission_ongoing = True
-        if(not rclpy.ok()):
-            rclpy.init() # will be removed later
-        mapSubscriber = MapSubscriber()
-        while MapManager.mission_ongoing and rclpy.ok():
-            try:
-                await run_in_threadpool(lambda:rclpy.spin_once(mapSubscriber, timeout_sec=4))
-                if mapSubscriber.newMapAvailable and mapSubscriber.base_64_map_img is not None:
-                    await send_map_image(mapSubscriber.base_64_map_img)
-                    mapSubscriber.newMapAvailable = False
-            except Exception as err:
-                logging.debug(f"Exception in Map manager: {err}") #not important
-                pass
-        mapSubscriber.destroy_node()
-        
-    @staticmethod
-    def stop_map_listener():
-        MapManager.mission_ongoing = False
-            
-    
-async def send_map_image(map_data):
-    logging.debug(f"Sending map data: {map_data}")
-    """
-    Send the map data to the client
-    """
-    await sio.emit(Events.MAP_DATA.value, map_data)
 
 def twos_comp_byte(val):
     bits = 8
