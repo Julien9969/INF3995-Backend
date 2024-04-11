@@ -1,23 +1,11 @@
 from pydantic import BaseModel
 
-# from datetime import datetime
-from backend_server.schemas.something_type import SomethingType
-
-
-class SomethingBase(BaseModel):
-    id: int
-    truc: SomethingType
-    # value: float
-    # timestamp: datetime
-
-    class Config:
-        orm_mode = True
-
 
 class File(BaseModel):
     name: str
     id: int
     content: str
+
 
 class FileObject():
     def __init__(self, name: str, id: int, content: str):
@@ -30,10 +18,12 @@ class FileObject():
     content: str
     robotId: int
 
+
 class FileId(BaseModel):
     name: str
     id: int
-    robotId: int    
+    robotId: int
+
 
 class serviceError():
     def __init__(self, message: str, content: str):
@@ -42,5 +32,3 @@ class serviceError():
 
     message: str
     content: str
-
-

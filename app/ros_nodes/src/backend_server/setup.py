@@ -1,36 +1,25 @@
-from setuptools import find_packages, setup
-
 import os
-from glob import glob
+
+from setuptools import find_packages, setup
 
 package_name = 'backend_server'
 
 df = [
-        ('share/ament_index/resource_index/packages',
-            ['resource/' + package_name]),
-        ('share/' + package_name, ['package.xml']),
-        # ('share/' + package_name + '/api', ['backend_server/api/.']),    
-        # ('share/' + package_name + '/db', ['backend_server/db/.']),    
-        # ('share/' + package_name + '/db/models', ['backend_server/db/models/.']),    
-    ]
+    ('share/ament_index/resource_index/packages', ['resource/' + package_name]),
+    ('share/' + package_name, ['package.xml']),
+]
+
 
 def package_files(data_files, directory_list):
-
     paths_dict = {}
 
     for directory in directory_list:
-
         for (path, directories, filenames) in os.walk(directory):
-
             for filename in filenames:
-                print("============ ", filename)
-
                 file_path = os.path.join(path, filename)
                 install_path = os.path.join('share', package_name, path)
-
                 if install_path in paths_dict.keys():
                     paths_dict[install_path].append(file_path)
-
                 else:
                     paths_dict[install_path] = [file_path]
 
@@ -39,11 +28,11 @@ def package_files(data_files, directory_list):
 
     return data_files
 
+
 setup(
     name=package_name,
     version='0.0.0',
     packages=find_packages(exclude=['test']),
-    
     data_files=package_files(df, ['api/', 'db/']),
     install_requires=['setuptools'],
     zip_safe=True,
@@ -54,7 +43,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-                'serv = backend_server.run:main',
+            'serv = backend_server.run:main',
         ],
     },
 )

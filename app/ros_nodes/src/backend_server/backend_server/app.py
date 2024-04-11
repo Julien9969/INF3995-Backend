@@ -1,62 +1,53 @@
 import asyncio
-import time, rclpy
-from fastapi.middleware.cors import CORSMiddleware
+import rclpy
+import time
 from contextlib import asynccontextmanager
-from fastapi import FastAPI, Request, Response, HTTPException
+
+from backend_server.api.base import api_router
+from backend_server.db.models import Base
+from backend_server.db.session import engine
+from backend_server.db.utils import check_db_connected, check_db_disconnected
+from backend_server.db.insertions import init_missions
+from backend_server.websocket.base import socket_app
+from fastapi import FastAPI, Request
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.status import HTTP_504_GATEWAY_TIMEOUT
-
-from backend_server.db.models.tables_models import Base, populate_db
-from backend_server.db.utils import check_db_connected, check_db_disconnected
-from backend_server.db.session import engine
-from backend_server.api.base import api_router
-
-from backend_server.websocket.base import socket_app
 
 
 @asynccontextmanager
 async def app_lifespan(app: FastAPI):
     # Start up event
-    if(not rclpy.ok()):
+    if not rclpy.ok():
         rclpy.init()
-    print("Starting up")
     await check_db_connected()
-    print(app.title)
 
     yield
 
-    if(rclpy.ok()):
+    if rclpy.ok():
         rclpy.shutdown()
     # Shutdown event
     await check_db_disconnected()
 
 
-def include_router(app):
-    app.include_router(api_router)
-
-
-def create_tables():
-    Base.metadata.create_all(bind=engine)
-
-
 def start_application() -> FastAPI:
-    app = FastAPI(lifespan=app_lifespan, debug=True, title="API", version="0.1")
-    include_router(app)
+    app = FastAPI(lifespan=app_lifespan, debug=True, title="Limousine Backend Server 3995", version="1.0")
+    app.include_router(api_router)
     # configure_static(app)
     app.mount("/", socket_app)  # Add web sockets to app
-    create_tables()
-    populate_db()
+    Base.metadata.create_all(bind=engine)
+    init_missions()
     return app
 
 
-# ENLEVE TEMPORAIREMENT POUR ETRE LANCE PAR ROS A LA PLACE
 app = start_application()
+
 
 @app.middleware("http")
 async def timeout_middleware(request: Request, call_next):
     try:
         start_time = time.time()
-        return await asyncio.wait_for(call_next(request), timeout=20)
+        return await asyncio.wait_for(call_next(request), timeout=5)
 
     except asyncio.TimeoutError:
         process_time = time.time() - start_time
@@ -64,10 +55,8 @@ async def timeout_middleware(request: Request, call_next):
                              'processing_time': process_time},
                             status_code=HTTP_504_GATEWAY_TIMEOUT)
 
+
 origins = [
-    # "http://localhost",
-    # "http://localhost:8000",
-    # "http://127.0.0.1:8000",
     "*"
 ]
 
@@ -78,4 +67,3 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-

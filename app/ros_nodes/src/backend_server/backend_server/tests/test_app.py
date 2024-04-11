@@ -1,7 +1,8 @@
 from unittest.mock import AsyncMock, patch, MagicMock
 import fastapi
 import pytest
-from backend_server.app import start_application, create_tables, include_router, app_lifespan
+
+from backend_server.app import app_lifespan
 
 
 # # Cant get the fastapi mock for the moment
