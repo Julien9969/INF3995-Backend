@@ -15,13 +15,13 @@ class MissionNode(Node):
         self.future1 = None
 
         try:
-            ros_route = f"robot{1}/mission_switch"
+            ros_route = f"/robot{1}/mission_switch"
             self.cli1 = self.create_client(MissionSwitch, ros_route)
 
-            ros_route = f"robot{2}/mission_switch"
+            ros_route = f"/robot{2}/mission_switch"
             self.cli2 = self.create_client(MissionSwitch, ros_route)
-            if self.cli1.wait_for_service(timeout_sec=2.0):  # TODO: could this be in parallel
-                if self.cli2.wait_for_service(timeout_sec=2.0):
+            if self.cli1.wait_for_service(timeout_sec=5.0):  # TODO: could this be in parallel
+                if self.cli2.wait_for_service(timeout_sec=5.0):
                     self.req = MissionSwitch.Request()
         except Exception as e:
             logging.error(f"Error creating ROS clients: {e}")
