@@ -15,7 +15,7 @@ def retrieve_missions():
             startTimestamp=result.start_timestamp,
             elapsedTime=result.duration,
             isSimulation=result.is_simulation,
-            robotCount=0,
+            robotCount=result.robot_count,
             missionState='ENDED',
         )
         status.append(mission)
