@@ -70,7 +70,7 @@ def retrieve_robots(mission_id: int) -> list[RobotInformation]:
             battery=robot.battery,
             position=robot.position,
             distance=robot.distance,
-            state=robot.status,
+            state=robot.state,
             lastUpdate=robot.last_update,
             initialPosition=robot.initial_position,
         )
