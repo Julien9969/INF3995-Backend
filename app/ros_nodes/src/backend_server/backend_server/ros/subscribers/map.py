@@ -7,7 +7,9 @@ from fastapi.concurrency import run_in_threadpool
 import rclpy
 from rclpy.node import Node
 
-from nav_msgs.msg import OccupancyGrid
+from nav_msgs.msg import OccupancyGrid, Odometry
+from geometry_msgs.msg import Pose
+
 from array import array
 
 import base64
@@ -18,6 +20,20 @@ class MapSubscriber(Node):
     newMapAvailable = False
     def __init__(self):
         super().__init__('map_subscriber')
+        self.subscription_odom_1 = self.create_subscription(
+            Odometry,
+            'robot1/odom',
+            self.odom_callback_1,
+            10)
+        self.subscription_odom_1  # prevent unused variable warning
+
+        self.subscription_odom_2 = self.create_subscription(
+            Odometry,
+            'robot2/odom',
+            self.odom_callback_2,
+            10)
+        self.subscription_odom_2  # prevent unused variable warning
+
         self.subscription = self.create_subscription(
             OccupancyGrid,
             'map',
@@ -27,16 +43,31 @@ class MapSubscriber(Node):
 
     def listener_callback(self, occupancy_grid: OccupancyGrid):
         logging.debug(f"Map received")
+        if (self.odom_1 is None or self.odom_2 is None):
+            logging.debug(f"Odom not received yet!! cannot do map")
         base_64_map_data = self.convertDataToBase64Str(occupancy_grid)
         self.base_64_map_img = f'data:image/bmp;base64,{base_64_map_data}'
         self.newMapAvailable = True
 
+    def odom_callback_1(self, odom: Odometry):
+        logging.debug(f"== Odom robot 1 : {odom.pose.pose}")
+        self.odom_1 = odom.pose.pose
+        
+    def odom_callback_2(self, odom: Odometry):
+        logging.debug(f"== Odom robot 2 : {odom.pose.pose}")
+        self.odom_2 = odom.pose.pose
+        
 
     def convertDataToBase64Str(self, grid):
         width, height = self.get_grid_dimensions(grid)
         width_msb, width_lsb = self.calculate_msb_lsb(width)
         height_msb, height_lsb = self.calculate_msb_lsb(height)
-        logging.debug(f"Map received W: {width} H: {height}, W msb: {width_msb} W lsb: {width_lsb} ; H msb: {height_msb} H lsb: {height_lsb}")
+        # logging.debug(f"Map received W: {width} H: {height}, W msb: {width_msb} W lsb: {width_lsb} ; H msb: {height_msb} H lsb: {height_lsb}")
+        logging.debug(f"========================= MAP ANALYSIS:")
+        logging.debug(f"===== grid.info.resolution : {grid.info.resolution}")
+        logging.debug(f"===== W-H : {grid.info.width}-{grid.info.height}")
+        logging.debug(f"===== position : {grid.info.origin.position}")
+        logging.debug(f"===== orientation : {grid.info.origin.orientation}")
         data = self.create_data_array(width, height, width_msb, width_lsb, height_msb, height_lsb, grid)
         return base64.b64encode(data).decode('utf-8')
 
@@ -60,13 +91,43 @@ class MapSubscriber(Node):
         return data
 
     def append_grid_data_to_array(self, data, width, height, grid):
+        logging.debug(f"=== WIDTH {width} , HEIGHT {height}")
+        map_origin_x = grid.info.origin.position.x
+        map_origin_y = grid.info.origin.position.y
+        res = grid.info.resolution
+        robot1_pos = (
+            math.floor((self.odom_1.position.y - map_origin_y) / res),
+            math.floor((self.odom_1.position.x - map_origin_x) / res),
+        )
+        robot2_pos = (
+            math.floor((self.odom_2.position.y - map_origin_y) / res),
+            math.floor((self.odom_2.position.x - map_origin_x) / res),
+        )
+        logging.debug(f"--- robot pos on MAP: {robot1_pos, robot2_pos}")
         for i in range(height):
             for j in range(width):
                 point_value = grid.data[width*i + j]
-                self.append_point_value_to_data(data, point_value)
+                # Testing robot localisation
+                robot_here = 0
+                if (abs(robot1_pos[0] - i) < 8 and abs(robot1_pos[1] - j) < 8):
+                    robot_here = 1
+                elif (abs(robot2_pos[0] - i) < 4 and abs(robot2_pos[1] - j) < 4):
+                    robot_here = 2
+                #
+                self.append_point_value_to_data(data, point_value, robot_here)
             self.add_padding_to_data(data, width)
             
-    def append_point_value_to_data(self, data, point_value):
+    def append_point_value_to_data(self, data, point_value, robot_here):
+        if robot_here == 1:
+            data.append(twos_comp_byte(254))
+            data.append(0)
+            data.append(70)            
+            return
+        if robot_here == 2:
+            data.append(70)            
+            data.append(0)
+            data.append(twos_comp_byte(254))
+            return
         if point_value == -1:
             # format = BGR , donc voici du gris pour les zones non explorées
             data.append(twos_comp_byte(175))
