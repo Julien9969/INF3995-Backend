@@ -42,9 +42,9 @@ class Mission(metaclass=Singleton):
             logging.info(f"Starting mission node for mission {self.mission_id}")
             mission = MissionNode()
             result = mission.start_mission()
-            if(result == Environment.SIMULATED):
+            if(result == Environment.SIMULATED.value):
                 self.is_simulation = True
-            elif(result == Environment.REAL):
+            elif(result == Environment.REAL.value):
                 self.is_simulation = False
             return result
 
