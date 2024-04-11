@@ -1,5 +1,8 @@
 import math
-from backend_server.classes.common import WebsocketsEvents
+from backend_server.websocket.emitter import send_log
+from backend_server.classes.common import LogType, Position
+from backend_server.models.robots import RobotsData
+
 from backend_server.websocket.base import sio
 
 import logging
@@ -40,6 +43,7 @@ class MapSubscriber(Node):
             self.listener_callback,
             10)
         self.subscription  # prevent unused variable warning
+        self.distances = [0, 0]
 
     def listener_callback(self, occupancy_grid: OccupancyGrid):
         logging.debug(f"Map received")
@@ -51,12 +55,23 @@ class MapSubscriber(Node):
 
     def odom_callback_1(self, odom: Odometry):
         logging.debug(f"== Odom robot 1 : {odom.pose.pose}")
+        self.last_odom_1 = self.odom_1
         self.odom_1 = odom.pose.pose
+        if self.last_odom_1 is None:
+            robot = RobotsData().get_robot(1)
+            robot.initial_position = Position(self.odom_1.position.x, self.odom_1.position.y)
+        else:
+            self.log_positions_distance(1, self.odom_1, self.last_odom_1)
         
     def odom_callback_2(self, odom: Odometry):
         logging.debug(f"== Odom robot 2 : {odom.pose.pose}")
+        self.last_odom_2 = self.odom_2
         self.odom_2 = odom.pose.pose
-        
+        if self.last_odom_2 is None:
+            robot = RobotsData().get_robot(2)
+            robot.initial_position = Position(self.odom_2.position.x, self.odom_2.position.y)
+        else:
+            self.log_positions_distance(2, self.odom_2, self.last_odom_2)
 
     def convertDataToBase64Str(self, grid):
         width, height = self.get_grid_dimensions(grid)
@@ -104,15 +119,22 @@ class MapSubscriber(Node):
             math.floor((self.odom_2.position.x - map_origin_x) / res),
         )
         logging.debug(f"--- robot pos on MAP: {robot1_pos, robot2_pos}")
+
+        robot1 = RobotsData().get_robot(1)
+        robot1.update_position(Position(robot1_pos[0], robot1_pos[1]))
+        
+        robot2 = RobotsData().get_robot(2)
+        robot2.update_position(Position(robot2_pos[0], robot2_pos[1]))
+
         for i in range(height):
             for j in range(width):
                 point_value = grid.data[width*i + j]
                 # Testing robot localisation
                 robot_here = 0
-                if (abs(robot1_pos[0] - i) < 8 and abs(robot1_pos[1] - j) < 8):
-                    robot_here = 1
-                elif (abs(robot2_pos[0] - i) < 4 and abs(robot2_pos[1] - j) < 4):
-                    robot_here = 2
+                # if (abs(robot1_pos[0] - i) < 8 and abs(robot1_pos[1] - j) < 8):
+                #     robot_here = 1
+                # elif (abs(robot2_pos[0] - i) < 4 and abs(robot2_pos[1] - j) < 4):
+                #     robot_here = 2
                 #
                 self.append_point_value_to_data(data, point_value, robot_here)
             self.add_padding_to_data(data, width)
@@ -149,6 +171,15 @@ class MapSubscriber(Node):
             pad_n = 0
         for _ in range(pad_n):
             data.append(0)
+
+    def log_positions_distance(self, robot_num, odom, last_odom):
+        d_x = odom.position.x - last_odom.position.x
+        d_y = odom.position.y - last_odom.position.y
+        self.distances[robot_num-1] += math.sqrt(d_x**2 + d_y**2)
+        send_log(f"Position: {odom}", robot_id=robot_num, event_type=LogType.SENSOR)
+        send_log(f"Distance totale parcourue: {self.distances[robot_num-1]}", robot_id=robot_num, event_type=LogType.SENSOR)
+        robot = RobotsData().get_robot(robot_num)
+        robot.distance = self.distances[robot_num-1]
 
 
 

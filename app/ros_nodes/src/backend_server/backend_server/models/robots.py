@@ -55,6 +55,9 @@ class RobotsData(metaclass=Singleton):
                                  position=str(robot.position),
                                  initialPosition=str(robot.position))
                 for robot in self.robots]
+    
+    def get_robot(self, robot_id):
+        return self.robots[robot_id]
 
     def identify_robot(self, robot_id: int):
         for robot in self.robots:
