@@ -51,16 +51,18 @@ class WebsocketsEvents(str, Enum):
     MISSION_MAP = "mission-map"
     ABORT_MISSION = "abort-mission"
     ROBOT_STATUS = "robot-status"
-    IDENTIFY_FEEDBACK = "identify-feedback"
-    IDENTIFY_REQUEST = "identify-request"
     HEADBACKBASE_FEEDBACK = "headbackbase-feedback"
     HEADBACKBASE_REQUEST = "headbackbase-request"
     CONNECT = "connect"
     DISCONNECT = "disconnect"
+    PING = "ping"
+    PONG = "pong"
+
 
 class Environment(str, Enum):
     SIMULATED = "simulated"
     REAL = "real"
+
 
 class Position(TypedDict):
     x: int

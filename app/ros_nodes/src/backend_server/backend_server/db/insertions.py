@@ -69,8 +69,8 @@ def init_missions():
                 map_data='map_data'
             )
             session.add(map_data)
-            session.commit()
 
+    session.commit()
     session.close()
 
 
