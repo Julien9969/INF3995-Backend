@@ -1,22 +1,28 @@
-import datetime
 import asyncio
-from .identify_client import IdentifyClientAsync
+
 import rclpy
-from geometry_msgs.msg import Twist
+from fastapi.concurrency import run_in_threadpool
+from nav_msgs.msg import Odometry
 from pydantic import BaseModel
+
+from .identify_client import IdentifyClientAsync
+
+connected_robots = set()
+i = 1
+
 
 class IdentifyBase:
     # def __init__(self):
     #     pass
 
     @staticmethod
-    async def launch_client(robot_id: int = 1):
-        if(not rclpy.ok()):
-            rclpy.init()
+    async def launch_client(robot_id: int = 1) -> str:
+
         identify_client = IdentifyClientAsync(robot_id)
 
         if not hasattr(identify_client, 'req'):
             identify_client.destroy_node()
+
             return None
 
         response = await identify_client.send_request(4)
@@ -25,11 +31,35 @@ class IdentifyBase:
             (4, response.b))
 
         identify_client.destroy_node()
+
         return 'Result of identify: for %d * 2 = %d' % (4, response.b)
-    
+
+    @staticmethod
+    async def list_connected_robot() -> list[int]:
+        global connected_robots, i
+        connected_robots = set()
+
+        for i in range(1, 3):
+            node = rclpy.create_node('robot_connector_node')
+            odom_topic = f'/robot{i}/odom'
+            subscriber = node.create_subscription(Odometry, odom_topic, IdentifyBase.odom_callback, 10)
+
+            node.get_logger().info(f"Connected robots: {connected_robots}")
+
+            await run_in_threadpool(lambda: rclpy.spin_once(node, timeout_sec=5))
+            await asyncio.sleep(1)  # Wait for some time to receive odom data
+            node.destroy_node()
+
+        return list(connected_robots)
+
+    @staticmethod
+    def odom_callback(msg):
+        global connected_robots, i
+        connected_robots.add(i)
+        # Here you can implement your logic to process the received odom data
+        # For example, print the received data along with the robot's ID
+        print(f"Received odom data from robot {i} :")
+
+
 class IdentifyResponse(BaseModel):
     data: str
-
-
-
-
