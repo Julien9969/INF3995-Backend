@@ -10,7 +10,7 @@ class MissionNode(Node):
     """
 
     def __init__(self):
-        super().__init__('identify_client_async')
+        super().__init__('mission_switch_client_async')
         self.future2 = None
         self.future1 = None
 
@@ -36,8 +36,6 @@ class MissionNode(Node):
         return self.future1.result(), self.future2.result()
 
     def start_mission(self):
-        if not rclpy.ok():
-            rclpy.init()
 
         if not hasattr(self, 'req'):
             self.destroy_node()
@@ -53,8 +51,6 @@ class MissionNode(Node):
         return result
 
     def stop_mission(self):
-        if not rclpy.ok():
-            rclpy.init()
 
         if not hasattr(self, 'req'):
             self.destroy_node()
