@@ -8,8 +8,8 @@ from backend_server.classes.singleton import Singleton
 class Robot:
     def __init__(self, id: int, initial_position: Position):
         self.id = id
-        self.battery = 35
-        self.distance = 0.1
+        self.battery = None
+        self.distance = None
         self.initial_position = initial_position
         self.position = initial_position
         self.state = RobotState.IDLE
@@ -27,10 +27,6 @@ class RobotsData(metaclass=Singleton):
 
     def __init__(self):
         self.robots: list[Robot] = []
-        robot1 = Robot(1, Position(x=40, y=120))
-        robot2 = Robot(2, Position(x=100, y=25))
-        self.robots.append(robot1)
-        self.robots.append(robot2)
 
     def connect_robot(self, robot: Robot):
         self.robots.append(robot)
