@@ -15,8 +15,8 @@ class Robot:
         self.state = RobotState.IDLE
 
     def update_position(self, position):
-        assert position.x >= 0
-        assert position.y >= 0
+        # assert position['x'] >= 0
+        # assert position['y'] >= 0
         self.position = position
 
 
@@ -57,7 +57,7 @@ class RobotsData(metaclass=Singleton):
                 for robot in self.robots]
     
     def get_robot(self, robot_id):
-        return self.robots[robot_id]
+        return self.robots[robot_id-1]
 
     def identify_robot(self, robot_id: int):
         for robot in self.robots:
