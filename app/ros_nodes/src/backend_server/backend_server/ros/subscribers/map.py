@@ -120,12 +120,12 @@ class MapSubscriber(Node):
         map_origin_y = grid.info.origin.position.y
         res = grid.info.resolution
         robot1_pos = (
-            int(math.floor((self.odom_1.position.y - map_origin_y) / res)),
             int(math.floor((self.odom_1.position.x - map_origin_x) / res)),
+            height - int(math.floor((self.odom_1.position.y - map_origin_y) / res)),
         )
         robot2_pos = (
-            int(math.floor((self.odom_2.position.y - map_origin_y) / res)),
             int(math.floor((self.odom_2.position.x - map_origin_x) / res)),
+            height - int(math.floor((self.odom_2.position.y - map_origin_y) / res)),
         )
 
         try:
