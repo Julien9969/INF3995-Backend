@@ -11,7 +11,6 @@ import rclpy
 from rclpy.node import Node
 
 from nav_msgs.msg import OccupancyGrid, Odometry
-from geometry_msgs.msg import Pose
 
 from array import array
 
@@ -21,6 +20,11 @@ logging.basicConfig(level=logging.DEBUG)
 
 class MapSubscriber(Node):
     newMapAvailable = False
+    odom_1 = None
+    odom_2 = None
+    last_odom_1 = None
+    last_odom_2 = None
+
     def __init__(self):
         super().__init__('map_subscriber')
         self.subscription_odom_1 = self.create_subscription(
@@ -49,28 +53,33 @@ class MapSubscriber(Node):
         logging.debug(f"Map received")
         if (self.odom_1 is None or self.odom_2 is None):
             logging.debug(f"Odom not received yet!! cannot do map")
+            return
         base_64_map_data = self.convertDataToBase64Str(occupancy_grid)
         self.base_64_map_img = f'data:image/bmp;base64,{base_64_map_data}'
         self.newMapAvailable = True
 
     def odom_callback_1(self, odom: Odometry):
         logging.debug(f"== Odom robot 1 : {odom.pose.pose}")
-        self.last_odom_1 = self.odom_1
-        self.odom_1 = odom.pose.pose
-        if self.last_odom_1 is None:
-            robot = RobotsData().get_robot(1)
-            robot.initial_position = Position(self.odom_1.position.x, self.odom_1.position.y)
+        if self.odom_1 is None:
+            self.last_odom_1 = odom.pose.pose
+            self.odom_1 = odom.pose.pose
+            # TODO move initial pos to proper place with map, cuz here it's odom pos != map position
+            # robot = RobotsData().get_robot(1)
+            # robot.initial_position = Position(x=int(math.floor(self.odom_1.position.x)), y=int(math.floor(self.odom_1.position.y)))
+
         else:
+            self.last_odom_1 = self.odom_1
+            self.odom_1 = odom.pose.pose
             self.log_positions_distance(1, self.odom_1, self.last_odom_1)
         
     def odom_callback_2(self, odom: Odometry):
         logging.debug(f"== Odom robot 2 : {odom.pose.pose}")
-        self.last_odom_2 = self.odom_2
-        self.odom_2 = odom.pose.pose
-        if self.last_odom_2 is None:
-            robot = RobotsData().get_robot(2)
-            robot.initial_position = Position(self.odom_2.position.x, self.odom_2.position.y)
+        if self.odom_2 is None:
+            self.last_odom_2 = odom.pose.pose
+            self.odom_2 = odom.pose.pose
         else:
+            self.last_odom_2 = self.odom_2
+            self.odom_2 = odom.pose.pose
             self.log_positions_distance(2, self.odom_2, self.last_odom_2)
 
     def convertDataToBase64Str(self, grid):
@@ -111,21 +120,22 @@ class MapSubscriber(Node):
         map_origin_y = grid.info.origin.position.y
         res = grid.info.resolution
         robot1_pos = (
-            math.floor((self.odom_1.position.y - map_origin_y) / res),
-            math.floor((self.odom_1.position.x - map_origin_x) / res),
+            int(math.floor((self.odom_1.position.y - map_origin_y) / res)),
+            int(math.floor((self.odom_1.position.x - map_origin_x) / res)),
         )
         robot2_pos = (
-            math.floor((self.odom_2.position.y - map_origin_y) / res),
-            math.floor((self.odom_2.position.x - map_origin_x) / res),
+            int(math.floor((self.odom_2.position.y - map_origin_y) / res)),
+            int(math.floor((self.odom_2.position.x - map_origin_x) / res)),
         )
-        logging.debug(f"--- robot pos on MAP: {robot1_pos, robot2_pos}")
 
-        robot1 = RobotsData().get_robot(1)
-        robot1.update_position(Position(robot1_pos[0], robot1_pos[1]))
-        
-        robot2 = RobotsData().get_robot(2)
-        robot2.update_position(Position(robot2_pos[0], robot2_pos[1]))
-
+        try:
+            robot1 = RobotsData().get_robot(1)
+            robot1.update_position(Position(x=robot1_pos[0], y=robot1_pos[1]))
+            
+            robot2 = RobotsData().get_robot(2)
+            robot2.update_position(Position(x=robot2_pos[0], y=robot2_pos[1]))
+        except Exception as err:
+            logging.debug(f"--- EXCEPTION: {err}")
         for i in range(height):
             for j in range(width):
                 point_value = grid.data[width*i + j]
@@ -176,8 +186,8 @@ class MapSubscriber(Node):
         d_x = odom.position.x - last_odom.position.x
         d_y = odom.position.y - last_odom.position.y
         self.distances[robot_num-1] += math.sqrt(d_x**2 + d_y**2)
-        send_log(f"Position: {odom}", robot_id=robot_num, event_type=LogType.SENSOR)
-        send_log(f"Distance totale parcourue: {self.distances[robot_num-1]}", robot_id=robot_num, event_type=LogType.SENSOR)
+        # send_log(f"Position: {odom}", robot_id=robot_num, event_type=LogType.SENSOR)
+        # send_log(f"Distance totale parcourue: {self.distances[robot_num-1]}", robot_id=robot_num, event_type=LogType.SENSOR)
         robot = RobotsData().get_robot(robot_num)
         robot.distance = self.distances[robot_num-1]
 
