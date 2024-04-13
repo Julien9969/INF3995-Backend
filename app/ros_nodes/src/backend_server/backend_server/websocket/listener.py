@@ -42,12 +42,3 @@ async def set_mission_end(sid, _=None):
 @sio.on(WebsocketsEvents.PING.value)
 async def ping(sid, _=None):
     await send(WebsocketsEvents.PONG, "pong")
-
-
-@sio.on(WebsocketsEvents.HEADBACKBASE_REQUEST.value)
-async def headbackbase_request():
-    """
-    Confirm to clients that the mission has been aborted
-    """
-    logging.info("Headbackbase request received")
-    # TODO: call Node or wtv
