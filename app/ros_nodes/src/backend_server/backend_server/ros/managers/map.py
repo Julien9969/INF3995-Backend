@@ -21,6 +21,8 @@ class MapManager:
                 if map_subscriber.newMapAvailable and map_subscriber.base_64_map_img is not None:
                     await send_map_image(map_subscriber.base_64_map_img)
                     map_subscriber.newMapAvailable = False
+                    await map_subscriber.log_positions_distance(1, map_subscriber.odom_1, map_subscriber.last_odom_1)
+                    await map_subscriber.log_positions_distance(2, map_subscriber.odom_2, map_subscriber.last_odom_2)
             except Exception as err:
                 if str(err) != "generator already executing":
                     logging.debug(f"Exception in Map manager: {err}")

@@ -70,7 +70,7 @@ class MapSubscriber(Node):
         else:
             self.last_odom_1 = self.odom_1
             self.odom_1 = odom.pose.pose
-            self.log_positions_distance(1, self.odom_1, self.last_odom_1)
+            self.update_distance(1, self.odom_1, self.last_odom_1)
         
     def odom_callback_2(self, odom: Odometry):
         logging.debug(f"== Odom robot 2 : {odom.pose.pose}")
@@ -80,7 +80,7 @@ class MapSubscriber(Node):
         else:
             self.last_odom_2 = self.odom_2
             self.odom_2 = odom.pose.pose
-            self.log_positions_distance(2, self.odom_2, self.last_odom_2)
+            self.update_distance(2, self.odom_2, self.last_odom_2)
 
     def convertDataToBase64Str(self, grid):
         width, height = self.get_grid_dimensions(grid)
@@ -182,15 +182,16 @@ class MapSubscriber(Node):
         for _ in range(pad_n):
             data.append(0)
 
-    def log_positions_distance(self, robot_num, odom, last_odom):
+    def update_distance(self, robot_num, odom, last_odom):
         d_x = odom.position.x - last_odom.position.x
         d_y = odom.position.y - last_odom.position.y
         self.distances[robot_num-1] += math.sqrt(d_x**2 + d_y**2)
-        # send_log(f"Position: {odom}", robot_id=robot_num, event_type=LogType.SENSOR)
-        # send_log(f"Distance totale parcourue: {self.distances[robot_num-1]}", robot_id=robot_num, event_type=LogType.SENSOR)
         robot = RobotsData().get_robot(robot_num)
         robot.distance = self.distances[robot_num-1]
 
+    async def log_positions_distance(self, robot_num, odom, last_odom):
+        await send_log(message=f"Position: {odom}", robot_id=robot_num, event_type=LogType.SENSOR)
+        await send_log(message=f"Distance totale parcourue: {self.distances[robot_num-1]}", robot_id=robot_num, event_type=LogType.SENSOR)
 
 
 def twos_comp_byte(val):
