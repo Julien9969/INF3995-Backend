@@ -189,9 +189,9 @@ class MapSubscriber(Node):
         robot = RobotsData().get_robot(robot_num)
         robot.distance = self.distances[robot_num-1]
 
-    async def log_positions_distance(self, robot_num, odom, last_odom):
-        await send_log(message=f"Position: {odom}", robot_id=robot_num, event_type=LogType.SENSOR)
-        await send_log(message=f"Distance totale parcourue: {self.distances[robot_num-1]}", robot_id=robot_num, event_type=LogType.SENSOR)
+    async def log_positions_distance(self, robot_num, odom):
+        await send_log(message=f"Position: x = {round(odom.position.x, 3)}, y = {round(odom.position.y, 3)}", robot_id=robot_num, event_type=LogType.SENSOR)
+        await send_log(message=f"Distance parcourue: {round(self.distances[robot_num-1], 3)}", robot_id=robot_num, event_type=LogType.SENSOR)
 
 
 def twos_comp_byte(val):
