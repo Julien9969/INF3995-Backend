@@ -2,8 +2,9 @@ import asyncio
 import json
 import time
 
-from backend_server.classes.common import Log, LogType, WebsocketsEvents
+from backend_server.classes.common import Log, LogType, WebsocketsEvents, MissionState
 from backend_server.models.mission import Mission
+from backend_server.models.logs import Logs
 from backend_server.models.robots import RobotsData
 from backend_server.websocket.base import sio
 
@@ -25,7 +26,8 @@ async def send_log(message: str, robot_id=2, event_type=LogType.LOG):
               robotId=robot_id,
               eventType=event_type,
               missionId=1)
-
+    logs = Logs()
+    logs.add_log(log)
     await send(WebsocketsEvents.LOG_DATA, log)
 
 
@@ -40,7 +42,8 @@ async def send_mission_updates():
     while True:
         mission = Mission()
         update = mission.get_status()
-        await send(WebsocketsEvents.MISSION_STATUS, update)
+        if mission.get_status()['missionState'] == MissionState.NOT_STARTED:
+            await send(WebsocketsEvents.MISSION_STATUS, update)
         await asyncio.sleep(FREQUENCY)
 
 
