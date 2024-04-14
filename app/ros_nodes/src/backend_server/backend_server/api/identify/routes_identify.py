@@ -14,7 +14,7 @@ async def get_identify() -> responses.JSONResponse:
         status_code=status.HTTP_200_OK
     )
 
-@router.get("/robot/{robot_id}")
+@router.get("/{robot_id}")
 async def get_identify_id(robot_id: int) -> responses.JSONResponse:
     logging.info(f"Request to identify service for robot_id: {robot_id}")
     result = await IdentifyBase.launch_client(robot_id)
@@ -23,7 +23,7 @@ async def get_identify_id(robot_id: int) -> responses.JSONResponse:
     else:
         return responses.JSONResponse ({ 'data':  result }, status_code=status.HTTP_200_OK)
     
-@router.get("/connected")
+@router.get("/connected/")
 async def get_connected_robots() -> responses.JSONResponse:
 
     result = await IdentifyBase.list_connected_robot()
