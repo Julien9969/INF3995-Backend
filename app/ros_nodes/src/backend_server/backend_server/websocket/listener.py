@@ -1,6 +1,6 @@
 import logging
 
-from backend_server.api.identify.identify_base import IdentifyBase
+from backend_server.models.robots import RobotsData
 from backend_server.classes.common import WebsocketsEvents
 from backend_server.models.mission import Mission
 from backend_server.ros.managers.logs import LogManager
@@ -14,6 +14,9 @@ async def set_mission_start(sid, _=None):
     """
     Confirm to clients that the mission has been started
     """
+    if(RobotsData().get_robots() == []):
+        await send(WebsocketsEvents.MISSION_START, "No robots connected")
+        return
     mission = Mission()
     answers = mission.start_mission()
     for id in answers:
