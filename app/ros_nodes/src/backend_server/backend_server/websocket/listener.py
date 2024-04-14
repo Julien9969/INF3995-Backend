@@ -6,7 +6,6 @@ from backend_server.models.mission import Mission
 from backend_server.ros.managers.logs import LogManager
 from backend_server.ros.managers.map import MapManager
 from backend_server.websocket.base import sio
-
 from backend_server.websocket.emitter import send, send_log
 
 logging.basicConfig(level=logging.INFO)
