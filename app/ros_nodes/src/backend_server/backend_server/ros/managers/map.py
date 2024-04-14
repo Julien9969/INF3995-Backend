@@ -1,4 +1,5 @@
 import logging
+from backend_server.models.map import MapData
 import rclpy
 
 from backend_server.classes.constants import RCL_TIMEOUT
@@ -20,6 +21,7 @@ class MapManager:
                 await run_in_threadpool(lambda:rclpy.spin_once(map_subscriber, timeout_sec=RCL_TIMEOUT))
                 if map_subscriber.newMapAvailable and map_subscriber.base_64_map_img is not None:
                     await send_map_image(map_subscriber.base_64_map_img)
+                    MapData().set_map(map_subscriber.base_64_map_img)
                     map_subscriber.newMapAvailable = False
                     await map_subscriber.log_positions_distance(1, map_subscriber.odom_1)
                     await map_subscriber.log_positions_distance(2, map_subscriber.odom_2)
