@@ -10,7 +10,7 @@ from backend_server.models.logs import Logs
 from backend_server.models.robots import RobotsData
 from backend_server.models.map import MapData
 
-
+logging.basicConfig(level=logging.INFO)
 class Mission(metaclass=Singleton):
     """
     Singleton to store the data during the mission
@@ -41,12 +41,13 @@ class Mission(metaclass=Singleton):
             self.mission_id = get_new_mission_id()
             logging.info(f"Starting mission node for mission {self.mission_id}")
             mission = MissionNode()
-            result = mission.start_mission()
-            if(result == Environment.SIMULATED.value):
+            answers,environment = mission.start_mission()
+            logging.info(environment)
+            if(environment == Environment.SIMULATED.value):
                 self.is_simulation = True
-            elif(result == Environment.REAL.value):
+            elif(environment == Environment.REAL.value):
                 self.is_simulation = False
-            return result
+            return answers
 
     def stop_mission(self):
         self.stop_timestamp = int(time.time())
@@ -60,6 +61,19 @@ class Mission(metaclass=Singleton):
                      robots.get_robots(),
                      logs.get_logs(),
                      mission_map.get_map())
+        
+    def head_back_base(self, robot_id:int = None):
+        mission = MissionNode()
+        if robot_id:
+            mission.head_back_base_single(robot_id)
+        else:
+            mission.head_back_base()
+
+    def check_battery(self,battery_level: int, robot_id: int):
+        RobotsData().update_battery(battery_level, robot_id)
+        if battery_level < 30:
+            self.head_back_base(robot_id)
+            RobotsData().head_back_to_base
 
     def get_status(self) -> MissionStatus:
         return MissionStatus(missionId=self.mission_id,
