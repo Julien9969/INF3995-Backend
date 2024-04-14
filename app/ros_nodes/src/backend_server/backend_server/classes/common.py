@@ -54,6 +54,7 @@ class WebsocketsEvents(str, Enum):
     DISCONNECT = "disconnect"
     PING = "ping"
     PONG = "pong"
+    HEADBACKBASE = "headbackbase-request"
 
 
 class Environment(str, Enum):
@@ -87,3 +88,4 @@ class RobotState(str, Enum):
     RUNNING = "running"
     DISCONNECTED = "disconnected"
     IDENTIFYING = "identifying"
+    HEADING_BACK = "heading-back"
