@@ -20,7 +20,7 @@ async def set_mission_start(sid, _=None):
     mission = Mission()
     answers = mission.start_mission()
     for id in answers:
-        await send_log(f"Robot {id} answer: {answers[id]}", robot_id=id)
+        await send_log(f"Robot {id} answer: {answers[id]}", robot_id=id, event_type="command")
     logging.info("Mission started")
     await LogManager.start_record_logs()
 
@@ -48,3 +48,14 @@ async def set_mission_end(sid, _=None):
 @sio.on(WebsocketsEvents.PING.value)
 async def ping(sid, _=None):
     await send(WebsocketsEvents.PONG, "pong")
+
+@sio.on(WebsocketsEvents.HEADBACKBASE.value)
+async def head_back_base(sid, _=None):
+    """
+    Confirm to clients that the mission has been stopped
+    """
+    Mission().head_back_base()
+    logging.info("Head back base")
+    LogManager.stop_record_logs()
+    MapManager.stop_map_listener()
+    await send(WebsocketsEvents.HEADBACKBASE, "Head back base")

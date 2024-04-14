@@ -61,3 +61,12 @@ class MissionNode(Node):
         responses = self.send_request('stop')
         self.destroy_node()
         return responses
+    
+    def head_back_base(self):
+        if not hasattr(self, 'req'):
+            self.destroy_node()
+            return None
+
+        responses = self.send_request('home')
+        self.destroy_node()
+        return responses

@@ -54,6 +54,7 @@ class WebsocketsEvents(str, Enum):
     DISCONNECT = "disconnect"
     PING = "ping"
     PONG = "pong"
+    HEADBACKBASE = "headbackbase-request"
 
 
 class Environment(str, Enum):

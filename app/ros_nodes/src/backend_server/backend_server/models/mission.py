@@ -61,6 +61,10 @@ class Mission(metaclass=Singleton):
                      robots.get_robots(),
                      logs.get_logs(),
                      mission_map.get_map())
+        
+    def head_back_base(self):
+        mission = MissionNode()
+        mission.head_back_base()
 
     def get_status(self) -> MissionStatus:
         return MissionStatus(missionId=self.mission_id,
