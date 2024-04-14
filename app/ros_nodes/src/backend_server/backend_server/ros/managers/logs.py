@@ -23,13 +23,13 @@ class LogManager:
                     log = log_subscriber.last_ros_log
                     if log.logType == LogType.BATTERY:
                         battery_level = log.message.split(":")[1].strip().replace("%", "")
-                        Mission().check_battery(battery_level, log.source_id)
+                        Mission().check_battery(int(battery_level), log.source_id)
                     else:
                         await send_log(log.message, log.source_id, log.logType)
                     log_subscriber.is_new_log = False
             except Exception as err:
                 if str(err) != "generator already executing":
-                    logging.debug(f"Exception in Map manager: {err}")
+                    logging.debug(f"Exception in Log manager: {err}")
         log_subscriber.destroy_node()
 
     @staticmethod
