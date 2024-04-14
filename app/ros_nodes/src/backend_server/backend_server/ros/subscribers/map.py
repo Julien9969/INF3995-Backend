@@ -63,10 +63,6 @@ class MapSubscriber(Node):
         if self.odom_1 is None:
             self.last_odom_1 = odom.pose.pose
             self.odom_1 = odom.pose.pose
-            # TODO move initial pos to proper place with map, cuz here it's odom pos != map position
-            # robot = RobotsData().get_robot(1)
-            # robot.initial_position = Position(x=int(math.floor(self.odom_1.position.x)), y=int(math.floor(self.odom_1.position.y)))
-
         else:
             self.last_odom_1 = self.odom_1
             self.odom_1 = odom.pose.pose
@@ -86,19 +82,14 @@ class MapSubscriber(Node):
         width, height = self.get_grid_dimensions(grid)
         width_msb, width_lsb = self.calculate_msb_lsb(width)
         height_msb, height_lsb = self.calculate_msb_lsb(height)
-        # logging.debug(f"Map received W: {width} H: {height}, W msb: {width_msb} W lsb: {width_lsb} ; H msb: {height_msb} H lsb: {height_lsb}")
-        logging.debug(f"========================= MAP ANALYSIS:")
-        logging.debug(f"===== grid.info.resolution : {grid.info.resolution}")
-        logging.debug(f"===== W-H : {grid.info.width}-{grid.info.height}")
-        logging.debug(f"===== position : {grid.info.origin.position}")
-        logging.debug(f"===== orientation : {grid.info.origin.orientation}")
         data = self.create_data_array(width, height, width_msb, width_lsb, height_msb, height_lsb, grid)
         return base64.b64encode(data).decode('utf-8')
 
     def get_grid_dimensions(self, grid):
         return grid.info.width, grid.info.height
 
-    def calculate_msb_lsb(self, value): # calculates the most significant byte and the least significant byte of a value
+    def calculate_msb_lsb(self, value): 
+        # Calculer l'octet le plus significatif, et le moins significatif
         msb = math.floor(value/256)
         lsb = value % 256
         if lsb > 127:
@@ -115,7 +106,6 @@ class MapSubscriber(Node):
         return data
 
     def append_grid_data_to_array(self, data, width, height, grid):
-        logging.debug(f"=== WIDTH {width} , HEIGHT {height}")
         map_origin_x = grid.info.origin.position.x
         map_origin_y = grid.info.origin.position.y
         res = grid.info.resolution
@@ -139,27 +129,10 @@ class MapSubscriber(Node):
         for i in range(height):
             for j in range(width):
                 point_value = grid.data[width*i + j]
-                # Testing robot localisation
-                robot_here = 0
-                # if (abs(robot1_pos[0] - i) < 8 and abs(robot1_pos[1] - j) < 8):
-                #     robot_here = 1
-                # elif (abs(robot2_pos[0] - i) < 4 and abs(robot2_pos[1] - j) < 4):
-                #     robot_here = 2
-                #
-                self.append_point_value_to_data(data, point_value, robot_here)
+                self.append_point_value_to_data(data, point_value)
             self.add_padding_to_data(data, width)
             
-    def append_point_value_to_data(self, data, point_value, robot_here):
-        if robot_here == 1:
-            data.append(twos_comp_byte(254))
-            data.append(0)
-            data.append(70)            
-            return
-        if robot_here == 2:
-            data.append(70)            
-            data.append(0)
-            data.append(twos_comp_byte(254))
-            return
+    def append_point_value_to_data(self, data, point_value):
         if point_value == -1:
             # format = BGR , donc voici du gris pour les zones non explorées
             data.append(twos_comp_byte(175))
@@ -196,7 +169,7 @@ class MapSubscriber(Node):
 
 def twos_comp_byte(val):
     bits = 8
-    """compute the 2's complement of int value val"""
+    # Pour calculer le complement a 2 du nombre
     if (val & (1 << (bits - 1))) != 0: # if sign bit is set e.g., 8bit: 128-255
         val = val - (1 << bits)        # compute negative value
     return val                         # return positive value as is

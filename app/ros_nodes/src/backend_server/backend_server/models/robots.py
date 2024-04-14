@@ -15,8 +15,6 @@ class Robot:
         self.state = RobotState.IDLE
 
     def update_position(self, position):
-        # assert position['x'] >= 0
-        # assert position['y'] >= 0
         self.position = position
 
 
