@@ -47,3 +47,5 @@ RUN chmod +x /src/app/ros_nodes/deploy-backend.sh
 
 COPY start-app.sh /
 RUN chmod +x /start-app.sh
+
+# TODO: exec start-app.sh
