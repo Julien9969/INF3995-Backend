@@ -9,7 +9,7 @@ class Robot:
     def __init__(self, id: int, initial_position: Position):
         self.id = id
         self.battery = None
-        self.distance = None
+        self.distance = 0
         self.initial_position = initial_position
         self.position = initial_position
         self.state = RobotState.IDLE
@@ -27,6 +27,12 @@ class RobotsData(metaclass=Singleton):
 
     def __init__(self):
         self.robots: list[Robot] = []
+
+    def reset_robots(self, robot_set:set[int]):
+        self.robots = []
+        for robot_id in robot_set:
+            self.robots.append(Robot(id=robot_id, initial_position=Position(x=0, y=0)))
+
 
     def connect_robot(self, robot: Robot):
         self.robots.append(robot)

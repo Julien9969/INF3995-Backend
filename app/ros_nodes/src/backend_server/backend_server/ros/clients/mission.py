@@ -1,9 +1,11 @@
 import logging
+from backend_server.api.identify.identify_base import IdentifyBase
 import rclpy
 from interfaces.srv import MissionSwitch
 from rclpy.node import Node
 
 logging.basicConfig(level=logging.INFO)
+
 class MissionNode(Node):
     """
     This class is used to call the ROS service 'identify' from the backend.
@@ -11,53 +13,51 @@ class MissionNode(Node):
 
     def __init__(self):
         super().__init__('mission_switch_client_async')
-        self.future2 = None
-        self.future1 = None
+        self._futures:dict = {}
+        self._clients:list = []
+        self._client_ids:dict = {}
 
         try:
-            ros_route = f"/robot{1}/mission_switch"
-            self.cli1 = self.create_client(MissionSwitch, ros_route)
-
-            ros_route = f"/robot{2}/mission_switch"
-            self.cli2 = self.create_client(MissionSwitch, ros_route)
-            if self.cli1.wait_for_service(timeout_sec=5.0):  # TODO: could this be in parallel
-                if self.cli2.wait_for_service(timeout_sec=5.0):
+            for id in IdentifyBase.connected_robots:
+                ros_route = f"/robot{id}/mission_switch"
+                client = self.create_client(MissionSwitch, ros_route)
+                if client.wait_for_service(timeout_sec=5.0):
                     self.req = MissionSwitch.Request()
+                self._clients.append(client)
+                self._client_ids[id] = len(self._clients) - 1
         except Exception as e:
             logging.error(f"Error creating ROS clients: {e}")
             raise
-
+    
     def send_request(self, cmd: str):
-        self.req.command = cmd  # TODO: what if more that tree robots
-        self.future1 = self.cli1.call_async(self.req)
-        self.future2 = self.cli2.call_async(self.req)
-        rclpy.spin_until_future_complete(self, self.future1)
-        rclpy.spin_until_future_complete(self, self.future2)
-        return self.future1.result(), self.future2.result()
+        self.req.command = cmd  
+        for id in self._client_ids:
+            self._futures[id] = self._clients[self._client_ids[id]].call_async(self.req)
+            rclpy.spin_until_future_complete(self, self._futures[id])
+        return {id: future.result() for id, future in self._futures.items()}
 
     def start_mission(self):
-
         if not hasattr(self, 'req'):
             self.destroy_node()
             return None
 
-        response1, response2 = self.send_request('start')
-        if response1.environment == response2.environment:
-            result = f"{response1.environment}"
-        else:
-            result = f"different environments {response1.environment}, {response2.environment}"
-            logging.info(f"Error: {result}")
+        responses = self.send_request('start')
+        environments = {id: response.environment for id, response in responses.items()}
+        answers = {id: response.answer for id, response in responses.items()}
+            
+        if len(set(environments.values())) > 1:
+            logging.info("Error: different environments returned in responses")
+            self.destroy_node()
+            return answers, None
+
         self.destroy_node()        
-        return result
+        return answers, next(iter(environments.values()))
 
     def stop_mission(self):
-
         if not hasattr(self, 'req'):
             self.destroy_node()
             return None
 
-        response1, response2 = self.send_request('stop')
-        result = f"Robots response to stop: {response1}, {response2}"
-
+        responses = self.send_request('stop')
         self.destroy_node()
-        return result
+        return responses

@@ -10,7 +10,7 @@ from backend_server.models.logs import Logs
 from backend_server.models.robots import RobotsData
 from backend_server.models.map import MapData
 
-
+logging.basicConfig(level=logging.INFO)
 class Mission(metaclass=Singleton):
     """
     Singleton to store the data during the mission
@@ -41,12 +41,13 @@ class Mission(metaclass=Singleton):
             self.mission_id = get_new_mission_id()
             logging.info(f"Starting mission node for mission {self.mission_id}")
             mission = MissionNode()
-            result = mission.start_mission()
-            if(result == Environment.SIMULATED.value):
+            answers,environment = mission.start_mission()
+            logging.info(environment)
+            if(environment == Environment.SIMULATED.value):
                 self.is_simulation = True
-            elif(result == Environment.REAL.value):
+            elif(environment == Environment.REAL.value):
                 self.is_simulation = False
-            return result
+            return answers
 
     def stop_mission(self):
         self.stop_timestamp = int(time.time())

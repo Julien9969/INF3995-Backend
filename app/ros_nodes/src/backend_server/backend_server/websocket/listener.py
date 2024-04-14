@@ -1,20 +1,23 @@
 import logging
 
+from backend_server.api.identify.identify_base import IdentifyBase
 from backend_server.classes.common import WebsocketsEvents
 from backend_server.models.mission import Mission
 from backend_server.ros.managers.logs import LogManager
 from backend_server.ros.managers.map import MapManager
 from backend_server.websocket.base import sio
-from backend_server.websocket.emitter import send
+from backend_server.websocket.emitter import send, send_log
 
-
+logging.basicConfig(level=logging.INFO)
 @sio.on(WebsocketsEvents.MISSION_START.value)
 async def set_mission_start(sid, _=None):
     """
     Confirm to clients that the mission has been started
     """
     mission = Mission()
-    mission.start_mission()
+    answers = mission.start_mission()
+    for id in answers:
+        await send_log(f"Robot {id} answer: {answers[id]}", robot_id=id)
     logging.info("Mission started")
     await LogManager.start_record_logs()
 

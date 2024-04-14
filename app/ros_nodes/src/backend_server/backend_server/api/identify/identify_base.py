@@ -1,8 +1,7 @@
 import asyncio
 import logging
 
-from backend_server.classes.common import Position
-from backend_server.models.robots import Robot, RobotsData
+from backend_server.models.robots import RobotsData
 from .identify_client import IdentifyClientAsync
 import rclpy
 import re
@@ -51,8 +50,8 @@ class IdentifyBase:
             await run_in_threadpool(lambda: rclpy.spin_once(node, timeout_sec=5))
             await asyncio.sleep(1)  # Wait for some time to receive odom data
             node.destroy_node()
-        for robot_id in IdentifyBase.connected_robots:
-            RobotsData().connect_robot(Robot(robot_id, Position(x=40, y=120)))
+        
+        RobotsData().reset_robots(IdentifyBase.connected_robots)
             
         return [robot.id for robot in RobotsData().robots]
     
