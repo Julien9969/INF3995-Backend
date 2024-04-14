@@ -220,6 +220,9 @@ nav_msgs::msg::OccupancyGrid::SharedPtr MergingPipeline::composeGrids()
   // CODE POUR ESSAYER DE REGLER ORIGIN OF MERGED MAP
   // RCLCPP_INFO(logger, "===== NB OF GRIDS %d", grids_.size());
   for(nav_msgs::msg::OccupancyGrid::ConstSharedPtr grid : grids_) {
+    if (!grid) {
+      continue;
+    }
     if(grid->info.width > max_w) {
       max_w = grid->info.width;
       origin_x = grid->info.origin.position.x;
