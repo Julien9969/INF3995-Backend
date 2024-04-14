@@ -1,6 +1,6 @@
 import logging
+from backend_server.models.mission import Mission
 from backend_server.classes.common import LogType
-from backend_server.models.robots import RobotsData
 import rclpy
 from fastapi.concurrency import run_in_threadpool
 from backend_server.websocket.emitter import send_log
@@ -22,7 +22,8 @@ class LogManager:
                 if log_subscriber.is_new_log and log_subscriber.last_ros_log is not None:
                     log = log_subscriber.last_ros_log
                     if log.logType == LogType.BATTERY:
-                        RobotsData().update_battery(log.message, log.source_id)
+                        battery_level = log.message.split(":")[1].strip().replace("%", "")
+                        Mission().check_battery(battery_level, log.source_id)
                     else:
                         await send_log(log.message, log.source_id, log.logType)
                     log_subscriber.is_new_log = False

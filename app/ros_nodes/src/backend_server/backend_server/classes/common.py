@@ -88,3 +88,4 @@ class RobotState(str, Enum):
     RUNNING = "running"
     DISCONNECTED = "disconnected"
     IDENTIFYING = "identifying"
+    HEADING_BACK = "heading-back"

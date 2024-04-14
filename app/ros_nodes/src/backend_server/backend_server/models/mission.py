@@ -62,9 +62,18 @@ class Mission(metaclass=Singleton):
                      logs.get_logs(),
                      mission_map.get_map())
         
-    def head_back_base(self):
+    def head_back_base(self, robot_id:int = None):
         mission = MissionNode()
-        mission.head_back_base()
+        if robot_id:
+            mission.head_back_base_single(robot_id)
+        else:
+            mission.head_back_base()
+
+    def check_battery(self,battery_level: int, robot_id: int):
+        RobotsData().update_battery(battery_level, robot_id)
+        if battery_level < 30:
+            self.head_back_base(robot_id)
+            RobotsData().head_back_to_base
 
     def get_status(self) -> MissionStatus:
         return MissionStatus(missionId=self.mission_id,

@@ -18,55 +18,77 @@ class MissionNode(Node):
         self._client_ids:dict = {}
 
         try:
-            for id in IdentifyBase.connected_robots:
-                ros_route = f"/robot{id}/mission_switch"
+            for robot_id in IdentifyBase.connected_robots:
+                ros_route = f"/robot{robot_id}/mission_switch"
                 client = self.create_client(MissionSwitch, ros_route)
                 if client.wait_for_service(timeout_sec=5.0):
                     self.req = MissionSwitch.Request()
                 self._clients.append(client)
-                self._client_ids[id] = len(self._clients) - 1
+                self._client_ids[robot_id] = len(self._clients) - 1
         except Exception as e:
             logging.error(f"Error creating ROS clients: {e}")
             raise
-    
-    def send_request(self, cmd: str):
-        self.req.command = cmd  
-        for id in self._client_ids:
-            self._futures[id] = self._clients[self._client_ids[id]].call_async(self.req)
-            rclpy.spin_until_future_complete(self, self._futures[id])
-        return {id: future.result() for id, future in self._futures.items()}
 
-    def start_mission(self):
+    def _check_req_exists(self):
         if not hasattr(self, 'req'):
             self.destroy_node()
+            return False
+        return True
+
+    def send_request(self, cmd: str):
+        if not self._check_req_exists():
+            return None
+
+        self.req.command = cmd  
+        for robot_id in self._client_ids:
+            self._futures[robot_id] = self._clients[self._client_ids[robot_id]].call_async(self.req)
+            rclpy.spin_until_future_complete(self, self._futures[robot_id])
+        return {robot_id: future.result() for robot_id, future in self._futures.items()}
+
+
+    def start_mission(self):
+        if not self._check_req_exists():
             return None
 
         responses = self.send_request('start')
-        environments = {id: response.environment for id, response in responses.items()}
+        environments = {response.environment for response in responses.values()}
         answers = {id: response.answer for id, response in responses.items()}
-            
-        if len(set(environments.values())) > 1:
+
+        if len(environments) > 1:
             logging.info("Error: different environments returned in responses")
             self.destroy_node()
             return answers, None
 
-        self.destroy_node()        
-        return answers, next(iter(environments.values()))
+        self.destroy_node()
+        return answers, next(iter(environments))
 
     def stop_mission(self):
-        if not hasattr(self, 'req'):
-            self.destroy_node()
+        if not self._check_req_exists():
             return None
 
         responses = self.send_request('stop')
         self.destroy_node()
         return responses
-    
+
     def head_back_base(self):
-        if not hasattr(self, 'req'):
-            self.destroy_node()
+        if not self._check_req_exists():
             return None
 
         responses = self.send_request('home')
         self.destroy_node()
         return responses
+
+    def head_back_base_single(self, robot_id):
+        if not self._check_req_exists():
+            return None
+
+        if robot_id not in self._client_ids:
+            logging.error(f"Robot ID {robot_id} not found")
+            return None
+
+        self.req.command = 'home'
+        self._futures[robot_id] = self._clients[self._client_ids[robot_id]].call_async(self.req)
+        rclpy.spin_until_future_complete(self, self._futures[robot_id])
+        response = self._futures[robot_id].result()
+        self.destroy_node()
+        return {robot_id: response}
