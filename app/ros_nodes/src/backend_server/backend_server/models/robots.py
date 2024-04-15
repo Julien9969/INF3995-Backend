@@ -58,7 +58,10 @@ class RobotsData(metaclass=Singleton):
                 for robot in self.robots]
     
     def get_robot(self, robot_id):
-        return self.robots[robot_id-1]
+        for robot in self.robots:
+            if robot.id == robot_id:
+                return robot
+        return None
 
     def identify_robot(self, robot_id: int):
         for robot in self.robots:

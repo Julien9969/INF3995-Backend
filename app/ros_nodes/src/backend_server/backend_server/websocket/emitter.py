@@ -2,6 +2,7 @@ import asyncio
 import json
 import time
 
+from backend_server.models.logs import Logs
 from backend_server.classes.common import Log, LogType, WebsocketsEvents
 from backend_server.models.mission import Mission
 from backend_server.models.robots import RobotsData
@@ -25,7 +26,7 @@ async def send_log(message: str, robot_id=2, event_type=LogType.LOG):
               robotId=robot_id,
               eventType=event_type,
               missionId=1)
-
+    Logs().add_log(log)
     await send(WebsocketsEvents.LOG_DATA, log)
 
 

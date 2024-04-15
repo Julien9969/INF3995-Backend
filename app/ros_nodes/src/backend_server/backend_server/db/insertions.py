@@ -104,7 +104,7 @@ def save_mission(mission: MissionStatus, robots: list[RobotInformation], logs: l
     for log in logs:
         session.add(LogDB(timestamp=log['timestamp'],
                           mission_id=mission['missionId'],
-                          eventType=log['eventType'],
+                          event_type=log['eventType'],
                           robot_id=log['robotId'],
                           message=log['message']))
         session.commit()
