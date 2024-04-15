@@ -30,6 +30,11 @@ class RobotsData(metaclass=Singleton):
         self.robots = []
         for robot_id in robot_set:
             self.robots.append(Robot(id=robot_id, initial_position=Position(x=0, y=0)))
+    
+    def run_robot(self, robot_id):
+        for robot in self.robots:
+            if robot.id == robot_id:
+                robot.state = RobotState.RUNNING
 
 
     def connect_robot(self, robot: Robot):

@@ -43,8 +43,7 @@ class Mission(metaclass=Singleton):
             logging.info(f"Starting mission node for mission {self.mission_id}")
             mission = MissionNode()
             answers,environment = mission.start_mission()
-            logging.info(environment)
-
+            [RobotsData().run_robot(id) for id in answers]
             if(environment == Environment.SIMULATED.value):
                 self.is_simulation = True
                 if self.mapMergeProcess is None:
