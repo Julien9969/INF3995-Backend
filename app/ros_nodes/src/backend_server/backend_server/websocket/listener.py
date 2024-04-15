@@ -49,10 +49,3 @@ async def set_mission_end(sid, _=None):
 async def ping(sid, _=None):
     await send(WebsocketsEvents.PONG, "pong")
 
-@sio.on(WebsocketsEvents.HEADBACKBASE.value)
-async def head_back_base(sid, _=None):
-    """
-    Confirm to clients that the mission has been stopped
-    """
-    Mission().head_back_base()
-    await send(WebsocketsEvents.HEADBACKBASE, "Head back base")
