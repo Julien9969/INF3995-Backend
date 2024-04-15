@@ -2,7 +2,7 @@ import logging
 import uvicorn
 import sys
 
-sys.path.append(".")  # TODO: could be changed, messes with IDE
+sys.path.append(".")
 
 from backend_server.classes.constants import PORT
 

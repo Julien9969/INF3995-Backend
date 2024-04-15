@@ -3,7 +3,7 @@ import json
 from fastapi import APIRouter
 from fastapi import responses, status
 
-from .mission_history_base import HistoryBase, HistoryResponse
+from .mission_history_base import HistoryBase
 
 router = APIRouter(include_in_schema=True)
 

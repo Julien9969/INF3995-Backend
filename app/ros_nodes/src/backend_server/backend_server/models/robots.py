@@ -1,5 +1,5 @@
-import time
 import logging
+import time
 
 from backend_server.classes.common import RobotInformation, Position, RobotState
 from backend_server.classes.singleton import Singleton
@@ -26,16 +26,15 @@ class RobotsData(metaclass=Singleton):
     def __init__(self):
         self.robots: list[Robot] = []
 
-    def reset_robots(self, robot_set:set[int]):
+    def reset_robots(self, robot_set: set[int]):
         self.robots = []
         for robot_id in robot_set:
             self.robots.append(Robot(id=robot_id, initial_position=Position(x=0, y=0)))
-    
+
     def run_robot(self, robot_id):
         for robot in self.robots:
             if robot.id == robot_id:
                 robot.state = RobotState.RUNNING
-
 
     def connect_robot(self, robot: Robot):
         self.robots.append(robot)
@@ -43,7 +42,7 @@ class RobotsData(metaclass=Singleton):
     def disconnect_robot(self, robot: Robot):
         self.robots.remove(robot)
 
-    def update_battery(self, battery_level:int, robot_id: int):
+    def update_battery(self, battery_level: int, robot_id: int):
         for robot in self.robots:
             if robot.id == robot_id:
                 robot.battery = battery_level
@@ -61,7 +60,7 @@ class RobotsData(metaclass=Singleton):
                                  position=str(robot.position),
                                  initialPosition=str(robot.position))
                 for robot in self.robots]
-    
+
     def get_robot(self, robot_id):
         for robot in self.robots:
             if robot.id == robot_id:
@@ -73,7 +72,7 @@ class RobotsData(metaclass=Singleton):
             if robot.id == robot_id:
                 robot.state = RobotState.IDENTIFYING
 
-    def head_back_to_base(self, robot_id: int=None):
+    def head_back_to_base(self, robot_id: int = None):
         for robot in self.robots:
             if not robot_id or robot.id == robot_id:
                 robot.state = RobotState.HEADING_BACK

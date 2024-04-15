@@ -1,4 +1,4 @@
-from backend_server.db.session import Base, SessionLocal
+from backend_server.db.session import Base
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, Float
 
 
@@ -44,4 +44,4 @@ class Map(Base):
 
     id = Column(Integer, primary_key=True)
     mission_id = Column(Integer, ForeignKey('missions.id'))
-    map_data = Column(String)  # TODO: Big Enough Base 64 encoded image
+    map_data = Column(String)

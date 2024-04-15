@@ -1,13 +1,13 @@
 import asyncio
-import rclpy
 import time
 from contextlib import asynccontextmanager
 
+import rclpy
 from backend_server.api.base import api_router
+from backend_server.db.insertions import init_missions
 from backend_server.db.models import Base
 from backend_server.db.session import engine
 from backend_server.db.utils import check_db_connected, check_db_disconnected
-from backend_server.db.insertions import init_missions
 from backend_server.websocket.base import socket_app
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
