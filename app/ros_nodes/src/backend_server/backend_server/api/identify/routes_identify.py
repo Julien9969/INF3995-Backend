@@ -1,6 +1,8 @@
 import logging
 from fastapi import APIRouter, status
 from fastapi import responses, status
+
+from backend_server.models.mission import Mission
 from .identify_base import IdentifyBase, IdentifyResponse
 
 logging.basicConfig(level=logging.INFO)
@@ -30,5 +32,15 @@ async def get_connected_robots() -> responses.JSONResponse:
 
     if(not result):
         return responses.JSONResponse ({'data':  "Request to identify service failed !"} , status_code=status.HTTP_404_NOT_FOUND)
+    else:
+        return responses.JSONResponse (result, status_code=status.HTTP_200_OK)
+    
+@router.get("/head_back/")
+async def head_back() -> responses.JSONResponse:
+
+    result = Mission().head_back_base()
+
+    if(not result):
+        return responses.JSONResponse ({'data':  "Request to headback base failed !"} , status_code=status.HTTP_404_NOT_FOUND)
     else:
         return responses.JSONResponse (result, status_code=status.HTTP_200_OK)

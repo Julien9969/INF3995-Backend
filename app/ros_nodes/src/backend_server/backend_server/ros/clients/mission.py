@@ -5,7 +5,6 @@ from interfaces.srv import MissionSwitch
 from rclpy.node import Node
 
 logging.basicConfig(level=logging.INFO)
-
 class MissionNode(Node):
     """
     This class is used to call the ROS service 'identify' from the backend.

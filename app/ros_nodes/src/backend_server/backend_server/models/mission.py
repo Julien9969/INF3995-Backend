@@ -1,5 +1,6 @@
 import logging
 import time
+import subprocess
 
 from backend_server.classes.common import Environment, MissionState, MissionStatus
 from backend_server.db.insertions import save_mission
@@ -15,7 +16,7 @@ class Mission(metaclass=Singleton):
     """
     Singleton to store the data during the mission
     """
-
+    mapMergeProcess = None
     def __init__(self):
         self.start_timestamp: int = 0
         self.stop_timestamp: int = 0
@@ -42,11 +43,15 @@ class Mission(metaclass=Singleton):
             logging.info(f"Starting mission node for mission {self.mission_id}")
             mission = MissionNode()
             answers,environment = mission.start_mission()
-            logging.info(environment)
+            [RobotsData().run_robot(id) for id in answers]
             if(environment == Environment.SIMULATED.value):
                 self.is_simulation = True
+                if self.mapMergeProcess is None:
+                    self.mapMergeProcess = subprocess.Popen(['bash', '/src/app/ros_nodes/start-map-merge-robots.sh'])
             elif(environment == Environment.REAL.value):
                 self.is_simulation = False
+                if self.mapMergeProcess is None:
+                    self.mapMergeProcess = subprocess.Popen(['bash', '/src/app/ros_nodes/start-map-merge-sim.sh'])
             return answers
 
     def stop_mission(self):
