@@ -21,11 +21,12 @@ async def send_raw(event: WebsocketsEvents, data, sid=None):
 
 
 async def send_log(message: str, robot_id=2, event_type=LogType.LOG):
+    mission = Mission()
     log = Log(message=message,
               timestamp=int(time.time()),
               robotId=robot_id,
               eventType=event_type,
-              missionId=1)
+              missionId=mission.get_status()['missionId'])
     logs = Logs()
     logs.add_log(log)
     await send(WebsocketsEvents.LOG_DATA, log)
