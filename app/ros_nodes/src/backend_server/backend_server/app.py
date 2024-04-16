@@ -47,7 +47,7 @@ app = start_application()
 async def timeout_middleware(request: Request, call_next):
     try:
         start_time = time.time()
-        return await asyncio.wait_for(call_next(request), timeout=5)
+        return await asyncio.wait_for(call_next(request), timeout=15)
 
     except asyncio.TimeoutError:
         process_time = time.time() - start_time
