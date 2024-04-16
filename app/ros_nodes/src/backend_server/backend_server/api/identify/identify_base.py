@@ -47,7 +47,14 @@ class IdentifyBase:
 
             logging.info(f"Connected  to robots {IdentifyBase.connected_robots}")
 
-            await run_in_threadpool(lambda: rclpy.spin_once(node, timeout_sec=5))
+            try:
+                await run_in_threadpool(lambda: rclpy.spin_once(node, timeout_sec=5))
+            except Exception as e:
+                logging.info(f"Identify connected already executing {odom_topic} will wait his response")
+                await asyncio.sleep(1)
+                node.destroy_node()
+                return IdentifyBase.connected_robots
+            
             await asyncio.sleep(1)  # Wait for some time to receive odom data
             node.destroy_node()
 
@@ -67,7 +74,6 @@ class IdentifyBase:
 
     @staticmethod
     def odom_callback(msg):
-        logging.info(f"Received odom data from robot {msg} :")
         robot_id = IdentifyBase().get_robot_id(msg.header.frame_id)
         IdentifyBase.connected_robots.add(robot_id)
         logging.info(f"Received odom data from robot {robot_id} :")
