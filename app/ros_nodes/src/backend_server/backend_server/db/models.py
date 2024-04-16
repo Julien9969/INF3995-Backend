@@ -21,7 +21,7 @@ class Log(Base):
     timestamp = Column(Integer)
     event_type = Column(String)
     message = Column(String)
-    robot_id = Column(Integer, ForeignKey('robots.id'))
+    robot_id = Column(Integer)  # because robot_id as a primary key is not a good idea
     mission_id = Column(Integer, ForeignKey('missions.id'))
 
 
