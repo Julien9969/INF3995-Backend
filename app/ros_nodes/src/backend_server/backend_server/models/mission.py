@@ -50,11 +50,11 @@ class Mission(metaclass=Singleton):
             if (environment == Environment.SIMULATED.value):
                 self.is_simulation = True
                 if self.mapMergeProcess is None:
-                    self.mapMergeProcess = subprocess.Popen(['bash', '/src/app/ros_nodes/start-map-merge-robots.sh'])
+                    self.mapMergeProcess = subprocess.Popen(['bash', '/src/app/ros_nodes/start-map-merge-sim.sh'])
             elif (environment == Environment.REAL.value):
                 self.is_simulation = False
                 if self.mapMergeProcess is None:
-                    self.mapMergeProcess = subprocess.Popen(['bash', '/src/app/ros_nodes/start-map-merge-sim.sh'])
+                    self.mapMergeProcess = subprocess.Popen(['bash', '/src/app/ros_nodes/start-map-merge-robots.sh'])
             return answers
 
     def stop_mission(self):
