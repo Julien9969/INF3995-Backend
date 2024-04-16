@@ -43,8 +43,7 @@ async def send_mission_updates():
     while True:
         mission = Mission()
         update = mission.get_status()
-        if mission.get_status()['missionState'] == MissionState.NOT_STARTED:
-            await send(WebsocketsEvents.MISSION_STATUS, update)
+        await send(WebsocketsEvents.MISSION_STATUS, update)
         await asyncio.sleep(FREQUENCY)
 
 
