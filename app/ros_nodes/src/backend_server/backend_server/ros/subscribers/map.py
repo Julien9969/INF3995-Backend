@@ -45,9 +45,6 @@ class MapSubscriber(Node):
 
     def listener_callback(self, occupancy_grid: OccupancyGrid):
         # logging.debug(f"Map received")
-        if self.odom_1 is None or self.odom_2 is None:
-            logging.debug(f"Odom not received yet!! cannot do map")
-            return
         base_64_map_data = self.convertDataToBase64Str(occupancy_grid)
         self.base_64_map_img = f'data:image/bmp;base64,{base_64_map_data}'
         self.newMapAvailable = True
@@ -108,23 +105,29 @@ class MapSubscriber(Node):
         map_origin_x = grid.info.origin.position.x
         map_origin_y = grid.info.origin.position.y
         res = grid.info.resolution
-        robot1_pos = (
-            int(math.floor((self.odom_1.position.x - map_origin_x) / res)),
-            height - int(math.floor((self.odom_1.position.y - map_origin_y) / res)),
-        )
-        robot2_pos = (
-            int(math.floor((self.odom_2.position.x - map_origin_x) / res)),
-            height - int(math.floor((self.odom_2.position.y - map_origin_y) / res)),
-        )
 
-        try:
-            robot1 = RobotsData().get_robot(1)
-            robot1.update_position(Position(x=robot1_pos[0], y=robot1_pos[1]))
+        if self.odom_1 is not None:
+            robot1_pos = (
+                int(math.floor((self.odom_1.position.x - map_origin_x) / res)),
+                height - int(math.floor((self.odom_1.position.y - map_origin_y) / res)),
+            )
+            try:
+                robot1 = RobotsData().get_robot(1)
+                robot1.update_position(Position(x=robot1_pos[0], y=robot1_pos[1]))
+            except Exception as err:
+                logging.debug(f"--- Exception sending position robot 1: {err}")
 
-            robot2 = RobotsData().get_robot(2)
-            robot2.update_position(Position(x=robot2_pos[0], y=robot2_pos[1]))
-        except Exception as err:
-            logging.debug(f"--- EXCEPTION: {err}")
+        if self.odom_2 is not None:
+            robot2_pos = (
+                int(math.floor((self.odom_2.position.x - map_origin_x) / res)),
+                height - int(math.floor((self.odom_2.position.y - map_origin_y) / res)),
+            )
+            try:
+                robot2 = RobotsData().get_robot(2)
+                robot2.update_position(Position(x=robot2_pos[0], y=robot2_pos[1]))
+            except Exception as err:
+                logging.debug(f"--- Exception sending position robot 2: {err}")
+
         for i in range(height):
             for j in range(width):
                 point_value = grid.data[width * i + j]
