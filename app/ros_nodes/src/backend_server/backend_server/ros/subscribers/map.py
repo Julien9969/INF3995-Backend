@@ -44,7 +44,7 @@ class MapSubscriber(Node):
         self.distances = [0, 0]
 
     def listener_callback(self, occupancy_grid: OccupancyGrid):
-        logging.debug(f"Map received")
+        # logging.debug(f"Map received")
         if self.odom_1 is None or self.odom_2 is None:
             logging.debug(f"Odom not received yet!! cannot do map")
             return
@@ -53,7 +53,7 @@ class MapSubscriber(Node):
         self.newMapAvailable = True
 
     def odom_callback_1(self, odom: Odometry):
-        logging.debug(f"== Odom robot 1 : {odom.pose.pose}")
+        # logging.debug(f"== Odom robot 1 : {odom.pose.pose}")
         if self.odom_1 is None:
             self.last_odom_1 = odom.pose.pose
             self.odom_1 = odom.pose.pose
@@ -63,7 +63,7 @@ class MapSubscriber(Node):
             self.update_distance(1, self.odom_1, self.last_odom_1)
 
     def odom_callback_2(self, odom: Odometry):
-        logging.debug(f"== Odom robot 2 : {odom.pose.pose}")
+        # logging.debug(f"== Odom robot 2 : {odom.pose.pose}")
         if self.odom_2 is None:
             self.last_odom_2 = odom.pose.pose
             self.odom_2 = odom.pose.pose
