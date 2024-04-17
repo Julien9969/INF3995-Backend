@@ -12,6 +12,7 @@ def retrieve_missions():
         mission = MissionStatus(
             missionId=result.id,
             startTimestamp=result.start_timestamp,
+            distance=result.distance,
             elapsedTime=result.duration,
             isSimulation=result.is_simulation,
             robotCount=result.robot_count,
