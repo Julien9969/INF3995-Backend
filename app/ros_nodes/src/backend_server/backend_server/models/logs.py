@@ -1,5 +1,4 @@
-
-from backend_server.classes.common import LogType, Log
+from backend_server.classes.common import Log
 from backend_server.classes.singleton import Singleton
 
 

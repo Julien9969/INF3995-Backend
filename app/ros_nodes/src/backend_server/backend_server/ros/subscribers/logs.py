@@ -1,7 +1,3 @@
-from collections import namedtuple
-import re
-from typing import List
-from fastapi.concurrency import run_in_threadpool
 import logging
 import re
 from collections import namedtuple
@@ -55,7 +51,6 @@ class LogSubscriber(Node):
             return LogType.BATTERY
         else:
             return LogType.LOG
-        
 
     def listener_callback(self, raw_log):
         source_id: int = self.get_robot_id(raw_log.name)

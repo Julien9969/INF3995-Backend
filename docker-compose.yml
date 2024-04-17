@@ -47,7 +47,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_DB: inf3995    
+      POSTGRES_DB: inf3995
       POSTGRES_USER: eq102
       POSTGRES_PASSWORD: root
     # networks:
@@ -59,7 +59,7 @@ services:
   #   volumes:
   #     - postgres_data:/var/lib/postgresql/test_data
   #   environment:
-  #     POSTGRES_DB: test_inf3995    
+  #     POSTGRES_DB: test_inf3995
   #     POSTGRES_USER: test_eq102
   #     POSTGRES_PASSWORD: test_root
     # networks:

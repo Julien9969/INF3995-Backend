@@ -1,5 +1,6 @@
 import time
 from typing import Generator
+
 from backend_server.classes.constants import SQLALCHEMY_DATABASE_URL
 from sqlalchemy import create_engine
 from sqlalchemy.orm import declarative_base
@@ -12,7 +13,7 @@ while True:
             SQLALCHEMY_DATABASE_URL
         )
         SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-        time.sleep(1)  # TODO: ehourdebaigt: is this sleep necessary?
+        time.sleep(1)
         break
     except Exception as e:
         continue

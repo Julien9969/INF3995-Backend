@@ -7,7 +7,7 @@ class File(BaseModel):
     content: str
 
 
-class FileObject():
+class FileObject:
     def __init__(self, name: str, id: int, content: str):
         self.name = name
         self.id = id
