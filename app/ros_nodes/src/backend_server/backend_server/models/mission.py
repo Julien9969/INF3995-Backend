@@ -71,11 +71,15 @@ class Mission(metaclass=Singleton):
                      mission_map.get_map())
 
     def head_back_base(self, robot_id: int = None):
+        if self.state != MissionState.ONGOING:
+            return None
         mission = MissionNode()
         if robot_id:
-            mission.head_back_base_single(robot_id)
+            logging.info(f"Robot {robot_id} is heading back to base")
+            return str(mission.head_back_base_single(robot_id))
         else:
-            mission.head_back_base()
+            logging.info(f"Robots are heading back to base")
+            return str(mission.head_back_base())
 
     def check_battery(self, battery_level: int, robot_id: int):
         RobotsData().update_battery(battery_level, robot_id)
