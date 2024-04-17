@@ -75,9 +75,10 @@ class Mission(metaclass=Singleton):
             return None
         response = ""
         running_robots = RobotsData().running_robots(robot_id)
+        logging.info(f"Running robots: {running_robots}")
         if(running_robots):
-            mission = MissionNode()
             for id in running_robots:
+                mission = MissionNode()
                 response = response + str(mission.head_back_base(id))
                 RobotsData().head_back_to_base(id)
                 logging.info(f"Robot {id} is heading back to base")
