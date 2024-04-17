@@ -1,10 +1,12 @@
 import logging
-from backend_server.api.identify.identify_base import IdentifyBase
+
 import rclpy
+from backend_server.api.identify.identify_base import IdentifyBase
 from interfaces.srv import MissionSwitch
 from rclpy.node import Node
 
 logging.basicConfig(level=logging.INFO)
+
 
 class MissionNode(Node):
     """
@@ -13,9 +15,9 @@ class MissionNode(Node):
 
     def __init__(self):
         super().__init__('mission_switch_client_async')
-        self._futures:dict = {}
-        self._clients:list = []
-        self._client_ids:dict = {}
+        self._futures: dict = {}
+        self._clients: list = []
+        self._client_ids: dict = {}
 
         try:
             for robot_id in IdentifyBase.connected_robots:
@@ -39,12 +41,11 @@ class MissionNode(Node):
         if not self._check_req_exists():
             return None
 
-        self.req.command = cmd  
+        self.req.command = cmd
         for robot_id in self._client_ids:
             self._futures[robot_id] = self._clients[self._client_ids[robot_id]].call_async(self.req)
             rclpy.spin_until_future_complete(self, self._futures[robot_id])
         return {robot_id: future.result() for robot_id, future in self._futures.items()}
-
 
     def start_mission(self):
         if not self._check_req_exists():

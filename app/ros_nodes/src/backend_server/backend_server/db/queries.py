@@ -1,7 +1,6 @@
 from backend_server.classes.common import RobotInformation, MissionStatus, Log
 from backend_server.db.models import Mission as MissionDB, Robot as RobotDB, Map as MapDB, Log as LogDB
 from backend_server.db.session import SessionLocal
-import logging
 
 
 def retrieve_missions():

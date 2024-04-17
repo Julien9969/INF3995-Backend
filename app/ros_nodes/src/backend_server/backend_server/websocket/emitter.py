@@ -2,8 +2,9 @@ import asyncio
 import json
 import time
 
-from backend_server.classes.common import Log, LogType, WebsocketsEvents
+from backend_server.classes.common import Log, LogType, WebsocketsEvents, MissionState
 from backend_server.models.mission import Mission
+from backend_server.models.logs import Logs
 from backend_server.models.robots import RobotsData
 from backend_server.websocket.base import sio
 
@@ -20,12 +21,14 @@ async def send_raw(event: WebsocketsEvents, data, sid=None):
 
 
 async def send_log(message: str, robot_id=2, event_type=LogType.LOG):
+    mission = Mission()
     log = Log(message=message,
               timestamp=int(time.time()),
               robotId=robot_id,
               eventType=event_type,
-              missionId=1)
-
+              missionId=mission.get_status()['missionId'])
+    logs = Logs()
+    logs.add_log(log)
     await send(WebsocketsEvents.LOG_DATA, log)
 
 

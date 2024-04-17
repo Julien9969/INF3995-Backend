@@ -1,15 +1,16 @@
 import logging
-from backend_server.models.mission import Mission
-from backend_server.classes.common import LogType
+
 import rclpy
-from fastapi.concurrency import run_in_threadpool
-from backend_server.websocket.emitter import send_log
-from backend_server.ros.subscribers.logs import LogSubscriber
+from backend_server.classes.common import LogType
 from backend_server.classes.constants import RCL_TIMEOUT
+from backend_server.models.mission import Mission
+from backend_server.ros.subscribers.logs import LogSubscriber
+from backend_server.websocket.emitter import send_log
+from fastapi.concurrency import run_in_threadpool
 
 
 class LogManager:
-    is_recording = True  # TODO: shouldn't this be False?
+    is_recording = True
 
     @staticmethod
     async def start_record_logs():

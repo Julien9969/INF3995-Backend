@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  fastapi:
+    build: .
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    volumes:
+      - ./app:/src/app
+      - /app/ros_nodes/build
+      - /app/ros_nodes/install
+      - /app/ros_nodes/log
+    image: fastapi
+    container_name: fastapi-container
+    environment:
+      - ROS_DOMAIN_ID=62
+      - TERM='xterm-256color'
+      - WATCHFILES_FORCE_POLLING=true
+    command: /bin/bash -c "/start-app.sh"
+
+
+  db:
+    image: postgres:13
+    ports:
+      - "5430:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_DB: inf3995
+      POSTGRES_USER: eq102
+      POSTGRES_PASSWORD: root
+
+volumes:
+  postgres_data:

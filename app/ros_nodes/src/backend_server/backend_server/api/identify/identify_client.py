@@ -1,5 +1,5 @@
-from interfaces.srv import Identify
 import rclpy
+from interfaces.srv import Identify
 from rclpy.node import Node
 
 
@@ -7,6 +7,7 @@ class IdentifyClientAsync(Node):
     """
     This class is used to call the ROS service 'identify' from the backend.
     """
+
     def __init__(self, robot_id: int = 1):
         super().__init__('identify_client_async')
         self.future = None
@@ -15,7 +16,7 @@ class IdentifyClientAsync(Node):
 
         if self.cli.wait_for_service(timeout_sec=5.0):
             self.req = Identify.Request()
-        else:    
+        else:
             self.get_logger().info(f'service not available (robot id {robot_id})...')
 
     async def send_request(self, a):

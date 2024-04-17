@@ -1,8 +1,8 @@
+import time
+
 from backend_server.classes.common import MissionStatus, RobotInformation, Log
 from backend_server.db.models import Mission as MissionDB, Log as LogDB, Map as MapDB, Robot as RobotDB
 from backend_server.db.session import SessionLocal
-
-import time
 
 
 def init_missions():
@@ -104,8 +104,8 @@ def save_mission(mission: MissionStatus, robots: list[RobotInformation], logs: l
     for log in logs:
         session.add(LogDB(timestamp=log['timestamp'],
                           mission_id=mission['missionId'],
-                          eventType=log['eventType'],
-                          robot_id=log['robotId'],
+                          event_type=log['eventType'],
+                          robot_id=log['robotId'] + 1,  # we count naturally
                           message=log['message']))
         session.commit()
 
