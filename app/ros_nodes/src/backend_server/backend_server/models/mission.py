@@ -2,7 +2,7 @@ import logging
 import subprocess
 import time
 
-from backend_server.classes.common import Environment, MissionState, MissionStatus
+from backend_server.classes.common import Environment, MissionState, MissionStatus, RobotState
 from backend_server.classes.singleton import Singleton
 from backend_server.db.insertions import save_mission
 from backend_server.db.queries import get_new_mission_id
@@ -73,17 +73,19 @@ class Mission(metaclass=Singleton):
     def head_back_base(self, robot_id: int = None):
         if self.state != MissionState.ONGOING:
             return None
-        mission = MissionNode()
-        if robot_id:
-            logging.info(f"Robot {robot_id} is heading back to base")
-            return str(mission.head_back_base_single(robot_id))
-        else:
-            logging.info(f"Robots are heading back to base")
-            return str(mission.head_back_base())
+        response = ""
+        running_robots = RobotsData().running_robots(robot_id)
+        if(running_robots):
+            mission = MissionNode()
+            for id in running_robots:
+                response = response + str(mission.head_back_base(id))
+                RobotsData().head_back_to_base(id)
+                logging.info(f"Robot {id} is heading back to base")
+        return response
 
     def check_battery(self, battery_level: int, robot_id: int):
         RobotsData().update_battery(battery_level, robot_id)
-        if battery_level < 30:
+        if battery_level < 30 and RobotsData().get_robot(robot_id).state == RobotState.RUNNING:
             self.head_back_base(robot_id)
             RobotsData().head_back_to_base
 

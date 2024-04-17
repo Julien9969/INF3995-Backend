@@ -71,15 +71,7 @@ class MissionNode(Node):
         self.destroy_node()
         return responses
 
-    def head_back_base(self):
-        if not self._check_req_exists():
-            return None
-
-        responses = self.send_request('home')
-        self.destroy_node()
-        return responses
-
-    def head_back_base_single(self, robot_id):
+    def head_back_base(self, robot_id):
         if not self._check_req_exists():
             return None
 
