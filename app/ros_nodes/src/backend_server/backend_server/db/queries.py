@@ -12,6 +12,7 @@ def retrieve_missions():
         mission = MissionStatus(
             missionId=result.id,
             startTimestamp=result.start_timestamp,
+            distance=result.distance,
             elapsedTime=result.duration,
             isSimulation=result.is_simulation,
             robotCount=result.robot_count,
@@ -64,7 +65,7 @@ def retrieve_robots(mission_id: int) -> list[RobotInformation]:
     robots = []
     for robot in result:
         robot_data = RobotInformation(
-            id=robot.id,
+            id=robot.robot_id,
             name=robot.id,
             battery=robot.battery,
             position=robot.position,
