@@ -65,7 +65,7 @@ def retrieve_robots(mission_id: int) -> list[RobotInformation]:
     robots = []
     for robot in result:
         robot_data = RobotInformation(
-            id=robot.id,
+            id=robot.robot_id,
             name=robot.id,
             battery=robot.battery,
             position=robot.position,
