@@ -23,7 +23,7 @@ async def get_identify() -> responses.JSONResponse:
 async def get_identify_id(robot_id: int) -> responses.JSONResponse:
     logging.info(f"Request to identify service for robot_id: {robot_id}")
     result = await IdentifyBase.launch_client(robot_id)
-    if (not result):
+    if not result:
         return responses.JSONResponse({'data': "Request to identify service failed !"},
                                       status_code=status.HTTP_404_NOT_FOUND)
     else:
@@ -34,7 +34,7 @@ async def get_identify_id(robot_id: int) -> responses.JSONResponse:
 async def get_connected_robots() -> responses.JSONResponse:
     result = await IdentifyBase.list_connected_robot()
 
-    if (not result):
+    if not result:
         return responses.JSONResponse({'data': "Request to identify service failed !"},
                                       status_code=status.HTTP_404_NOT_FOUND)
     else:
@@ -45,7 +45,7 @@ async def get_connected_robots() -> responses.JSONResponse:
 async def head_back() -> responses.JSONResponse:
     result = Mission().head_back_base()
 
-    if (not result):
+    if not result:
         return responses.JSONResponse({'data': "Request to headback base failed !"},
                                       status_code=status.HTTP_404_NOT_FOUND)
     else:

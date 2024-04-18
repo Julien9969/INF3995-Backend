@@ -71,15 +71,7 @@ class MissionNode(Node):
         self.destroy_node()
         return responses
 
-    def head_back_base(self):
-        if not self._check_req_exists():
-            return None
-
-        responses = self.send_request('home')
-        self.destroy_node()
-        return responses
-
-    def head_back_base_single(self, robot_id):
+    def head_back_base(self, robot_id:int):
         if not self._check_req_exists():
             return None
 
@@ -88,6 +80,7 @@ class MissionNode(Node):
             return None
 
         self.req.command = 'home'
+        logging.info(f"Sending request to robot {robot_id} to head back to base")
         self._futures[robot_id] = self._clients[self._client_ids[robot_id]].call_async(self.req)
         rclpy.spin_until_future_complete(self, self._futures[robot_id])
         response = self._futures[robot_id].result()

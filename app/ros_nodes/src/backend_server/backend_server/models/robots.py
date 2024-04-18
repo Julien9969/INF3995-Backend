@@ -78,3 +78,19 @@ class RobotsData(metaclass=Singleton):
                 robot.state = RobotState.HEADING_BACK
                 if robot_id:
                     break
+    def running_robots(self, id: int = None):
+        if id is None:
+            list = []
+            for robot in self.robots:
+                if robot.state == RobotState.RUNNING:
+                    list.append(robot.id)
+            return list
+        else:
+            for robot in self.robots:
+                if robot.id == id and robot.state == RobotState.RUNNING:
+                    return [robot.id]
+            return None
+    def stop_robots(self):
+        for robot in self.robots:
+            robot.state = RobotState.IDLE
+        logging.info("All robots stopped")
