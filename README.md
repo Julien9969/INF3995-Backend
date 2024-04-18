@@ -61,130 +61,6 @@ docker ps -a
 ```
 `inf3995-backend-fastapi` and `postgres:13` should be in IMAGE column
 
-
-### Use the created images (pas sur du nom)
-
-#### **Start the server**
-```sh
-docker compose start
-```
-
-**Open live logs of the server**
-```sh
-docker compose logs -f
-```
-
-**Open a bash of fast-api**
-```sh
-docker exec -it fastapi-container bash
-```
-Source the setup.sh file
-```sh
-source ros_nodes/install/setup.sh
-```
-
-**Open a bash of the database**
-```sh
-docker exec -it inf3995-backend-db-1 bash
-```
-**Open postgres command prompt**
-```sh
-docker exec -it inf3995-backend-db-1 psql -U eq102 -d inf3995 
-``````
-**list all db tables**
-```sql
-\dt
-```
-**Display elements of something table**
-```sql
-select * from something;
-```
-#### Stop the server
-```sh
-docker compose stop
-```
-
-### Run the tests
-Open a bash of fast-api
-```sh
-docker exec -it fastapi-container bash
-```
-Run the tests + coverage
-```sh
-cd ros_nodes/src/backend_server/  
-pytest --cov-report term-missing --cov=backend_server backend_server/
-```
-
-##### Test execution with one command (marche pas d'un coup faut la faire en deux fois jsp pk)
-```sh
-docker exec -it fastapi-container bash -c "cd ros_nodes/src/backend_server/ && pytest --cov-report term-missing --cov=backend_server"
-``` 
-
-### Delete the docker and cache
-At `docker-compose.yml` location run 
-```sh
-docker compose stop
-docker compose rm
-```
-Prompt `Y` for the container to delete
-```sh
-docker rmi fastapi-container
-docker rmi postgres:13
-docker builder prune
-docker images
-```
-
-Reset docker configuration (change db user)
-```sh
-docker compose down -v
-```
-
-in progress  
-uvicorn backend_server.main:app --reload --host 0.0.0.0 --port 8000
-
-
-## Resources
-
-[Fast API documentation](https://fastapi.tiangolo.com/) \
-[Fastapi sql db tutorial](https://fastapi.tiangolo.com/tutorial/sql-databases/) \
-[SQLAlchemy](https://www.sqlalchemy.org/) \
-[Pydantic](https://pydantic-docs.helpmanual.io/)
-
-### Python
-
-Create a virtual environment :
-```bash
-python3 -m venv .venv
-```
-or in vscode : \
-Ctrl+Shift+P -> Python: Select Interpreter -> Enter interpreter path -> Enter path to venv/bin/python3
-
-Activate the virtual environment (Linux):
-```sh
-source ./.venv/bin/activate
-```
-
-Activate the virtual environment (Windows):
-```
-./.venv/Scripts/activate
-```
-
-Install dependencies (in the virtual environment):
-```bash
-pip install -r requirements.txt
-```
-
-## Usage
-
-Start the server (at the root of the project):
-```
-uvicorn app.main:app --reload
-```
-
-
-Open the docs in a browser :
-http://localhost:8000/docs
-
 ## Setup with docker compose
 Access the api docs:
 - http://localhost:8000/docs
@@ -270,7 +146,7 @@ docker exec -it fastapi-container bash
 Run the tests + coverage
 ```sh
 cd /src/app/ros_nodes/src/backend_server
-pytest --ignore=./test --cov-report term-missing --cov=backend_server backend_server/
+pytest --ignore=./test --ignore=./tests/mock --cov-config=.coveragerc --cov-report term-missing --cov=backend_server backend_server/
 ```
 
 ##### Test execution with one command (--ignore=./test is for ros2 lint exclude)
@@ -314,9 +190,18 @@ If you need to create a new folder in **tests/mock** you will need to patch the 
 ## Resources
 
 Gitlab ci ignore test folder (ros2 dep)
-pytest --ignore=./test --cov-report term-missing --cov=backend_server backend_server/
+pytest --ignore=./test --cov-config=.coveragerc --ignore=./tests/mock --cov-report term-missing --cov=backend_server backend_server/
 
 [Fast API documentation](https://fastapi.tiangolo.com/) \
 [Fastapi sql db tutorial](https://fastapi.tiangolo.com/tutorial/sql-databases/) \
 [SQLAlchemy](https://www.sqlalchemy.org/) \
 [Pydantic](https://pydantic-docs.helpmanual.io/)
+
+
+## For Windows:
+
+```bash
+docker run --rm -p 5430:5432 -v postgres_data:/var/lib/postgresql/data -e POSTGRES_DB=inf3995 -e POSTGRES_USER=eq102 -e POSTGRES_PASSWORD=root -it postgres:13
+
+docker run --rm -p 8000:8000 -v C://full-path/INF3995-Backend/app:/src/app -v /app/ros_nodes/build -v /app/ros_nodes/install -v /app/ros_nodes/log -e ROS_DOMAIN_ID=62 -e TERM='xterm-256color' -e SQLALCHEMY_DATABASE_HOST=host.docker.internal -e WATCHFILES_FORCE_POLLING=true -it fastapi bash -c "/bin/bash -c '/start-app.sh'"
+```

@@ -4,8 +4,11 @@ psycopg2-binary
 databases
 asyncpg
 aiosqlite
+python-socketio
+python-dotenv
 
 # for testing
 pytest
 requests
 pytest-cov
+pytest-asyncio

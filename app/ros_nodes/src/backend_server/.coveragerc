@@ -1,0 +1,4 @@
+[run]
+omit = ./backend_server/tests/*
+ ./backend_server/api/examples/*
+ run.py
