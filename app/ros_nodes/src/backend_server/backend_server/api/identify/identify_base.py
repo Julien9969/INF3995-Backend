@@ -53,14 +53,14 @@ class IdentifyBase:
                 logging.info(f"Identify connected already executing {odom_topic} will wait his response")
                 await asyncio.sleep(1)
                 node.destroy_node()
-                return IdentifyBase.connected_robots
+                return str(IdentifyBase.connected_robots)
             
             await asyncio.sleep(1)  # Wait for some time to receive odom data
             node.destroy_node()
 
         RobotsData().reset_robots(IdentifyBase.connected_robots)
 
-        return [robot.id for robot in RobotsData().robots]
+        return str([robot.id for robot in RobotsData().robots])
 
     def get_robot_id(self, name: str):
 

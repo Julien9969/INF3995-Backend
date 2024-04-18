@@ -60,6 +60,7 @@ class Mission(metaclass=Singleton):
     def stop_mission(self):
         self.stop_timestamp = int(time.time())
         self.state = MissionState.ENDED
+        RobotsData().stop_robots()
         mission = MissionNode()
         mission.stop_mission()
         logs = Logs()
@@ -78,9 +79,9 @@ class Mission(metaclass=Singleton):
         logging.info(f"Running robots: {running_robots}")
         if(running_robots):
             for id in running_robots:
+                RobotsData().head_back_to_base(id)
                 mission = MissionNode()
                 response = response + str(mission.head_back_base(id))
-                RobotsData().head_back_to_base(id)
                 logging.info(f"Robot {id} is heading back to base")
         return response
 

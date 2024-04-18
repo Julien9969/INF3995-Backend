@@ -90,3 +90,7 @@ class RobotsData(metaclass=Singleton):
                 if robot.id == id and robot.state == RobotState.RUNNING:
                     return [robot.id]
             return None
+    def stop_robots(self):
+        for robot in self.robots:
+            robot.state = RobotState.IDLE
+        logging.info("All robots stopped")
